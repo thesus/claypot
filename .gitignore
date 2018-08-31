@@ -1,0 +1,15 @@
+# Virtual environments
+/venv
+
+# Raw css files
+*.css
+*.css.map
+
+# Python cache
+__pycache__
+*.pyc
+
+# System and Testing
+.DS_Store
+.pytest_cache
+.coverage
