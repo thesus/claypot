@@ -123,7 +123,7 @@ class RecipeEditFormView(View):
                 recipe_form = RecipeCreateForm(instance=instance)
                 recipe_ingredient_forms = [
                     RecipeIngredientCreateForm(instance=ri)
-                    for ri in instance.recipe_ingredient_forms
+                    for ri in instance.recipe_ingredients.all()
                 ]
                 new_recipe_ingredient = RecipeIngredientCreateForm({
                     'recipe': instance.pk,
