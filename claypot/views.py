@@ -116,11 +116,12 @@ class RecipeEditFormView(View):
 
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
-            if hasattr(kwargs, 'pk'):
-                recipe = get_object_or_404(Recipe, pk=kwargs['pk'])
-                return JsonResponse({
-                    recipe
-                })
+            if kwargs['pk']:
+                instance = get_object_or_404(Recipe, pk=kwargs['pk'])
+                recipe = {
+                    'title': instance.title
+                }
+                return JsonResponse(recipe)
             else:
                 return HttpResponse('{}', content_type='application/json')
         else:
