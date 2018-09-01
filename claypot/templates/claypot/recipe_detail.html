@@ -1,0 +1,31 @@
+{% extends "claypot/base.html" %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}{{ recipe.title }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<article>
+    <div>{{ recipe.title }}</div>
+    {% for ri in ingredients %}
+    <div>
+        {% if ri.amount_type == AMOUNT_TYPE_NUMERIC %}
+            {% blocktrans with amount=ri.amount_numeric|intcomma unit=ri.unit ingredient=ri.ingredient context "Numeric amount of an ingredient" %}
+                {{ amount }}&nbsp;{{ unit }} of {{ ingredient }}
+            {% endblocktrans %}
+        {% elif ri.amount_type == AMOUNT_TYPE_APPROX %}
+            {% blocktrans with amount=ri.amount_approx ingredient=ri.ingredient context "Approximate amount of an ingredient" %}
+                {{ amount }} of {{ ingredient }}
+            {% endblocktrans %}
+        {% elif ri.amount_type == AMOUNT_TYPE_NONE %}
+            {% blocktrans with ingredient=ri.ingredient context "Unspecified amount of an ingredient" %}
+                {{ ingredient }}
+            {% endblocktrans %}
+        {% else %}
+            {% trans "This recipe looks broken. May ask an administrator about it." %}
+        {% endif %}
+    </div>
+    {% endfor %}
+</article>
+{% endblock %}
+

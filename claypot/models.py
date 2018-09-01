@@ -6,7 +6,14 @@ from django.utils.translation import (
 )
 
 
+class UnitManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
+
 class Unit(models.Model):
+    objects = UnitManager()
+
     name = models.CharField(
         max_length=100,
         verbose_name=ugettext_lazy('Name'),
@@ -22,6 +29,9 @@ class Unit(models.Model):
         blank=True,
     )
 
+    def natural_key(self):
+        return (self.name,)
+
     def __str__(self):
         # Translators: Unit display name
         return ugettext('{0.name}').format(self)
@@ -29,13 +39,22 @@ class Unit(models.Model):
     class Meta:
         verbose_name = ugettext_lazy('Unit')
         verbose_name_plural = ugettext_lazy('Units')
+        unique_together = ('name',)
+
+
+class RecipeManager(models.Manager):
+    def get_by_natural_key(self, slug):
+        return self.get(slug=slug)
 
 
 class Recipe(models.Model):
+    objects = RecipeManager()
+
     title = models.CharField(
         max_length=500,
         verbose_name=ugettext_lazy('Title'),
     )
+    slug = models.SlugField(max_length=200)
     instructions = models.TextField(
         verbose_name=ugettext_lazy('Instructions'))
 
@@ -52,14 +71,19 @@ class Recipe(models.Model):
         verbose_name=ugettext_lazy('Author'),
         related_name='authored_recipes',
     )
+    published_on = models.DateTimeField(auto_now=True)
+
+    def natural_key(self):
+        return (self.slug,)
 
     def __str__(self):
         # Translators: Recipe display name
-        return ugettext('{0.name}').format(self)
+        return ugettext('{0.title}').format(self)
 
     class Meta:
         verbose_name = ugettext_lazy('Recipe')
         verbose_name_plural = ugettext_lazy('Recipes')
+        unique_together = ('slug',)
 
 
 AMOUNT_TYPE_NONE = 1
@@ -72,7 +96,16 @@ AMOUNT_TYPES = (
 )
 
 
+class RecipeIngredientManager(models.Manager):
+    def get_by_natural_key(self, recipe, ingredient):
+        recipe = Recipe.objects.get_by_natural_key(*recipe)
+        ingredient = Ingredient.objects.get_by_natural_key(*ingredient)
+        return self.get(recipe=recipe, ingredient=ingredient)
+
+
 class RecipeIngredient(models.Model):
+    objects = RecipeIngredientManager()
+
     recipe = models.ForeignKey(
         'Recipe',
         verbose_name=ugettext_lazy('Recipe'),
@@ -98,11 +131,15 @@ class RecipeIngredient(models.Model):
     )
     amount_numeric = models.FloatField(
         verbose_name=ugettext_lazy('Amount, numeric'),
+        null=True,
+        blank=True,
     )
     amount_approx = models.CharField(
         max_length=250,
         # Translators: Description of amount like "pint" or "some"
         verbose_name=ugettext_lazy('Amount, approximated'),
+        null=True,
+        blank=True,
     )
     unit = models.ForeignKey(
         'Unit',
@@ -114,6 +151,12 @@ class RecipeIngredient(models.Model):
         related_name='recipe_ingredients',
     )
 
+    def natural_key(self):
+        return (
+            self.recipe.natural_key(),
+            self.ingredient.natural_key(),
+        )
+
     def __str__(self):
         # Translators: Recipe ingredient display name
         return ugettext('{0.recipe}\'s {0.ingredient}').format(self)
@@ -121,13 +164,24 @@ class RecipeIngredient(models.Model):
     class Meta:
         verbose_name = ugettext_lazy('Recipe ingredient')
         verbose_name_plural = ugettext_lazy('Recipe ingredients')
+        unique_together = ('recipe', 'ingredient')
+
+
+class IngredientManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
 
 
 class Ingredient(models.Model):
+    objects = IngredientManager()
+
     name = models.CharField(
         max_length=200,
         verbose_name=ugettext_lazy('Name'),
     )
+
+    def natural_key(self):
+        return (self.name,)
 
     def __str__(self):
         # Translators: Ingredient display name
@@ -136,3 +190,4 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = ugettext_lazy('Ingredient')
         verbose_name_plural = ugettext_lazy('Ingredients')
+        unique_together = ('name',)
