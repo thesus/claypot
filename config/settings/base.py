@@ -118,4 +118,4 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = str(APPS_DIR('media'))
 MEDIA_URL = '/media/'
 
-CRISPY_TEMPLATE_PACK = 'bootsrap4'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
