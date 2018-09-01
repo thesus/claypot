@@ -110,7 +110,7 @@ USE_TZ = True
 
 STATIC_ROOT = str(ROOT_DIR('static'))
 STATICFILES_DIRS = [
-    str(APPS_DIR.path('static'))
+    str(APPS_DIR.path('contrib/static'))
 ]
 STATIC_URL = '/static/'
 
