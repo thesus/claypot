@@ -13,6 +13,26 @@ class UserFactory(factory.DjangoModelFactory):
 
 
 @pytest_factoryboy.register
+class IngredientFactory(factory.DjangoModelFactory):
+    name = factory.Faker('name')
+
+    class Meta:
+        model = 'claypot.Ingredient'
+        django_get_or_create = ('name',)
+
+
+@pytest_factoryboy.register
+class UnitFactory(factory.DjangoModelFactory):
+    name = factory.Faker('name')
+    name_plural = factory.Faker('name')
+    code = factory.Faker('word')
+
+    class Meta:
+        model = 'claypot.Unit'
+        django_get_or_create = ('name',)
+
+
+@pytest_factoryboy.register
 class RecipeFactory(factory.DjangoModelFactory):
     title = factory.Faker('words')
     slug = factory.Faker('words')

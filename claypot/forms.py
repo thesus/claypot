@@ -1,7 +1,11 @@
 from django import forms
+from django.forms import ValidationError
 from django.utils.translation import ugettext
 
 from .models import (
+    AMOUNT_TYPE_APPROX,
+    AMOUNT_TYPE_NONE,
+    AMOUNT_TYPE_NUMERIC,
     Recipe,
     RecipeIngredient,
 )
@@ -70,7 +74,7 @@ class RecipeIngredientCreateForm(forms.ModelForm):
                         code='approximated-amount-given',
                     )
                 )
-            if cd['unit'] is not None:
+            if cd['unit'] is None:
                 errors.append(
                     ValidationError(
                         ugettext('Unit missing'),
