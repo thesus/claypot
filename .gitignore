@@ -14,4 +14,6 @@ __pycache__
 .pytest_cache
 .coverage
 
+# Toxic (js 'n stuff)
 claypot/contrib/static/vendor
+node_modules
