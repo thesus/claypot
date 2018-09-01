@@ -1,0 +1,8 @@
+- model: claypot.Ingredient
+  fields: { name: "Wasser" }
+- model: claypot.Ingredient
+  fields: { name: "Mehl" }
+- model: claypot.Ingredient
+  fields: { name: "Salz" }
+- model: claypot.Ingredient
+  fields: { name: "Hefe" }

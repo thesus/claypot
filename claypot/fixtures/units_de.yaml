@@ -1,0 +1,25 @@
+- model: claypot.Unit
+  fields:
+    name: Kilogramm
+    name_plural: Kilogramm
+    code: kg
+- model: claypot.Unit
+  fields:
+    name: Gramm
+    name_plural: Gramm
+    code: g
+- model: claypot.Unit
+  fields:
+    name: Liter
+    name_plural: Liter
+    code: l
+- model: claypot.Unit
+  fields:
+    name: Milliliter
+    name_plural: Milliliter
+    code: ml
+- model: claypot.Unit
+  fields:
+    name: Prise
+    name_plural: Prisen
+    code: ""

@@ -1,0 +1,10 @@
+- model: claypot.Unit
+  fields:
+    name: Teelöffel
+    name_plural: Teelöffel
+    code: TL
+- model: claypot.Unit
+  fields:
+    name: Esslöffel
+    name_plural: Esslöffel
+    code: EL
