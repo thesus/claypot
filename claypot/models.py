@@ -1,3 +1,6 @@
+from functools import reduce
+import operator
+
 from django.conf import settings
 from django.db import models
 from django.utils.translation import (
@@ -77,6 +80,13 @@ class Recipe(models.Model):
         related_name='starred_recipes',
     )
 
+    def tags(self):
+        return reduce(
+            operator.or_,
+            (set(ri.ingredient.tags.all())
+                for ri in self.recipe_ingredients.all()),
+        )
+
     def is_starred_by(self, user):
         return self.starred_by.filter(pk=user.pk).exists()
 
@@ -124,6 +134,12 @@ class RecipeIngredient(models.Model):
         verbose_name=ugettext_lazy('Ingredient'),
         on_delete=models.PROTECT,
         related_name='recipe_ingredients',
+    )
+    ingredient_extra = models.TextField(
+        blank=True,
+        # Translators: Optional field to note additional things about one specific
+        # ingredient
+        verbose_name=ugettext_lazy('Additional notes about ingredient'),
     )
     optional = models.BooleanField(
         verbose_name=ugettext_lazy('Optional'),
@@ -186,6 +202,10 @@ class Ingredient(models.Model):
         max_length=200,
         verbose_name=ugettext_lazy('Name'),
     )
+    tags = models.ManyToManyField(
+        'IngredientTag',
+        related_name='ingredients',
+    )
 
     def natural_key(self):
         return (self.name,)
@@ -198,3 +218,25 @@ class Ingredient(models.Model):
         verbose_name = ugettext_lazy('Ingredient')
         verbose_name_plural = ugettext_lazy('Ingredients')
         unique_together = ('name',)
+
+
+class IngredientTagManager(models.Manager):
+    def get_by_natural_key(self, tag):
+        return self.get(tag=tag)
+
+
+class IngredientTag(models.Model):
+    objects = IngredientTagManager()
+
+    tag = models.CharField(max_length=100)
+
+    def natural_key(self):
+        return (self.tag,)
+
+    def __str__(self):
+        return self.tag
+
+    class Meta:
+        verbose_name = ugettext_lazy('Tag')
+        verbose_name_plural = ugettext_lazy('Tags')
+        unique_together = ('tag',)

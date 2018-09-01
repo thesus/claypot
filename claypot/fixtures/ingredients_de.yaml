@@ -1,12 +1,33 @@
+- model: claypot.IngredientTag
+  fields: { tag: "Gluten" }
+- model: claypot.IngredientTag
+  fields: { tag: "Laktose" }
+- model: claypot.IngredientTag
+  fields: { tag: "Milch" }
+- model: claypot.IngredientTag
+  fields: { tag: "Fleisch" }
+
 - model: claypot.Ingredient
   fields: { name: "Wasser" }
 - model: claypot.Ingredient
-  fields: { name: "Mehl" }
+  fields:
+    name: Mehl
+    tags:
+      - [Gluten]
 - model: claypot.Ingredient
   fields: { name: "Salz" }
 - model: claypot.Ingredient
   fields: { name: "Hefe" }
 - model: claypot.Ingredient
-  fields: { name: "Joghurt" }
+  fields:
+    name: Joghurt
+    tags:
+      - [Laktose]
+      - [Milch]
 - model: claypot.Ingredient
   fields: { name: "Kartoffeln" }
+- model: claypot.Ingredient
+  fields:
+    name: Speck
+    tags:
+      - [Fleisch]

@@ -44,6 +44,12 @@
     <div>
         {{ recipe.instructions }}
     </div>
+    <div>{% trans "Tags" %}</div>
+    <ul>
+    {% for tag in tags %}
+        <li>{{tag}}</li>
+    {% endfor %}
+    </ul>
 </article>
 {% endblock %}
 

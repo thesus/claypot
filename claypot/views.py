@@ -48,6 +48,7 @@ class RecipeDetailView(DetailView):
         )
         context['is_starred'] = context['recipe'].is_starred_by(
             self.request.user)
+        context['tags'] = sorted(str(tag) for tag in context['recipe'].tags())
         context['AMOUNT_TYPE_APPROX'] = AMOUNT_TYPE_APPROX
         context['AMOUNT_TYPE_NONE'] = AMOUNT_TYPE_NONE
         context['AMOUNT_TYPE_NUMERIC'] = AMOUNT_TYPE_NUMERIC
