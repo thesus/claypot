@@ -20,6 +20,8 @@ from django.views.generic import (
 )
 
 from .forms import (
+    RecipeCreateForm,
+    RecipeIngredientCreateForm,
     RecipeSetStarForm,
     RecipeUnsetStarForm,
     TOGGLE_FORM_SET,
@@ -118,12 +120,26 @@ class RecipeEditFormView(View):
         if request.is_ajax():
             if 'pk' in kwargs:
                 instance = get_object_or_404(Recipe, pk=kwargs['pk'])
-                recipe = {
-                    'title': instance.title
-                }
-                return JsonResponse(recipe)
+                recipe_form = RecipeCreateForm(instance=instance)
+                recipe_ingredient_forms = [
+                    RecipeIngredientCreateForm(instance=ri)
+                    for ri in instance.recipe_ingredient_forms
+                ]
+                new_recipe_ingredient = RecipeIngredientCreateForm({
+                    'recipe': instance.pk,
+                })
             else:
-                return HttpResponse('{}', content_type='application/json')
+                recipe_form = RecipeCreateForm()
+                recipe_ingredient_forms = []
+                new_recipe_ingredient = RecipeIngredientCreateForm()
+            recipe = {}
+            recipe.update(recipe_form.serialize())
+            recipe['recipe_ingredients'] = [
+                rif.serialize(exclude=['recipe'])
+                for rif in recipe_ingredient_forms
+            ]
+            recipe['_new_ingredient'] = (
+                new_recipe_ingredient.serialize(exclude=['recipe']))
+            return JsonResponse(recipe)
         else:
             return render(request, 'claypot/recipe_update.html')
-
