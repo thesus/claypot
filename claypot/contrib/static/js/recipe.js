@@ -15,15 +15,30 @@ new Vue({
     },
     methods: {
         async getRecipe () {
-            let url = '/' + location.pathname.substring(1)
-            var response = axios.get(url, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+            // let url = '/' + location.pathname.substring(1)
+            // var response = axios.get(url, {
+            //     headers: {
+            //         'X-Requested-With': 'XMLHttpRequest'
+            //     }
+            // }).catch((error) => {
+            //     console.log(error)
+            // })
+            // this.$set(this, 'recipe', await response.data)
+            this.$set(
+                this,
+                'recipe', {
+                    title: '',
+                    instructions: '',
+                    ingredients: [
+                        {
+                            extra: 'apfel'
+                        },
+                        {
+                            extra: 'banane'
+                        }
+                    ]
                 }
-            }).catch((error) => {
-                console.log(error)
-            })
-            this.$set(this, 'recipe', await response.data)
+            )
         }
     }
 })
