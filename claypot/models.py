@@ -72,6 +72,13 @@ class Recipe(models.Model):
         related_name='authored_recipes',
     )
     published_on = models.DateTimeField(auto_now=True)
+    starred_by = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='starred_recipes',
+    )
+
+    def is_starred_by(self, user):
+        return self.starred_by.filter(pk=user.pk).exists()
 
     def natural_key(self):
         return (self.slug,)

@@ -7,6 +7,21 @@
 {% block content %}
 <article>
     <div>{{ recipe.title }}</div>
+    {% if user.is_authenticated %}
+        {% if not is_starred %}
+        <form method="post" action="{% url "recipe-set-star" pk=recipe.pk %}">
+            {% csrf_token %}
+            <button type="submit">{% trans "Star this recipe" %}</button>
+        </form>
+        {% else %}
+        <form method="post" action="{% url "recipe-unset-star" pk=recipe.pk %}">
+            {% csrf_token %}
+            <button type="submit">{% trans "Unstar this recipe" %}</button>
+        </form>
+        {% endif %}
+    {% else %}
+        <p>{% trans "Login to star your favourite recipes." %}</p>
+    {% endif %}
     {% for ri in ingredients %}
     <div>
         {% if ri.amount_type == AMOUNT_TYPE_NUMERIC %}
