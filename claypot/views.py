@@ -1,11 +1,17 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import (
+    HttpResponse,
     HttpResponseBadRequest,
     JsonResponse
 )
 
-from django.shortcuts import redirect
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+    render
+)
+
 from django.views.generic import (
     DetailView,
     ListView,
@@ -107,4 +113,16 @@ class IngredientListView(View):
 
 
 class RecipeEditFormView(View):
-    pass
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            if hasattr(kwargs, 'pk'):
+                recipe = get_object_or_404(Recipe, pk=kwargs['pk'])
+                return JsonResponse({
+                    recipe
+                })
+            else:
+                return HttpResponse('{}', content_type='application/json')
+        else:
+            return render(request, 'claypot/recipe_update.html')
+

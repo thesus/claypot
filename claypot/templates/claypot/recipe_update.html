@@ -1,0 +1,21 @@
+{% extends "claypot/base.html" %}
+
+{% load static %}
+{% load i18n %}
+{% load humanize %}
+
+{% block title %}{% trans "Edit Recipe" %} - {{ block.super }}{% endblock title %}
+
+{% block content %}
+    <div id="recipe">
+        <form>
+
+
+        </form>
+    </div>
+{% endblock content %}
+
+
+{% block javascript %}
+    <script src="{% static '/vendor/recipe.js' %}">
+{% endblock javascript %}

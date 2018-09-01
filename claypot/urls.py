@@ -35,7 +35,7 @@ urlpatterns = [
         name='recipe-update'
     ),
     path(
-        'recipes/create',
+        'recipes/create/',
         views.RecipeEditFormView.as_view(),
         name='recipe-create'
     ),
