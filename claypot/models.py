@@ -11,10 +11,15 @@ class Unit(models.Model):
         max_length=100,
         verbose_name=ugettext_lazy('Name'),
     )
+    name_plural = models.CharField(
+        max_length=100,
+        verbose_name=ugettext_lazy('Name, plural'),
+    )
     code = models.CharField(
         max_length=5,
         # Translators: Abbreviation for a unit
         verbose_name=ugettext_lazy('Code'),
+        blank=True,
     )
 
     def __str__(self):
