@@ -27,7 +27,6 @@ from .forms import (
     TOGGLE_FORM_SET,
     TOGGLE_FORM_UNSET,
 )
-
 from .models import (
     AMOUNT_TYPE_APPROX,
     AMOUNT_TYPE_NONE,
@@ -35,6 +34,7 @@ from .models import (
     Recipe,
     Ingredient
 )
+from .serializers import RecipeSerializer
 
 
 class HomeView(TemplateView):
@@ -120,26 +120,9 @@ class RecipeEditFormView(View):
         if request.is_ajax():
             if 'pk' in kwargs:
                 instance = get_object_or_404(Recipe, pk=kwargs['pk'])
-                recipe_form = RecipeCreateForm(instance=instance)
-                recipe_ingredient_forms = [
-                    RecipeIngredientCreateForm(instance=ri)
-                    for ri in instance.recipe_ingredients.all()
-                ]
-                new_recipe_ingredient = RecipeIngredientCreateForm({
-                    'recipe': instance.pk,
-                })
             else:
-                recipe_form = RecipeCreateForm()
-                recipe_ingredient_forms = []
-                new_recipe_ingredient = RecipeIngredientCreateForm()
-            recipe = {}
-            recipe.update(recipe_form.serialize())
-            recipe['recipe_ingredients'] = [
-                rif.serialize(exclude=['recipe'])
-                for rif in recipe_ingredient_forms
-            ]
-            recipe['_new_ingredient'] = (
-                new_recipe_ingredient.serialize(exclude=['recipe']))
-            return JsonResponse(recipe)
+                instance = None
+            response = RecipeSerializer(instance)
+            return JsonResponse(response.data, safe=False)
         else:
             return render(request, 'claypot/recipe_update.html')

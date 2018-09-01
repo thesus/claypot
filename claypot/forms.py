@@ -15,16 +15,7 @@ TOGGLE_FORM_SET = 'set'
 TOGGLE_FORM_UNSET = 'unset'
 
 
-class NaiveSerializerMixin:
-    def serialize(self, exclude=None):
-        return {
-            field_name: self.data.get(field_name, field.initial)
-            for field_name, field in self.fields.items()
-            if exclude is None or field_name not in exclude
-        }
-
-
-class RecipeCreateForm(forms.ModelForm, NaiveSerializerMixin):
+class RecipeCreateForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = (
@@ -33,7 +24,7 @@ class RecipeCreateForm(forms.ModelForm, NaiveSerializerMixin):
         )
 
 
-class RecipeIngredientCreateForm(forms.ModelForm, NaiveSerializerMixin):
+class RecipeIngredientCreateForm(forms.ModelForm):
     def clean(self):
         cd = super().clean()
         errors = []
@@ -120,14 +111,6 @@ class RecipeIngredientCreateForm(forms.ModelForm, NaiveSerializerMixin):
         if len(errors) > 0:
             raise ValidationError(errors)
         return cd
-
-    def serialize(self, *args, **kwargs):
-        result = super().serialize(*args, **kwargs)
-        if self.instance and self.instance.ingredient_id:
-            result['ingredient_name'] = str(self.instance.ingredient)
-        else:
-            result['ingredient_name'] = ''
-        return result
 
     class Meta:
         model = RecipeIngredient
