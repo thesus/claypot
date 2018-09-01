@@ -1,0 +1,82 @@
+- model: claypot.Recipe
+  fields:
+    title: Pizzateig
+    slug: pizzateig
+    instructions: Alles vermengen, mindestens eine Stunde gehen lassen, ausziehen, belegen, im auf 250 Grad Umluft vorgeheizten Backofen für 5 Minuten ausbacken.
+    published_on: "2018-09-01T13:55:00+02:00"
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [pizzateig]
+    ingredient: [Mehl]
+    amount_type: 2
+    amount_numeric: 0.1486
+    unit: [Kilogramm]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [pizzateig]
+    ingredient: [Wasser]
+    amount_type: 2
+    amount_numeric: 96.6
+    unit: [Milliliter]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [pizzateig]
+    ingredient: [Salz]
+    amount_type: 2
+    amount_numeric: 4.5
+    unit: [Gramm]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [pizzateig]
+    ingredient: [Hefe]
+    amount_type: 2
+    amount_numeric: 0.3
+    unit: [Gramm]
+- model: claypot.Recipe
+  fields:
+    title: Kartoffelbrot
+    slug: kartoffelbrot
+    instructions: Alles vermengen, mindestens eine Stunde gehen lassen, bei 180 Grad für 20 Minuten backen, dann bei 160 Grad für 40 weiter Minuten ausbacken.
+    published_on: "2018-09-01T13:59:00+02:00"
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [kartoffelbrot]
+    ingredient: [Mehl]
+    amount_type: 2
+    amount_numeric: 1
+    unit: [Kilogramm]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [kartoffelbrot]
+    ingredient: [Kartoffeln]
+    amount_type: 2
+    amount_numeric: 500
+    unit: [Gramm]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [kartoffelbrot]
+    ingredient: [Wasser]
+    amount_type: 2
+    amount_numeric: 0.5
+    unit: [Liter]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [kartoffelbrot]
+    ingredient: [Joghurt]
+    amount_type: 2
+    amount_numeric: 200
+    unit: [Gramm]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [kartoffelbrot]
+    ingredient: [Salz]
+    amount_type: 2
+    amount_numeric: 2
+    unit: [Teelöffel]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [kartoffelbrot]
+    ingredient: [Hefe]
+    amount_type: 2
+    amount_numeric: 42
+    unit: [Gramm]
