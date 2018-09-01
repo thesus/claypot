@@ -10,7 +10,7 @@ ROOT_DIR = environ.Path(__file__) - 3
 APPS_DIR = ROOT_DIR.path('claypot')
 
 env = environ.Env()
-
+env.read_env(str(ROOT_DIR.path(env.path('ENVIRONMENT_FILE', '.env'))))
 
 DEBUG = env.bool('DJANGO_DEBUG', default=False)
 
