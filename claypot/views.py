@@ -116,7 +116,7 @@ class RecipeEditFormView(View):
 
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
-            if kwargs['pk']:
+            if 'pk' in kwargs:
                 instance = get_object_or_404(Recipe, pk=kwargs['pk'])
                 recipe = {
                     'title': instance.title
