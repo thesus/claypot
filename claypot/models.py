@@ -85,6 +85,7 @@ class Recipe(models.Model):
             operator.or_,
             (set(ri.ingredient.tags.all())
                 for ri in self.recipe_ingredients.all()),
+            set()
         )
 
     def is_starred_by(self, user):
