@@ -25,6 +25,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'crispy_forms'
 ]
 
 INSTALLED_APPS += [
@@ -114,3 +116,5 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = str(APPS_DIR('media'))
 MEDIA_URL = '/media/'
+
+CRISPY_TEMPLATE_PACK = 'bootsrap4'
