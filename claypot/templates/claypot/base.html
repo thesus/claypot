@@ -1,0 +1,23 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block pagetitle %}{{ branding_name|default:"Claypot" }}{% endblock %}</title>
+    </head>
+    <body>
+        {% block navigation %}
+        <nav>
+            <ul>
+                <li><a href="{% url "home" %}">{% trans "Home" %}</a></li>
+            </ul>
+        </nav>
+        {% endblock %}
+        {% block full-content %}
+        <div>
+            {% block content %}
+            {% endblock %}
+        </div>
+        {% endblock %}
+    </body>
+</html>
