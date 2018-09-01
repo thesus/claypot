@@ -1,5 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseBadRequest
+
+from django.http import (
+    HttpResponseBadRequest,
+    JsonResponse
+)
+
 from django.shortcuts import redirect
 from django.views.generic import (
     DetailView,
@@ -14,11 +19,13 @@ from .forms import (
     TOGGLE_FORM_SET,
     TOGGLE_FORM_UNSET,
 )
+
 from .models import (
     AMOUNT_TYPE_APPROX,
     AMOUNT_TYPE_NONE,
     AMOUNT_TYPE_NUMERIC,
     Recipe,
+    Ingredient
 )
 
 
@@ -85,3 +92,19 @@ class RecipeSetStarFormView(RecipeUpdateStarFormView):
 
 class RecipeUnsetStarFormView(RecipeUpdateStarFormView):
     form_class = RecipeUnsetStarForm
+
+
+class IngredientListView(View):
+    def get(self, request, *args, **kwargs):
+        search = request.GET.get('search', '')
+        ingredients = Ingredient.objects.filter(
+            name__icontains=search
+        ).values_list('name', flat=True)
+
+        return JsonResponse({
+            'search': list(ingredients[:10])
+        })
+
+
+class RecipeEditFormView(View):
+    pass
