@@ -6,41 +6,60 @@
 
 {% block content %}
 <article>
-    <div>{{ recipe.title }}</div>
+    <h1>{{ recipe.title }}</h1>
     {% if user.is_authenticated %}
         {% if not is_starred %}
         <form method="post" action="{% url "recipe-set-star" pk=recipe.pk %}">
             {% csrf_token %}
-            <button type="submit">{% trans "Star this recipe" %}</button>
+            <button class="btn btn-primary" type="submit">{% trans "Star this recipe" %}</button>
         </form>
         {% else %}
         <form method="post" action="{% url "recipe-unset-star" pk=recipe.pk %}">
             {% csrf_token %}
-            <button type="submit">{% trans "Unstar this recipe" %}</button>
+            <button class="btn btn-primary" type="submit">{% trans "Unstar this recipe" %}</button>
         </form>
         {% endif %}
     {% else %}
         <p>{% trans "Login to star your favourite recipes." %}</p>
     {% endif %}
-    {% for ri in ingredients %}
-    <div>
-        {% if ri.amount_type == AMOUNT_TYPE_NUMERIC %}
-            {% blocktrans with amount=ri.amount_numeric|intcomma unit=ri.unit ingredient=ri.ingredient context "Numeric amount of an ingredient" %}
-                {{ amount }}&nbsp;{{ unit }} of {{ ingredient }}
-            {% endblocktrans %}
-        {% elif ri.amount_type == AMOUNT_TYPE_APPROX %}
-            {% blocktrans with amount=ri.amount_approx ingredient=ri.ingredient context "Approximate amount of an ingredient" %}
-                {{ amount }} of {{ ingredient }}
-            {% endblocktrans %}
-        {% elif ri.amount_type == AMOUNT_TYPE_NONE %}
-            {% blocktrans with ingredient=ri.ingredient context "Unspecified amount of an ingredient" %}
-                {{ ingredient }}
-            {% endblocktrans %}
-        {% else %}
-            {% trans "This recipe looks broken. May ask an administrator about it." %}
-        {% endif %}
-    </div>
-    {% endfor %}
+    <h2>{% trans "Ingredients" %}</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{% trans "Amount" %}</th>
+                <th>{% trans "Ingredient" %}</th>
+                <th>{% trans "Extra" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ri in ingredients %}
+            <tr>
+                <td>
+                    {% if ri.amount_type == AMOUNT_TYPE_NUMERIC %}
+                        {% blocktrans with amount=ri.amount_numeric|intcomma unit=ri.unit ingredient=ri.ingredient context "Numeric amount of an ingredient" %}
+                            {{ amount }}&nbsp;{{ unit }}
+                        {% endblocktrans %}
+                    {% elif ri.amount_type == AMOUNT_TYPE_APPROX %}
+                        {% blocktrans with amount=ri.amount_approx ingredient=ri.ingredient context "Approximate amount of an ingredient" %}
+                            {{ amount }}
+                        {% endblocktrans %}
+                    {% elif ri.amount_type == AMOUNT_TYPE_NONE %}
+                        {% blocktrans with ingredient=ri.ingredient context "Unspecified amount of an ingredient" %}
+                        {% endblocktrans %}
+                    {% else %}
+                        {% trans "This recipe looks broken. May ask an administrator about it." %}
+                    {% endif %}
+                </td>
+                <td>
+                    {{ ri.ingredient }}
+                </td>
+                <td>
+                    {{ ri.extra }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
     <div>
         {{ recipe.instructions }}
     </div>
