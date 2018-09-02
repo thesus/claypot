@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from .models import (
     Ingredient,
+    IngredientTag,
     Recipe,
     RecipeIngredient,
     Unit,
@@ -56,4 +57,47 @@ class RecipeSerializer(serializers.ModelSerializer):
             'title',
             'instructions',
             'recipe_ingredients',
+        ]
+
+
+class IngredientSearchQuerySerializer(serializers.Serializer):
+    ingredient = serializers.SlugRelatedField(
+        queryset=Ingredient.objects.all(),
+        slug_field='name',
+    )
+    exclude = serializers.BooleanField(
+        required=False,
+        default=False,
+    )
+
+
+class IngredientTagSearchQuerySerializer(serializers.Serializer):
+    tag = serializers.SlugRelatedField(
+        queryset=IngredientTag.objects.all(),
+        slug_field='tag',
+    )
+    exclude = serializers.BooleanField(
+        required=False,
+        default=False,
+    )
+
+
+class RecipeSearchQuerySerializer(serializers.Serializer):
+    title = serializers.CharField(required=False)
+    ingredients = serializers.ListField(
+        IngredientSearchQuerySerializer(),
+        required=False,
+    )
+    tags = serializers.ListField(
+        IngredientTagSearchQuerySerializer(),
+        required=False,
+    )
+
+
+class RecipeSearchResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = [
+            'id',
+            'title',
         ]

@@ -34,7 +34,11 @@ from .models import (
     Ingredient,
     Unit,
 )
-from .serializers import RecipeSerializer
+from .serializers import (
+    RecipeSearchQuerySerializer,
+    RecipeSearchResultSerializer,
+    RecipeSerializer,
+)
 
 
 class HomeView(TemplateView):
@@ -230,3 +234,59 @@ class RecipeEditFormView(LoginRequiredMixin, View):
             ri.delete()
 
         return pk
+
+
+class RecipeSearchView(View):
+    def get(self, request):
+        data = {}
+        if 'title' in request.GET:
+            data['title'] = request.GET['title']
+        if 'ingredients' in request.GET:
+            data['ingredients'] = [
+                {
+                    'name': ingredient.lstrip('-'),
+                    'exclude': ingredient[0] == '-',
+                }
+                for ingredient in request.GET['ingredients'].split(',')
+                if len(ingredient) > 0
+            ]
+        if 'tags' in request.GET:
+            data['tags'] = [
+                {
+                    'tag': tag.lstrip('-'),
+                    'exclude': tag[0] == '-',
+                }
+                for tag in request.GET['tags'].split(',')
+                if len(tag) > 0
+            ]
+        if len(data) == 0:
+            return JsonResponse([], safe=False)
+        search_query = RecipeSearchQuerySerializer(data=data)
+        if not search_query.is_valid():
+            response = JsonResponse(
+                {'errors': search_query.errors},
+                safe=False,
+            )
+            response.status_code = 400
+            return response
+        vd = search_query.validated_data
+        qs = Recipe.objects.all()
+        if 'title' in vd:
+            for word in vd['title'].split():
+                qs = qs.filter(title__icontains=word)
+        if 'ingredients' in vd:
+            for ingredient in vd['ingredients']:
+                if ingredient['exclude']:
+                    f = qs.exclude
+                else:
+                    f = qs.filter
+                qs = f(recipe_ingredients__ingredient=ingredient['ingredient'])
+        if 'tags' in vd:
+            for tag in vd['tags']:
+                if tag['exclude']:
+                    f = qs.exclude
+                else:
+                    f = qs.filter
+                qs = f(recipe_ingredients__ingredient__tags=tag['tag'])
+        result = RecipeSearchResultSerializer(qs, many=True)
+        return JsonResponse(result.data, safe=False)
