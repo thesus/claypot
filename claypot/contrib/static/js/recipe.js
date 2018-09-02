@@ -37,6 +37,24 @@ new Vue({
     isSearchLoading(id) {
       return this.searches.includes(id)
     },
+    getAmount(id) {
+      let ingredient = this.recipe.recipe_ingredients[id]
+      return (ingredient.amount_numeric != null) ? ingredient.amount_numeric : ingredient.amount_approx
+    },
+    setAmount(event) {
+      let id = parseInt(event.target.attributes.index.value)
+      let ingredient = this.recipe.recipe_ingredients[id]
+      let val = event.target.value
+      if (isNaN(val)) {
+        this.$set(ingredient, 'amount_approx', val)
+        this.$set(ingredient, 'amount_type', 3)
+        ingredient.amount_numeric = null
+      } else {
+        this.$set(ingredient, 'amount_numeric', Number(val))
+        this.$set(ingredient, 'amount_type', 2)
+        ingredient.amount_approx = null
+      }
+    },
     async getRecipe () {
       var response = await axios.get(this.url, this.config).catch(
         (error) => {

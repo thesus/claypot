@@ -19,6 +19,13 @@
             </div>
             <hr>
             <div class="ingredient" v-for="(ingredient, index) in recipe.recipe_ingredients">
+                <input
+                    class="form-control"
+                    placeholder={% trans "Enter Amount" %}
+                    :value="getAmount(index)"
+                    @input="setAmount"
+                    :index="index"
+                >
                 <multiselect
                     v-model="ingredient.ingredient"
                     :options="getIngredients"
