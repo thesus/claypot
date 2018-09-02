@@ -37,7 +37,7 @@ urlpatterns = [
     path(
         'recipes/<int:pk>/edit',
         views.RecipeEditFormView.as_view(),
-        name='recipe-update'
+        name='recipe-edit'
     ),
     path(
         'recipes/create/',

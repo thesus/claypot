@@ -1,12 +1,49 @@
 {% extends "claypot/base.html" %}
+{% load static %}
 {% load i18n %}
 
 {% block title %}Home - {{ block.super }}{% endblock %}
 
 {% block content %}
 <p>{% trans "Welcome." %}</p>
+<a class="btn btn-primary" href="{% url 'recipe-create' %}">Create Recipe</a>
+
+<div id="search">
+  <div class="form-row search">
+    <div class="col">
+      <input
+        class="form-control"
+        v-model="searchTerm"
+        placeholder="{% trans 'Enter search term' %}">
+    </div>
+    <div class="col">
+      <multiselect
+        v-model="searchTags"
+        :options="allTags"
+        :hide-selected="true"
+        :multiple="true"
+        :close-on-select="false"
+      ></multiselect>
+    </div>
+  </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Rezept</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="recipe in recipes">
+        <td>
+          <a :href="'/recipes/' + recipe.id + '/'">{( recipe.title )}</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 {% endblock content %}
 
 
 {% block javascript %}
+  <script src="{% static 'vendor/search.js' %}"></script>
 {% endblock javascript %}

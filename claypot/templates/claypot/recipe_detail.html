@@ -19,6 +19,7 @@
             <button class="btn btn-primary" type="submit">{% trans "Unstar this recipe" %}</button>
         </form>
         {% endif %}
+        <a class="btn btn-primary" href="{% url "recipe-edit" pk=recipe.pk %}">Edit Recipe</a>
     {% else %}
         <p>{% trans "Login to star your favourite recipes." %}</p>
     {% endif %}
@@ -73,4 +74,3 @@
     </ul>
 </article>
 {% endblock %}
-
