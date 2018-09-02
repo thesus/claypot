@@ -7,21 +7,16 @@ from .models import (
     Unit,
 )
 
-class NestedUnitSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Unit
-        fields = ['id', 'name']
-
-
-class NestedIngredientSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ingredient
-        fields = ['id', 'name']
-
 
 class NestedRecipeIngredientSerializer(serializers.ModelSerializer):
-    unit = NestedUnitSerializer()
-    ingredient = NestedIngredientSerializer()
+    ingredient = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Ingredient.objects.all(),
+    )
+    unit = serializers.SlugRelatedField(
+        slug_field='name',
+        queryset=Unit.objects.all(),
+    )
 
     class Meta:
         model = RecipeIngredient
