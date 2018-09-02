@@ -15,6 +15,7 @@ new Vue({
       'searches': [],
       'newIngredients': [],
       'recipe': {},
+      'units': [],
       'ingredients': [],
       'url': '/' + location.pathname.substring(1),
       'config': {
@@ -26,6 +27,7 @@ new Vue({
   },
   mounted () {
     this.getRecipe()
+    this.getUnits()
     this.findIngredients('', -1)
   },
   computed: {
@@ -61,9 +63,15 @@ new Vue({
           console.log(error)
         }
       )
-
-      let recipe = response.data
       this.$set(this, 'recipe', response.data)
+    },
+    async getUnits () {
+      var response = await axios.get('/units', this.config).catch(
+        (error) => {
+          console.log(error)
+        }
+      )
+      this.$set(this, 'units', response.data.search)
     },
     async findIngredients(search, id) {
       this.searches.push(id)

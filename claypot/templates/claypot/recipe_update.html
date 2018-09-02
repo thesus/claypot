@@ -22,11 +22,17 @@
                 <div class="col">
                     <input
                         class="form-control"
-                        placeholder={% trans "Enter Amount" %}
+                        placeholder="{% trans "Enter Amount" %}"
                         :value="getAmount(index)"
                         @input="setAmount"
                         :index="index"
                     >
+                </div>
+                <div class="col">
+                    <multiselect
+                        v-model="ingredient.unit"
+                        :options="units"
+                    ></multiselect>
                 </div>
                 <div class="col">
                     <multiselect
