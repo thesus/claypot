@@ -87,6 +87,17 @@ new Vue({
         search
       )
       this.newIngredients.push(search)
+    },
+    addIngredient() {
+      this.recipe.recipe_ingredients.push({
+        amount_approx: null,
+        amount_numeric: null,
+        amount_type: 1,
+        ingredient: "",
+        ingredient_extra: "",
+        optional: false,
+        unit: ""
+      })
     }
   }
 })

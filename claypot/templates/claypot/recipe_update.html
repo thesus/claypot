@@ -18,26 +18,33 @@
                 <textarea id="instructions" class="form-control" placeholder="{% trans "Enter Instructions" %}" v-model="recipe.instructions"></textarea>
             </div>
             <hr>
-            <div class="ingredient" v-for="(ingredient, index) in recipe.recipe_ingredients">
-                <input
-                    class="form-control"
-                    placeholder={% trans "Enter Amount" %}
-                    :value="getAmount(index)"
-                    @input="setAmount"
-                    :index="index"
-                >
-                <multiselect
-                    v-model="ingredient.ingredient"
-                    :options="getIngredients"
-                    @search-change="findIngredients"
-                    @tag="createIngredient"
-                    :loading="isSearchLoading(index)"
-                    :taggable="true"
-                    tag-position="bottom"
-                    :id="index"
-                ></multiselect>
-                <input v-model="ingredient.extra">
+            <div class="form-row" v-for="(ingredient, index) in recipe.recipe_ingredients">
+                <div class="col">
+                    <input
+                        class="form-control"
+                        placeholder={% trans "Enter Amount" %}
+                        :value="getAmount(index)"
+                        @input="setAmount"
+                        :index="index"
+                    >
+                </div>
+                <div class="col">
+                    <multiselect
+                        v-model="ingredient.ingredient"
+                        :options="getIngredients"
+                        @search-change="findIngredients"
+                        @tag="createIngredient"
+                        :loading="isSearchLoading(index)"
+                        :taggable="true"
+                        tag-position="bottom"
+                        :id="index"
+                    ></multiselect>
+                </div>
+                <div class="col">
+                    <input class="form-control" placeholder="{% trans "Extra Information" %}" v-model="ingredient.extra">
+               </div>
             </div>
+            <button class="btn btn-primary" type="button" @click="addIngredient">{% trans "Add Ingredient" %}</button>
         </form>
     </div>
 {% endblock content %}
