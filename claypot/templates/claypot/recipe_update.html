@@ -18,7 +18,17 @@
                 <textarea id="instructions" class="form-control" placeholder="{% trans "Enter Instructions" %}" v-model="recipe.instructions"></textarea>
             </div>
             <hr>
-            <div class="ingredient" v-for="ingredient in recipe.ingredients">
+            <div class="ingredient" v-for="(ingredient, index) in recipe.recipe_ingredients">
+                <multiselect
+                    v-model="ingredient.ingredient"
+                    :options="getIngredients"
+                    @search-change="findIngredients"
+                    @tag="createIngredient"
+                    :loading="isSearchLoading(index)"
+                    :taggable="true"
+                    tag-position="bottom"
+                    :id="index"
+                ></multiselect>
                 <input v-model="ingredient.extra">
             </div>
         </form>
