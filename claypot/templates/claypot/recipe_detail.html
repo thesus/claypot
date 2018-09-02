@@ -29,6 +29,7 @@
                 <th>{% trans "Amount" %}</th>
                 <th>{% trans "Ingredient" %}</th>
                 <th>{% trans "Extra" %}</th>
+                <th>{% trans "Optional" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -36,16 +37,14 @@
             <tr>
                 <td>
                     {% if ri.amount_type == AMOUNT_TYPE_NUMERIC %}
-                        {% blocktrans with amount=ri.amount_numeric|intcomma unit=ri.unit ingredient=ri.ingredient context "Numeric amount of an ingredient" %}
-                            {{ amount }}&nbsp;{{ unit }}
-                        {% endblocktrans %}
+                        {% with amount=ri.amount_numeric|intcomma unit=ri.unit code=ri.unit.code ingredient=ri.ingredient %}
+                            {{ amount }}&nbsp; {% firstof code unit %}
+                        {% endwith %}
                     {% elif ri.amount_type == AMOUNT_TYPE_APPROX %}
-                        {% blocktrans with amount=ri.amount_approx ingredient=ri.ingredient context "Approximate amount of an ingredient" %}
+                        {% with amount=ri.amount_approx ingredient=ri.ingredient %}
                             {{ amount }}
-                        {% endblocktrans %}
+                        {% endwith %}
                     {% elif ri.amount_type == AMOUNT_TYPE_NONE %}
-                        {% blocktrans with ingredient=ri.ingredient context "Unspecified amount of an ingredient" %}
-                        {% endblocktrans %}
                     {% else %}
                         {% trans "This recipe looks broken. May ask an administrator about it." %}
                     {% endif %}
@@ -54,7 +53,10 @@
                     {{ ri.ingredient }}
                 </td>
                 <td>
-                    {{ ri.extra }}
+                    {{ ri.ingredient_extra }}
+                </td>
+                <td>
+                    {% if ri.optional %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}
                 </td>
             </tr>
         {% endfor %}
