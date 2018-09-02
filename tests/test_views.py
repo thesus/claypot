@@ -219,3 +219,46 @@ def test_get_recipe(authenticated_client, recipe_factory, use_recipe, use_ajax):
     assert (response['Content-Type'] == 'application/json') is use_ajax
     if use_ajax:
         assert response.json() == RecipeSerializer(recipe).data
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('title', [None, True, False])
+@pytest.mark.parametrize('tag', [None, True, False])
+@pytest.mark.parametrize('ingredient', [None, True, False])
+def test_recipe_search(
+        recipe_factory, recipe_ingredient_factory, ingredient_tag_factory,
+        client, title, tag, ingredient):
+    recipe1 = recipe_factory()
+    recipe_ingredient1 = recipe_ingredient_factory(recipe=recipe1)
+    tag1 = ingredient_tag_factory()
+    recipe_ingredient1.ingredient.tags.add(tag1)
+    url = reverse('recipe-search')
+
+    search_parameters = {}
+    if title is True:
+        search_parameters['title'] = recipe1.title[:5]
+    elif title is False:
+        search_parameters['title'] = 'not' + recipe1.title[:5]
+    if tag is True:
+        search_parameters['tags'] = tag1.tag
+    elif tag is False:
+        search_parameters['tags'] = '-' + tag1.tag
+    if ingredient is True:
+        search_parameters['ingredients'] = recipe_ingredient1.ingredient.name
+    elif ingredient is False:
+        search_parameters['ingredients'] = (
+            '-' + recipe_ingredient1.ingredient.name)
+
+    expect_find = len(search_parameters) > 0
+    if title is False:
+        expect_find = False
+    if tag is False:
+        expect_find = False
+    if ingredient is False:
+        expect_find = False
+
+    response = client.get(url, search_parameters)
+    assert response.status_code == 200
+    assert len(response.json()) == (1 if expect_find else 0)
+    if expect_find:
+        assert response.json()[0]['title'] == recipe1.title

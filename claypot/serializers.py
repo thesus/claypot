@@ -85,11 +85,11 @@ class IngredientTagSearchQuerySerializer(serializers.Serializer):
 class RecipeSearchQuerySerializer(serializers.Serializer):
     title = serializers.CharField(required=False)
     ingredients = serializers.ListField(
-        IngredientSearchQuerySerializer(),
+        child=IngredientSearchQuerySerializer(),
         required=False,
     )
     tags = serializers.ListField(
-        IngredientTagSearchQuerySerializer(),
+        child=IngredientTagSearchQuerySerializer(),
         required=False,
     )
 

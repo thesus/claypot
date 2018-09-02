@@ -244,7 +244,7 @@ class RecipeSearchView(View):
         if 'ingredients' in request.GET:
             data['ingredients'] = [
                 {
-                    'name': ingredient.lstrip('-'),
+                    'ingredient': ingredient.lstrip('-'),
                     'exclude': ingredient[0] == '-',
                 }
                 for ingredient in request.GET['ingredients'].split(',')
