@@ -177,6 +177,9 @@ class RecipeEditFormView(LoginRequiredMixin, View):
             pk = recipe.pk
         else:
             recipe = Recipe.objects.get(pk=pk)
+            recipe.title = data['title']
+            recipe.instructions = data['instructions']
+            recipe.save()
 
         # Save new ingredients so they're hashable
         for ri in data['recipe_ingredients']:

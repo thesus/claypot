@@ -81,6 +81,8 @@ def test_edit_recipe_add_ingredient(
     recipe_ingredient_factory(recipe=recipe)
     unit = unit_factory()
     data = RecipeSerializer(recipe).data
+    new_title = faker.sentence()
+    data['title'] = new_title
     data['recipe_ingredients'].append({
         "ingredient": faker.word(),
         "ingredient_extra": faker.sentence(),
@@ -101,6 +103,7 @@ def test_edit_recipe_add_ingredient(
     recipe_pk = response.json()['id']
     expected = RecipeSerializer(Recipe.objects.get(pk=recipe_pk)).data
     assert expected['id'] == recipe.pk
+    assert expected['title'] == new_title
     assert len(expected['recipe_ingredients']) == 2
     assert response.json() == expected
 
