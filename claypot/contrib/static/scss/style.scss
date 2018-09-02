@@ -2,6 +2,10 @@
 @import '~vue-multiselect/dist/vue-multiselect.min.css';
 
 
-.test {
-    border: 1px solid black;
+.hidden {
+    display: none;
+}
+
+.show {
+    display: block !important;
 }

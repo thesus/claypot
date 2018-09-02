@@ -8,7 +8,7 @@
 
 {% block content %}
     <div id="recipe">
-        <form>
+        <form class="hidden" :class="{'show': true}">
             {% csrf_token %}
             <div class="form-group">
                 <label for="title">{% trans "Title" %}</label>
