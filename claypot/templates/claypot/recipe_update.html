@@ -49,7 +49,10 @@
                 </div>
                 <div class="col">
                     <input class="form-control" placeholder="{% trans "Extra Information" %}" v-model="ingredient.extra">
-               </div>
+                </div>
+                <div class="col">
+                    <button class="btn btn-danger" type="button" @click="removeIngredient(index)">{% trans "Remove Ingredient" %}</button>
+                </div>
             </div>
             <button class="btn btn-primary" type="button" @click="addIngredient">{% trans "Add Ingredient" %}</button>
 

@@ -107,6 +107,9 @@ new Vue({
         unit: ""
       })
     },
+    removeIngredient(id) {
+      this.recipe.recipe_ingredients.splice(id, 1)
+    },
     async submitRecipe() {
       let config = Object.assign({}, this.config)
       config['headers']['X-CSRFToken'] =  document.getElementsByName("csrfmiddlewaretoken")[0].value;
