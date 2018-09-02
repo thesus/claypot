@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 
 from .models import (
@@ -8,11 +9,25 @@ from .models import (
 )
 
 
+class IngredientRelatedField(serializers.RelatedField):
+    slug_field = 'name'
+    model = Ingredient
+    queryset = Ingredient.objects.all()
+
+    def to_internal_value(self, data):
+        try:
+            return self.queryset.get(**{self.slug_field: data})
+        except ObjectDoesNotExist:
+            return self.model(**{self.slug_field: data})
+        except (TypeError, ValueError):
+            self.fail('invalid')
+
+    def to_representation(self, obj):
+        return getattr(obj, self.slug_field)
+
+
 class NestedRecipeIngredientSerializer(serializers.ModelSerializer):
-    ingredient = serializers.SlugRelatedField(
-        slug_field='name',
-        queryset=Ingredient.objects.all(),
-    )
+    ingredient = IngredientRelatedField()
     unit = serializers.SlugRelatedField(
         slug_field='name',
         queryset=Unit.objects.all(),
@@ -37,6 +52,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = [
+            'id',
             'title',
             'instructions',
             'recipe_ingredients',

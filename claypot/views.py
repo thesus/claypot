@@ -1,23 +1,25 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+import random
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import (
     HttpResponse,
     HttpResponseBadRequest,
     JsonResponse
 )
-
 from django.shortcuts import (
     get_object_or_404,
     redirect,
     render
 )
-
 from django.views.generic import (
     DetailView,
     ListView,
     TemplateView,
     View,
 )
+from django.utils.text import slugify
+from rest_framework.parsers import JSONParser
+from rest_framework.renderers import JSONRenderer
 
 from .forms import (
     RecipeCreateForm,
@@ -32,7 +34,8 @@ from .models import (
     AMOUNT_TYPE_NONE,
     AMOUNT_TYPE_NUMERIC,
     Recipe,
-    Ingredient
+    RecipeIngredient,
+    Ingredient,
 )
 from .serializers import RecipeSerializer
 
@@ -126,3 +129,86 @@ class RecipeEditFormView(View):
             return JsonResponse(response.data, safe=False)
         else:
             return render(request, 'claypot/recipe_update.html')
+
+    def post(self, request, *args, **kwargs):
+        if not request.is_ajax():
+            return HttpResponseBadRequest('Expecting AJAX request')
+        data = JSONParser().parse(request)
+        serializer = RecipeSerializer(data=data)
+        if serializer.is_valid():
+            pk = kwargs.get('pk', None)
+            vd = serializer.validated_data
+            pk = self.apply_input_to_database(pk, vd)
+            instance = get_object_or_404(Recipe, pk=pk)
+            serializer = RecipeSerializer(instance)
+            return JsonResponse(serializer.data, safe=False)
+        else:
+            response = JsonResponse({'errors': serializer.errors}, safe=False)
+            response.status_code = 400
+            return response
+
+    def apply_input_to_database(self, pk, data):
+        # Save recipe
+        if pk is None:
+            base_slug = slugify(data['title'])
+            slug = base_slug
+            while Recipe.objects.filter(slug=slug).exists():
+                slug = base_slug + '-{:04x}'.format(random.randint(0, 1024))
+            recipe = Recipe.objects.create(
+                title=data['title'],
+                slug=slug,
+                instructions=data['instructions']
+            )
+            pk = recipe.pk
+        else:
+            recipe = Recipe.objects.get(pk=pk)
+
+        # Save new ingredients so they're hashable
+        for ri in data['recipe_ingredients']:
+            if ri['ingredient'].pk is None:
+                ri['ingredient'].save()
+
+        # Save recipe ingredients
+        existing = {
+            ri.ingredient: ri
+            for ri in recipe.recipe_ingredients.all()
+        }
+        new = {
+            ri['ingredient']: ri
+            for ri in data['recipe_ingredients']
+        }
+        created = set(new) - set(existing)
+        updated = set(existing) & set(new)
+        removed = set(existing) - set(new)
+
+        # Create new RecipeIngredient objects
+        for ri_key in created:
+            ri = new[ri_key]
+            RecipeIngredient.objects.create(
+                recipe=recipe,
+                ingredient=ri['ingredient'],
+                ingredient_extra=ri['ingredient_extra'],
+                optional=ri['optional'],
+                amount_type=ri['amount_type'],
+                amount_numeric=ri['amount_numeric'],
+                amount_approx=ri['amount_approx'],
+                unit=ri['unit'],
+            )
+
+        # Update existing RecipeIngredient objects
+        for ri_key in updated:
+            ri = new[ri_key]
+            obj = existing[ri_key]
+            obj.ingredient_extra = ri['ingredient_extra']
+            obj.optional = ri['optional']
+            obj.amount_type = ri['amount_type']
+            obj.amount_numeric = ri['amount_numeric']
+            obj.amount_approx = ri['amount_approx']
+            obj.unit = ri['unit']
+            obj.save()
+
+        # Remove unmentioned RecipeIngredient objects
+        for ri in recipe.recipe_ingredients.filter(ingredient__name__in=removed):
+            ri.delete()
+
+        return pk
