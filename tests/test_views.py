@@ -45,7 +45,7 @@ def test_ingredient_list_view(
 
 
 @pytest.mark.django_db
-def test_new_recipe(faker, client, unit_factory):
+def test_new_recipe(faker, authenticated_client, unit_factory):
     unit = unit_factory()
     data = {
         "title": faker.name(),
@@ -61,7 +61,7 @@ def test_new_recipe(faker, client, unit_factory):
         }]
     }
     url = reverse('recipe-create')
-    response = client.post(
+    response = authenticated_client.post(
         url,
         data,
         content_type='application/json',
@@ -75,7 +75,7 @@ def test_new_recipe(faker, client, unit_factory):
 
 @pytest.mark.django_db
 def test_edit_recipe_add_ingredient(
-        faker, client, unit_factory, recipe_factory,
+        faker, authenticated_client, unit_factory, recipe_factory,
         recipe_ingredient_factory):
     recipe = recipe_factory()
     recipe_ingredient_factory(recipe=recipe)
@@ -91,7 +91,7 @@ def test_edit_recipe_add_ingredient(
         "unit": str(unit),
     })
     url = reverse('recipe-update', kwargs={'pk': recipe.pk})
-    response = client.post(
+    response = authenticated_client.post(
         url,
         data,
         content_type='application/json',
@@ -107,7 +107,7 @@ def test_edit_recipe_add_ingredient(
 
 @pytest.mark.django_db
 def test_edit_recipe_edit_ingredient(
-        faker, client, unit_factory, recipe_factory,
+        faker, authenticated_client, unit_factory, recipe_factory,
         recipe_ingredient_factory):
     recipe = recipe_factory()
     recipe_ingredient_factory(recipe=recipe)
@@ -115,7 +115,7 @@ def test_edit_recipe_edit_ingredient(
     new_extra_ingredient = faker.sentence()
     data['recipe_ingredients'][0]["ingredient_extra"] = new_extra_ingredient
     url = reverse('recipe-update', kwargs={'pk': recipe.pk})
-    response = client.post(
+    response = authenticated_client.post(
         url,
         data,
         content_type='application/json',
@@ -133,7 +133,7 @@ def test_edit_recipe_edit_ingredient(
 
 @pytest.mark.django_db
 def test_edit_recipe_remove_ingredient(
-        faker, client, unit_factory, recipe_factory,
+        faker, authenticated_client, unit_factory, recipe_factory,
         recipe_ingredient_factory):
     recipe = recipe_factory()
     recipe_ingredient_factory(recipe=recipe)
@@ -141,7 +141,7 @@ def test_edit_recipe_remove_ingredient(
     new_extra_ingredient = faker.sentence()
     data['recipe_ingredients'].pop()
     url = reverse('recipe-update', kwargs={'pk': recipe.pk})
-    response = client.post(
+    response = authenticated_client.post(
         url,
         data,
         content_type='application/json',
@@ -156,7 +156,7 @@ def test_edit_recipe_remove_ingredient(
 
 
 @pytest.mark.django_db
-def test_new_recipe_slug(faker, client, unit_factory):
+def test_new_recipe_slug(faker, authenticated_client, unit_factory):
     unit = unit_factory()
     data = {
         "title": faker.name(),
@@ -172,7 +172,7 @@ def test_new_recipe_slug(faker, client, unit_factory):
         }]
     }
     url = reverse('recipe-create')
-    response = client.post(
+    response = authenticated_client.post(
         url,
         data,
         content_type='application/json',
@@ -185,7 +185,7 @@ def test_new_recipe_slug(faker, client, unit_factory):
     assert response.json() == expected
 
     # Add another recipe with the same title
-    response = client.post(
+    response = authenticated_client.post(
         url,
         data,
         content_type='application/json',
@@ -201,7 +201,7 @@ def test_new_recipe_slug(faker, client, unit_factory):
 @pytest.mark.django_db
 @pytest.mark.parametrize('use_recipe', [True, False])
 @pytest.mark.parametrize('use_ajax', [True, False])
-def test_get_recipe(client, recipe_factory, use_recipe, use_ajax):
+def test_get_recipe(authenticated_client, recipe_factory, use_recipe, use_ajax):
     if use_recipe:
         recipe = recipe_factory()
         url = reverse('recipe-update', kwargs={'pk': recipe.pk})
@@ -211,7 +211,7 @@ def test_get_recipe(client, recipe_factory, use_recipe, use_ajax):
     kwargs = {}
     if use_ajax:
         kwargs['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest'
-    response = client.get(url, **kwargs)
+    response = authenticated_client.get(url, **kwargs)
     assert response.status_code == 200
     assert (response['Content-Type'] == 'application/json') is use_ajax
     if use_ajax:

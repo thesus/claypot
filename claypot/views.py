@@ -70,7 +70,7 @@ class RecipeDetailView(DetailView):
         return context
 
 
-class RecipeUpdateStarFormView(View, LoginRequiredMixin):
+class RecipeUpdateStarFormView(LoginRequiredMixin, View):
     form_class = None
 
     def post(self, request, pk):
@@ -132,7 +132,7 @@ class UnitListView(SearchableListView):
     queryset = Unit.objects.all()
 
 
-class RecipeEditFormView(View):
+class RecipeEditFormView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         if request.is_ajax():

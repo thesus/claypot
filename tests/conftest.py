@@ -1,6 +1,13 @@
 from django.conf import settings
 import factory
+import pytest
 import pytest_factoryboy
+
+
+@pytest.fixture
+def authenticated_client(client, user):
+    client.force_login(user)
+    return client
 
 
 @pytest_factoryboy.register
