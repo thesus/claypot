@@ -106,6 +106,19 @@ new Vue({
         optional: false,
         unit: ""
       })
+    },
+    async submitRecipe() {
+      let config = Object.assign({}, this.config)
+      config['headers']['X-CSRFToken'] =  document.getElementsByName("csrfmiddlewaretoken")[0].value;
+      config['method'] = 'post'
+      config['url'] = this.url
+      config['data'] = this.recipe
+      var response = await axios(config).catch(
+        (error) => {
+          console.log(error)
+        }
+      )
+      console.log(response)
     }
   }
 })
