@@ -36,6 +36,7 @@ from .models import (
     Recipe,
     RecipeIngredient,
     Ingredient,
+    Unit,
 )
 from .serializers import RecipeSerializer
 
@@ -105,16 +106,34 @@ class RecipeUnsetStarFormView(RecipeUpdateStarFormView):
     form_class = RecipeUnsetStarForm
 
 
-class IngredientListView(View):
+class SearchableListView(View):
+    queryset = None
+    search_field = 'name'
+    serializer_class = None
+    limit = 10
+
+    def get_queryset(self, request):
+        return self.queryset
+
+    def get_filtered_queryset(self, request, search_term):
+        qs = self.get_queryset(request)
+        return qs.filter(**{self.search_field + '__icontains': search_term})
+
     def get(self, request, *args, **kwargs):
         search = request.GET.get('search', '')
-        ingredients = Ingredient.objects.filter(
-            name__icontains=search
-        ).values_list('name', flat=True)
+        results = self.get_filtered_queryset(request, search)[:self.limit]
 
-        return JsonResponse({
-            'search': list(ingredients[:10])
-        })
+        return JsonResponse(
+            {'search': [getattr(item, self.search_field) for item in results]},
+            safe=False)
+
+
+class IngredientListView(SearchableListView):
+    queryset = Ingredient.objects.all()
+
+
+class UnitListView(SearchableListView):
+    queryset = Unit.objects.all()
 
 
 class RecipeEditFormView(View):

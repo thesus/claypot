@@ -14,8 +14,9 @@ def test_recipe_detail_view(client, recipe_factory):
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize('factory_type', ['Ingredient', 'Unit'])
 @pytest.mark.parametrize(
-    'ingredients,search_term,results',
+    'names,search_term,results',
     [
         (['Abc'], 'd', []),
         (['Abc'], 'a', ['Abc']),
@@ -24,10 +25,19 @@ def test_recipe_detail_view(client, recipe_factory):
     ]
 )
 def test_ingredient_list_view(
-        client, ingredient_factory, ingredients, search_term, results):
-    for name in ingredients:
-        ingredient_factory(name=name)
-    url = reverse('ingredient-list')
+        client, ingredient_factory, unit_factory, factory_type, names,
+        search_term, results):
+    if factory_type == 'Ingredient':
+        factory = ingredient_factory
+        url = reverse('ingredient-list')
+    elif factory_type == 'Unit':
+        factory = unit_factory
+        url = reverse('unit-list')
+    else:
+        assert False
+
+    for name in names:
+        factory(name=name)
 
     response = client.get(url, {'search': search_term})
     assert response.status_code == 200

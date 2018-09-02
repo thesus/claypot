@@ -43,5 +43,10 @@ urlpatterns = [
         'ingredients/',
         views.IngredientListView.as_view(),
         name='ingredient-list'
-    )
+    ),
+    path(
+        'units/',
+        views.UnitListView.as_view(),
+        name='unit-list'
+    ),
 ]
