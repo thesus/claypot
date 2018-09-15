@@ -27,11 +27,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
 
-    'crispy_forms'
+    'crispy_forms',
+    'graphene_django',
 ]
 
 INSTALLED_APPS += [
-    'claypot'
+    'claypot',
+    'claypot.api',
 ]
 
 MIDDLEWARE = [
@@ -119,3 +121,7 @@ MEDIA_ROOT = str(APPS_DIR('media'))
 MEDIA_URL = '/media/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+GRAPHENE = {
+    'SCHEMA': 'claypot.api.schema.schema',
+}
