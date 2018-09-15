@@ -1,57 +1,23 @@
+"""Define base urls here."""
+
 from django.urls import path
 
-from . import views
-
+from django.conf import settings
 
 urlpatterns = [
-    path(
-        '',
-        views.HomeView.as_view(),
-        name='home'
-    ),
-    path(
-        'recipes/',
-        views.RecipeListView.as_view(),
-        name='recipe-list'
-    ),
-    path(
-        'recipes/search',
-        views.RecipeSearchView.as_view(),
-        name='recipe-search'
-    ),
-    path(
-        'recipes/<int:pk>/',
-        views.RecipeDetailView.as_view(),
-        name='recipe-detail'
-    ),
-    path(
-        'recipes/<int:pk>/set-star',
-        views.RecipeSetStarFormView.as_view(),
-        name='recipe-set-star'
-    ),
-    path(
-        'recipes/<int:pk>/unset-star',
-        views.RecipeUnsetStarFormView.as_view(),
-        name='recipe-unset-star'
-    ),
-    path(
-        'recipes/<int:pk>/edit',
-        views.RecipeEditFormView.as_view(),
-        name='recipe-edit'
-    ),
-    path(
-        'recipes/create/',
-        views.RecipeEditFormView.as_view(),
-        name='recipe-create'
-    ),
-    path(
-        'ingredients/',
-        views.IngredientListView.as_view(),
-        name='ingredient-list'
-    ),
-    path(
-        'units/',
-        views.UnitListView.as_view(),
-        name='unit-list'
-    ),
 ]
+
+
+if settings.DEBUG:
+    from django.views.generic.base import TemplateView
+    from django.conf.urls.static import static
+
+    urlpatterns += [
+        path(
+            '',
+            TemplateView.as_view(template_name='index.html')
+        )
+    ] + static(
+        '/',
+        document_root=str(settings.ROOT_DIR.path('contrib'))
+    )

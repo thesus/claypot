@@ -1,11 +1,10 @@
-django-crispy-forms==1.7.2
+django==2.1.1
+djangorestframework==3.8.2
 django-environ==0.4.5
 django-environ==0.4.5
 django-filter==2.0.0
-django==2.1.1
 djangorestframework==3.8.2
 graphene-django==2.2.0
-jango-crispy-forms==1.7.2
 psycopg2==2.7.5
 pytz==2018.5
 pyyaml==3.13

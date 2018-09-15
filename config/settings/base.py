@@ -27,7 +27,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.staticfiles',
 
-    'crispy_forms',
     'graphene_django',
 ]
 
@@ -63,6 +62,10 @@ TEMPLATES = [
         },
     },
 ]
+
+if DEBUG:
+    TEMPLATES[0]['DIRS'] += ['contrib']
+
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
@@ -112,15 +115,10 @@ USE_TZ = True
 # Static files and Media (CSS, JavaScript, Images)
 
 STATIC_ROOT = str(ROOT_DIR('static'))
-STATICFILES_DIRS = [
-    str(APPS_DIR.path('contrib/static'))
-]
 STATIC_URL = '/static/'
 
 MEDIA_ROOT = str(APPS_DIR('media'))
 MEDIA_URL = '/media/'
-
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 GRAPHENE = {
     'SCHEMA': 'claypot.api.schema.schema',
