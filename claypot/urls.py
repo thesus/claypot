@@ -1,10 +1,11 @@
 """Define base urls here."""
 
-from django.urls import path
+from django.urls import path, include
 
 from django.conf import settings
 
 urlpatterns = [
+    path('api/', include('claypot.api.urls'))
 ]
 
 
@@ -19,5 +20,5 @@ if settings.DEBUG:
         )
     ] + static(
         '/',
-        document_root=str(settings.ROOT_DIR.path('contrib'))
+        document_root=str(settings.ROOT_DIR.path('claypot/contrib'))
     )

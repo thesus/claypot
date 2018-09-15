@@ -26,9 +26,9 @@ $ pytest --cov=claypot
 yarn
 ````
 
-### Compiles and hot-reloads for development
+### Compile Javascript for development
 ```
-yarn run serve
+yarn build --mode development --watch --dest ../claypot/contrib
 ```
 
 

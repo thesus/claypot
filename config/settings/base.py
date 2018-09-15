@@ -64,7 +64,7 @@ TEMPLATES = [
 ]
 
 if DEBUG:
-    TEMPLATES[0]['DIRS'] += ['contrib']
+    TEMPLATES[0]['DIRS'] += ['claypot/contrib']
 
 
 WSGI_APPLICATION = 'config.wsgi.application'
