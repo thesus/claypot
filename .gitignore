@@ -1,19 +1,33 @@
-# Virtual environments
+# Virtual environment
 /venv
 
 # Raw css files
 *.css
 *.css.map
 
-# Python cache
+# Python stuff
 __pycache__
 *.pyc
 
-# System and Testing
+# Other junk
 .DS_Store
-.pytest_cache
-.coverage
-
-# Toxic (js 'n stuff)
-claypot/contrib/static/vendor
 node_modules
+/dist
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
