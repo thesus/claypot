@@ -1,17 +1,23 @@
 <template>
-  <div>
-      {{ recipe }}
-  </div>
+  <ul v-if="recipes">
+    <li>
+      <recipe-link :recipe="item.node" v-for="item in recipes.edges" :key="item.node.id"/>
+    </li>
+  </ul>
 </template>
 
 <script>
 import gql from 'graphql-tag'
+import RecipeLink from '@/components/RecipeLink'
 
 export default {
   name: 'home',
+  components: {
+    RecipeLink
+  },
   apollo: {
-    recipe: gql`query {
-          recipes(instructions_Icontains: "180") {
+    recipes: gql`query {
+          recipes {
             edges {
               node {
                 id
@@ -40,11 +46,6 @@ export default {
             }
           }
         }`
-  },
-  data () {
-    return {
-      recipe: null
-    }
   }
 }
 </script>
