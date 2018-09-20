@@ -1,7 +1,7 @@
 <template>
   <ul v-if="recipes">
-    <li>
-      <recipe-link :recipe="item.node" v-for="item in recipes.edges" :key="item.node.id"/>
+    <li v-for="item in recipes.edges" :key="item.node.id">
+      <recipe-link :recipe="item.node"/>
     </li>
   </ul>
 </template>
