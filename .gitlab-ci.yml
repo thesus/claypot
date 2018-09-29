@@ -35,7 +35,7 @@ pages:
   script:
     - mkdir .public
     - cp -r htmlcov .public/htmlcov-backend
-    - echo '<html><head></head>><body><ul><li><a href="htmlcov-backend/index.html">Backend Coverage Report</a></li></ul></body></html>' > .public/index.html
+    - echo '<html><head></head><body><ul><li><a href="htmlcov-backend/index.html">Backend Coverage Report</a></li></ul></body></html>' > .public/index.html
     - mv .public public
   artifacts:
     paths:
