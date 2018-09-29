@@ -10,7 +10,7 @@ test:backend:
   coverage: "/\\d+\\%\\s*$/"
   before_script:
     - python -V
-    - pip install -r requirements/testing.txt
+    - pip install --cache-dir ~/.cache/pip -r requirements/testing.txt
   script:
     - pytest --cov=claypot --cov-report=term --cov-report=html
   artifacts:
