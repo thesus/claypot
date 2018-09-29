@@ -5,7 +5,7 @@ test:backend:
     DATABASE_URL: sqlite:////tmp/claypot.sqlite3
     DJANGO_SECRET_KEY: running-tests
     DJANGO_DEBUG: "true"
-  coverage: "\\d+\\%\\s*$"
+  coverage: "/\\d+\\%\\s*$/"
   before_script:
     - python -V
     - pip install -r requirements/testing.txt
