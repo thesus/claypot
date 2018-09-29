@@ -1,6 +1,8 @@
 test:backend:
   image: python:latest
   stage: test
+  tags:
+    - docker
   variables:
     DATABASE_URL: sqlite:////tmp/claypot.sqlite3
     DJANGO_SECRET_KEY: running-tests
@@ -22,6 +24,8 @@ test:backend:
 
 pages:
   stage: deploy
+  tags:
+    - docker
   only:
     - master
     - develop
