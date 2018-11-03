@@ -1,71 +1,47 @@
 <template>
-  <article>
-    <header>
-      <h1>{{ title }}</h1>
-    </header>
+  <ApolloQuery
+    :query="require('../graphql/Recipe.gql')"
+    :variables="{ id: recipeId }"
+  >
+    <template slot-scope="{ result: { loading, error, data } }">
+      <div v-if="loading">Loading...</div>
+      <div v-else-if="error">Error loading data</div>
+      <article v-else-if="data && data.recipe">
+        <header>
+          <h1>{{ data.recipe.title }}</h1>
+        </header>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Amount</th>
-          <th>Ingredient</th>
-        </tr>
-      </thead>
-      <tbody v-if="recipe && recipe.recipeIngredients">
-        <tr v-for="ingredient in recipe.recipeIngredients.edges">
-          <td>{{ ingredient.node.amountNumeric }}&nbsp;{{ ingredient.node.unit.code }}</td>
-          <td>{{ ingredient.node.ingredient.name }}</td>
-        </tr>
-      </tbody>
-    </table>
+        <table>
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>Ingredient</th>
+            </tr>
+          </thead>
+          <tbody v-if="data.recipe && data.recipe.recipeIngredients">
+            <tr v-for="ingredient in data.recipe.recipeIngredients.edges" :key="ingredient.node.ingredient.name">
+              <td>{{ ingredient.node.amountNumeric }}&nbsp;{{ ingredient.node.unit.code }}</td>
+              <td>{{ ingredient.node.ingredient.name }}</td>
+            </tr>
+          </tbody>
+        </table>
 
-    <p v-if="recipe">{{ recipe.instructions }}</p>
+        <p v-if="data.recipe">{{ data.recipe.instructions }}</p>
 
-    <footer>
-      <p>posted by {{ user }}</p>
-    </footer>
-  </article>
+        <footer>
+          <p>posted by {{ user }}</p>
+        </footer>
+      </article>
+      <div v-else>No result</div>
+    </template>
+  </ApolloQuery>
 </template>
 
 <script>
-import gql from 'graphql-tag'
-
 export default {
-  apollo: {
-    recipe: {
-      query: gql`query recipe($id: ID!) {
-          recipe: recipe(id: $id) {
-            title
-            instructions
-            publishedOn
-            recipeIngredients {
-              edges {
-                node {
-                  ingredient {name}
-                  amountType
-                  amountApprox
-                  amountNumeric
-                  unit {
-                    code
-                  }
-                }
-              }
-            }
-          }
-        }`,
-      variables() {
-        return {
-          id: this.$route.params.id
-        }
-      },
-      skip () {
-        return !this.$route.params.id
-      }
-    }
-  },
   computed: {
-    title () {
-      return this.recipe && this.recipe.title
+    recipeId () {
+      return this.$route.params.id
     },
     user () {
       return 'unknown'

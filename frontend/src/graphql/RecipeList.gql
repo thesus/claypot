@@ -1,0 +1,12 @@
+#import "./RecipeFragment.gql"
+
+query {
+  recipes {
+    edges {
+      node {
+        id
+        ...Recipe
+      }
+    }
+  }
+}

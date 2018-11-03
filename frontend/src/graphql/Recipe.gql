@@ -1,0 +1,7 @@
+#import "./RecipeFragment.gql"
+
+query recipe($id: ID!) {
+  recipe: recipe(id: $id) {
+    ...Recipe
+  }
+}

@@ -1,0 +1,18 @@
+fragment Recipe on RecipeNode {
+    title
+    instructions
+    publishedOn
+    recipeIngredients {
+      edges {
+        node {
+          ingredient {name}
+          amountType
+          amountApprox
+          amountNumeric
+          unit {
+            code
+          }
+        }
+      }
+    }
+}
