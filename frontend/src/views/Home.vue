@@ -10,6 +10,8 @@
 <script>
 import RecipeLink from '@/components/RecipeLink'
 
+import api from '@/api'
+
 export default {
   name: 'home',
   components: {
@@ -23,6 +25,15 @@ export default {
           title: "Test"
         }
       ]
+    }
+  },
+  mounted () {
+    this.update()
+  },
+  methods: {
+    update () {
+      const data = await api('fetch_recipes')
+      console.log(data)
     }
   }
 }
