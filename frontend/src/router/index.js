@@ -3,6 +3,7 @@ import Router from 'vue-router'
 
 import Home from '../views/Home.vue'
 import RecipeDetail from '../views/RecipeDetail.vue'
+import RecipeEdit from '../views/RecipeEdit.vue'
 
 Vue.use(Router)
 
@@ -19,6 +20,11 @@ export default new Router({
       path: '/recipes/:id',
       name: 'recipe-detail',
       component: RecipeDetail
+    },
+    {
+      path: '/recipes/:id/edit',
+      name: 'recipe-edit',
+      component: RecipeEdit
     }
     // {
     //   path: '/about',
