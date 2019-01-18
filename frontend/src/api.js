@@ -2,15 +2,15 @@ const endpoints = {
   fetch_recipes: '/api/recipes/',
 }
 
-class UnknownEndpointException extends Exception {
+class UnknownEndpointError extends Error {
   constructor () {
     super("Unknown endpoint")
   }
 }
 
-export default await function (endpoint, data, options) {
+export default function (endpoint, data, options) {
   if (!(endpoint in endpoints)) {
-    throw new UnknownEndpointException()
+    throw new UnknownEndpointError()
   }
   const url = endpoints[endpoint]
   const fetchOptions = options || {}

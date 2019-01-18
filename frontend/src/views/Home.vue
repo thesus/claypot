@@ -31,9 +31,18 @@ export default {
     this.update()
   },
   methods: {
-    update () {
-      const data = await api('fetch_recipes')
-      console.log(data)
+    async update () {
+      try {
+        const r = await api('fetch_recipes')
+        if (r.ok) {
+          this.recipes = await r.json()
+        } else {
+          throw Error("Display some kind of error")
+        }
+      } catch (err) {
+        // TODO: Display some kind of error
+        this.recipes.clear()
+      }
     }
   }
 }
