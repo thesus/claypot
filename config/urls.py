@@ -4,8 +4,9 @@ from django.urls import (
     path,
 )
 
+
 urlpatterns = [
-    path('', include('claypot.urls')),
     path('api/', include('claypot.api.urls')),
     path('admin/', admin.site.urls),
+    path('', include('claypot.urls')),
 ]
