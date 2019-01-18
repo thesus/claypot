@@ -19,12 +19,7 @@ export default {
   },
   data () {
     return {
-      recipes: [
-        {
-          id: 1,
-          title: "Test"
-        }
-      ]
+      recipes: []
     }
   },
   mounted () {
