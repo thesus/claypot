@@ -10,7 +10,7 @@
 <script>
 import RecipeLink from '@/components/RecipeLink'
 
-import api from '@/api'
+import {api, endpoints} from '@/api'
 
 export default {
   name: 'home',
@@ -33,11 +33,11 @@ export default {
   methods: {
     async update () {
       try {
-        const r = await api('fetch_recipes')
+        const r = await api(endpoints.fetch_recipes())
         if (r.ok) {
           this.recipes = await r.json()
         } else {
-          throw Error("Display some kind of error")
+          throw new Error("Display some kind of error")
         }
       } catch (err) {
         // TODO: Display some kind of error

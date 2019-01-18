@@ -1,5 +1,19 @@
 const endpoints = {
-  fetch_recipes: '/api/recipes/',
+  fetch_recipes () {
+    return '/api/recipes/'
+  },
+  fetch_recipe (id) {
+    return `/api/recipes/${id}/`
+  }
+}
+
+for (let [e, f] of Object.entries(endpoints)) {
+  endpoints[e] = function () {
+    return {
+      earmarked: 1,
+      url: f(...arguments),
+    }
+  }
 }
 
 class UnknownEndpointError extends Error {
@@ -8,11 +22,11 @@ class UnknownEndpointError extends Error {
   }
 }
 
-export default function (endpoint, data, options) {
-  if (!(endpoint in endpoints)) {
+function api(endpoint, data, options) {
+  if (!endpoint.earmarked) {
     throw new UnknownEndpointError()
   }
-  const url = endpoints[endpoint]
+  const url = endpoint.url
   const fetchOptions = options || {}
   if (data) {
     fetchOptions.method = fetchOptions.method || 'POST'
@@ -24,3 +38,5 @@ export default function (endpoint, data, options) {
   }
   return fetch(url, fetchOptions)
 }
+
+export {api, endpoints}
