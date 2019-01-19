@@ -1,9 +1,14 @@
+import { getCookie } from '@/utils'
+
 const endpoints = {
   fetch_recipes () {
     return '/api/recipes/'
   },
   fetch_recipe (id) {
     return `/api/recipes/${id}/`
+  },
+  login () {
+    return '/accounts/login'
   }
 }
 
@@ -37,6 +42,12 @@ function api(endpoint, data, options) {
       fetchOptions.headers = fetchOptions.headers || {}
       fetchOptions.headers['Content-Type'] = fetchOptions['Content-Type'] || 'application/json'
     }
+
+    const csrf = getCookie('csrftoken')
+    if (csrf) {
+      fetchOptions.headers['X-CSRFToken'] = csrf
+    }
+
   }
   return fetch(url, fetchOptions)
 }
