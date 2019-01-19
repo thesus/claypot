@@ -23,16 +23,30 @@ const actions = {
         }
       )
 
-      console.log(response)
-      commit(
-        'login',
-        {
-          user: response
-        }
-      )
-    } catch (err) {
+      if (response.ok) {
+        commit(
+          'login',
+          {
+            user: await response.json()
+          }
+        )
+      } else {
+        throw new Error()
+      }
+   } catch (err) {
       // TODO: Notification for errors
     }
+  },
+  logout({ commit }) {
+    try {
+      api(
+        endpoints.logout()
+      )
+    } catch(err) {
+      // This can fail silently.
+    }
+
+    commit('logout')
   }
 }
 
@@ -42,6 +56,10 @@ const mutations = {
     state.user = user
 
     router.push({ 'path': router.currentRoute.query.next || '/' })
+  },
+  logout(state) {
+    state.user = null
+    state.loggedIn = false
   }
 }
 
