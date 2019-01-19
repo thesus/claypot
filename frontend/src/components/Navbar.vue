@@ -11,14 +11,14 @@ $border_color: #ddd;
 
 .nav {
     margin: 5px 5px 5px 5px;
-    border-bottom: solid 1px $border_color;
-    border-top: solid 1px $border_color;
+    // border-bottom: solid 1px $border_color;
+    // border-top: solid 1px $border_color;
 }
 
 a {
     margin: 8px 5px 5px 5px;
     display: inline-block;
-    color: black;
+    color: #2c3e50;
     text-decoration: none;
 }
 
