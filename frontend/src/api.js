@@ -9,6 +9,15 @@ const endpoints = {
   },
   login () {
     return '/accounts/login'
+  },
+  logout () {
+    return '/accounts/logout'
+  },
+  password_reset () {
+    return '/accounts/reset'
+  },
+  password_reset_confirm () {
+    return '/accounts/confirm'
   }
 }
 

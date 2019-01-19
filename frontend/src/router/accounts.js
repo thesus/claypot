@@ -31,7 +31,7 @@ export default [
     component: ResetPassword
   },
   {
-    path: '/accounts/confirm',
+    path: '/accounts/reset/:uid/:token',
     name: 'reset-confirm-password',
     component: ResetConfirmPassword
   }

@@ -10,7 +10,12 @@ from django.contrib.auth import (
 
 
 from django.conf import settings
-from django.contrib.auth.forms import PasswordResetForm
+
+from django.contrib.auth.forms import (
+    PasswordResetForm,
+    SetPasswordForm
+)
+
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
@@ -98,7 +103,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
         # Check if passwords ae valid
         if not self.form.is_valid():
-            raise exceptions.ValidationError(self.set_password_form.errors)
+            raise exceptions.ValidationError(self.form.errors)
 
         # Check token
         if not default_token_generator.check_token(self.user, attrs['token']):
