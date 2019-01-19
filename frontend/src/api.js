@@ -1,6 +1,9 @@
 import { getCookie } from '@/utils'
 
 const endpoints = {
+  fetch_csrf_token () {
+    return '/api/csrf'
+  },
   fetch_recipes () {
     return '/api/recipes/'
   },
@@ -18,7 +21,14 @@ const endpoints = {
   },
   password_reset_confirm () {
     return '/accounts/confirm'
-  }
+  },
+  post_recipe (id) {
+    if (id) {
+      return `/api/recipes/${id}/`
+    } else {
+      return '/api/recipes/'
+    }
+  },
 }
 
 for (let [e, f] of Object.entries(endpoints)) {
@@ -36,12 +46,25 @@ class UnknownEndpointError extends Error {
   }
 }
 
-function api(endpoint, data, options) {
+function _needsCsrfToken(method) {
+  switch (method.toLowerCase()) {
+    case 'head':
+    case 'get':
+    case 'options':
+      // make absolutely sure these methods do not alter data
+      return false
+    default:
+      return true
+  }
+}
+
+async function api(endpoint, data, options) {
   if (!endpoint.earmarked) {
     throw new UnknownEndpointError()
   }
   const url = endpoint.url
   const fetchOptions = options || {}
+  fetchOptions.credentials = fetchOptions.credentials || 'same-origin'
 
   if (data) {
     fetchOptions.method = fetchOptions.method || 'POST'
@@ -52,8 +75,17 @@ function api(endpoint, data, options) {
       fetchOptions.headers['Content-Type'] = fetchOptions['Content-Type'] || 'application/json'
     }
 
-    const csrf = getCookie('csrftoken')
-    if (csrf) {
+    fetchOptions.needsCsrfToken = fetchOptions.needsCsrfToken || _needsCsrfToken(fetchOptions.method)
+    let csrf = getCookie('csrftoken')
+    if (!csrf) {
+      if (fetchOptions.needsCsrfToken) {
+        const r = await api(endpoints.fetch_csrf_token())
+        console.log(r)
+        csrf = getCookie('csrftoken')
+      }
+    }
+
+    if (fetchOptions.needsCsrfToken && csrf) {
       fetchOptions.headers['X-CSRFToken'] = csrf
     }
 

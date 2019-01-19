@@ -4,29 +4,59 @@ from claypot.models import (
     Ingredient,
     Recipe,
     RecipeIngredient,
-    Unit
+    Unit,
 )
 
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        exclude = []
+        fields = [
+            'id',
+            'name',
+        ]
+
+
+class IngredientField(serializers.RelatedField):
+    queryset = Ingredient.objects.all()
+
+    def to_representation(self, value):
+        return value.name
 
 
 class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Unit
-        exclude = []
+        fields = [
+            'id',
+            'name',
+            'name_plural',
+            'code',
+        ]
+
+
+class UnitField(serializers.RelatedField):
+    queryset = Unit.objects.all()
+
+    def to_representation(self, value):
+        return value.code
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
-    ingredient = IngredientSerializer()
-    unit = UnitSerializer()
+    ingredient = IngredientField()
+    unit = UnitField()
 
     class Meta:
         model = RecipeIngredient
-        exclude = []
+        fields = [
+            'ingredient',
+            'ingredient_extra',
+            'optional',
+            'amount_type',
+            'amount_numeric',
+            'amount_approx',
+            'unit',
+        ]
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -34,4 +64,19 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        exclude = []
+        fields = [
+            'id',
+            'title',
+            'slug',
+            'instructions',
+            'recipe_ingredients',
+            'author',
+            'published_on',
+        ]
+        read_only_fields = [
+            'id',
+            'slug',
+            'author',
+            'published_on',
+            'starred_by',
+        ]

@@ -14,9 +14,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="ingredient in recipe.recipe_ingredients" :key="ingredient.ingredient.name">
-          <td><input v-model="ingredient.amount_numeric">&nbsp;<input v-model="ingredient.unit.code"></td>
-          <td><input v-model="ingredient.ingredient.name"></td>
+        <tr v-for="ingredient in recipe.recipe_ingredients" :key="ingredient.ingredient">
+          <td><input v-model="ingredient.amount_numeric">&nbsp;<input v-model="ingredient.unit"></td>
+          <td><input v-model="ingredient.ingredient"></td>
         </tr>
       </tbody>
     </table>
@@ -35,6 +35,12 @@
 
 <script>
 import {api, endpoints} from '@/api'
+
+const amount_types = {
+  none: 1,
+  numeric: 2,
+  approx: 3,
+}
 
 export default {
   data () {
@@ -57,7 +63,7 @@ export default {
   },
   methods: {
     addIngredient () {
-      this.recipeIngredients.push({name: '', amountNumeric: 0, code: ''})
+      this.recipe.recipe_ingredients.push({ingredient: '', amount_numeric: 0, unit: ''})
     },
     async update () {
       if (!this.recipeId) {
@@ -77,8 +83,34 @@ export default {
         this.error = true
       }
     },
-    save () {
-      console.log('save')
+    async save () {
+      const ri = this.recipe.recipe_ingredients.map(i => {
+        return {
+          ingredient: i.ingredient,
+          ingredient_extra: '',
+          optional: false,
+          amount_type: amount_types.numeric,
+          amount_numeric: Number(i.amount_numeric),
+          amount_approx: '',
+          unit: i.unit,
+        }
+      })
+      const d = {
+        title: this.recipe.title,
+        instructions: this.recipe.instructions,
+        recipe_ingredients: ri,
+      }
+      try {
+        const r = await api(endpoints.post_recipe(this.recipeId), d)
+        if (r.ok) {
+          this.recipe = await r.json()
+          // TODO: Notify user about success.
+        } else {
+          // TODO: Notify user about broken fields?
+        }
+      } catch (err) {
+        // TODO: Notify user about network error.
+      }
     }
   }
 }
