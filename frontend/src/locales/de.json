@@ -1,0 +1,44 @@
+{
+    "generic": {
+        "loading": "Lädt...",
+        "loading_error": "Fehler beim Laden der Daten.",
+        "no_data": "Kein Ergebnis"
+    },
+    "navbar": {
+        "home": "Startseite",
+        "logout": "Abmelden",
+        "login": "Anmelden"
+    },
+    "home": {
+        "loading": "@:generic.loading",
+        "all_recipes": "Alle Rezepte"
+    },
+    "recipes": {
+        "amount": "Menge",
+        "ingredient": "Zutat",
+        "posted_by": "hinzugefügt von {user}",
+        "unknown_user": "unbekanntem Benutzer"
+    },
+    "recipe_detail": {
+        "loading": "@:generic.loading",
+        "loading_error": "@:generic.loading_error",
+        "no_data": "@:generic.no_data",
+        "amount": "@:recipes.amount",
+        "ingredient": "@:recipes.ingredient",
+        "posted_by": "@:recipes.posted_by",
+        "unknown_user": "@:recipes.unknown_user",
+        "edit": "Bearbeiten"
+    },
+    "recipe_edit": {
+        "loading": "@:generic.loading",
+        "loading_error": "@:generic.loading_error",
+        "no_data": "@:generic.no_data",
+        "amount": "@:recipes.amount",
+        "ingredient": "@:recipes.ingredient",
+        "posted_by": "@:recipes.posted_by",
+        "unknown_user": "@:recipes.unknown_user",
+        "remove": "Entfernen",
+        "add": "Hinzufügen",
+        "save": "Speichern"
+    }
+}

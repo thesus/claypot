@@ -1,18 +1,18 @@
 <template>
-  <div v-if="loading">Loading...</div>
-  <div v-else-if="error">Error loading data</div>
+  <div v-if="loading">{{ $t('recipe_detail.loading') }}</div>
+  <div v-else-if="error">{{ $t('recipe_detail.loading_error') }}</div>
   <article v-else-if="recipe">
     <header>
       <h1>{{ recipe.title }}</h1>
     </header>
 
-    <router-link :to="{name: 'recipe-edit', param: {id: recipeId}}">Edit</router-link>
+    <router-link :to="{name: 'recipe-edit', param: {id: recipeId}}">{{ $t('recipe_detail.edit') }}</router-link>
 
     <table>
       <thead>
         <tr>
-          <th>Amount</th>
-          <th>Ingredient</th>
+          <th>{{ $t('recipe_detail.amount') }}</th>
+          <th>{{ $t('recipe_detail.ingredient') }}</th>
         </tr>
       </thead>
       <tbody v-if="recipe && recipe.recipe_ingredients">
@@ -26,10 +26,10 @@
     <p v-if="recipe">{{ recipe.instructions }}</p>
 
     <footer>
-      <p>posted by {{ user }}</p>
+      <p>{{ $t('recipe_detail.posted_by',  {user: user}) }}</p>
     </footer>
   </article>
-  <div v-else>No result</div>
+  <div v-else>{{ $t('recipe_detail.no_data') }}</div>
 </template>
 
 <script>
@@ -72,7 +72,7 @@ export default {
       return this.$route.params.id
     },
     user () {
-      return 'unknown'
+      return this.$t('recipe_detail.unknown_user')
     }
   },
   watch: {

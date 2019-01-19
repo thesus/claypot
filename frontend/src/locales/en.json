@@ -1,0 +1,44 @@
+{
+    "generic": {
+        "loading": "Loading...",
+        "loading_error": "Error loading data.",
+        "no_data": "No result"
+    },
+    "navbar": {
+        "home": "Home",
+        "logout": "Logout",
+        "login": "Login"
+    },
+    "home": {
+        "loading": "@:generic.loading",
+        "all_recipes": "All recipes"
+    },
+    "recipes": {
+        "amount": "Amount",
+        "ingredient": "Ingredient",
+        "posted_by": "posted by {user}",
+        "unknown_user": "unknown"
+    },
+    "recipe_detail": {
+        "loading": "@:generic.loading",
+        "loading_error": "@:generic.loading_error",
+        "no_data": "@:generic.no_data",
+        "amount": "@:recipes.amount",
+        "ingredient": "@:recipes.ingredient",
+        "posted_by": "@:recipes.posted_by",
+        "unknown_user": "@:recipes.unknown_user",
+        "edit": "Edit"
+    },
+    "recipe_edit": {
+        "loading": "@:generic.loading",
+        "loading_error": "@:generic.loading_error",
+        "no_data": "@:generic.no_data",
+        "amount": "@:recipes.amount",
+        "ingredient": "@:recipes.ingredient",
+        "posted_by": "@:recipes.posted_by",
+        "unknown_user": "@:recipes.unknown_user",
+        "remove": "Remove",
+        "add": "Add",
+        "save": "Save"
+    }
+}

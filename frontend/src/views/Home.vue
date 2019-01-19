@@ -1,10 +1,13 @@
 <template>
-  <div v-if="!recipes">Loading</div>
-  <ul v-else-if="!!recipes">
-    <li v-for="item in recipes" :key="item.id">
-      <recipe-link :recipe="item"/>
-    </li>
-  </ul>
+  <div v-if="!recipes">{{ $t('home.loading') }}</div>
+  <article v-else-if="!!recipes">
+    <h1>{{ $t('home.all_recipes') }}</h1>
+    <ul>
+      <li v-for="item in recipes" :key="item.id">
+        <recipe-link :recipe="item"/>
+      </li>
+    </ul>
+  </article>
 </template>
 
 <script>

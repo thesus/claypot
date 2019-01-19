@@ -1,6 +1,6 @@
 <template>
-  <div v-if="loading">Loading...</div>
-  <div v-else-if="error">Error loading data</div>
+  <div v-if="loading">{{ $t('recipe_edit.loading') }}</div>
+  <div v-else-if="error">{{ $t('recipe_edit.loading_error') }}</div>
   <article v-else-if="recipe">
     <header>
       <input v-model="recipe.title" :disabled="saving">
@@ -9,8 +9,8 @@
     <table>
       <thead>
         <tr>
-          <th>Amount</th>
-          <th>Ingredient</th>
+          <th>{{ $t('recipe_edit.amount') }}</th>
+          <th>{{ $t('recipe_edit.ingredient') }}</th>
           <th></th>
         </tr>
       </thead>
@@ -18,21 +18,21 @@
         <tr v-for="(ingredient, i) in recipe.recipe_ingredients" :key="i">
           <td><input v-model="ingredient.amount_numeric">&nbsp;<input v-model="ingredient.unit"></td>
           <td><input v-model="ingredient.ingredient" :disabled="saving"></td>
-          <td><button :disabled="saving" @click="recipe.recipe_ingredients.splice(i)">Remove</button></td>
+          <td><button :disabled="saving" @click="recipe.recipe_ingredients.splice(i)">{{ $t('recipe_edit.remove') }}</button></td>
         </tr>
       </tbody>
     </table>
-    <button @click.prevent="addIngredient" :disabled="saving">Add</button>
+    <button @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
 
     <p><textarea v-model="recipe.instructions" :disabled="saving"></textarea></p>
 
     <footer>
-      <p>posted by {{ user }}</p>
+      <p>{{ $t('recipe_edit.posted_by',  {user: user}) }}</p>
     </footer>
 
-    <button @click.prevent="save" :disabled="saving">Save</button>
+    <button @click.prevent="save" :disabled="saving">{{ $t('recipe_edit.save') }}</button>
   </article>
-  <div v-else>No result</div>
+  <div v-else>{{ $t('recipe_edit.no_data') }}</div>
 </template>
 
 <script>
@@ -61,7 +61,7 @@ export default {
       return this.$route.params.id
     },
     user () {
-      return 'unknown'
+      return this.$t('recipe_edit.unknown_user')
     }
   },
   methods: {

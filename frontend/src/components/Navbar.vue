@@ -1,8 +1,8 @@
 <template>
     <div class="nav">
-        <router-link :to="{ name: 'home' }">Home</router-link>
-        <router-link v-if="$store.getters.isLoggedIn" :to="{ name: 'logout' }">Logout</router-link>
-        <router-link v-else :to="{ name: 'login' }">Login</router-link>
+        <router-link :to="{ name: 'home' }">{{ $t('navbar.home') }}</router-link>
+        <router-link v-if="$store.getters.isLoggedIn" :to="{ name: 'logout' }">{{ $t('navbar.logout') }}</router-link>
+        <router-link v-else :to="{ name: 'login' }">{{ $t('navbar.login') }}</router-link>
     </div>
 </template>
 
