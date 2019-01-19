@@ -1,1 +1,0 @@
-import claypot.api.schema
