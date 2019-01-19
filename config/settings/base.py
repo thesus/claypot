@@ -120,6 +120,16 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = str(APPS_DIR('media'))
 MEDIA_URL = '/media/'
 
-GRAPHENE = {
-    'SCHEMA': 'claypot.api.schema.schema',
+
+# Email
+EMAIL_BACKEND = env(
+    'DJANGO_EMAIL_BACKEND',
+    default='django.core.mail.backends.console.EmailBackend'
+)
+
+# Rest Framework
+REST_FRAMEWORK = {
+    'AUTHENTICATION_BACKENDS': (
+        'rest_framework.authentication.SessionAuthentication'
+    )
 }

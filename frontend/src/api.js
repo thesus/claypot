@@ -28,8 +28,10 @@ function api(endpoint, data, options) {
   }
   const url = endpoint.url
   const fetchOptions = options || {}
+
   if (data) {
     fetchOptions.method = fetchOptions.method || 'POST'
+
     if (!fetchOptions.body) {
       fetchOptions.body = JSON.stringify(data)
       fetchOptions.headers = fetchOptions.headers || {}
@@ -39,4 +41,4 @@ function api(endpoint, data, options) {
   return fetch(url, fetchOptions)
 }
 
-export {api, endpoints}
+export { api, endpoints }
