@@ -16,6 +16,8 @@
     "recipes": {
         "amount": "Menge",
         "ingredient": "Zutat",
+        "ingredient_extra": "Anmerkung",
+        "unit": "Einheit",
         "posted_by": "hinzugefügt von {user}",
         "unknown_user": "unbekanntem Benutzer"
     },
@@ -25,6 +27,7 @@
         "no_data": "@:generic.no_data",
         "amount": "@:recipes.amount",
         "ingredient": "@:recipes.ingredient",
+        "ingredient_extra": "@:recipes.ingredient_extra",
         "posted_by": "@:recipes.posted_by",
         "unknown_user": "@:recipes.unknown_user",
         "edit": "Bearbeiten"
@@ -34,7 +37,9 @@
         "loading_error": "@:generic.loading_error",
         "no_data": "@:generic.no_data",
         "amount": "@:recipes.amount",
+        "unit": "@:recipes.unit",
         "ingredient": "@:recipes.ingredient",
+        "ingredient_extra": "@:recipes.ingredient_extra",
         "posted_by": "@:recipes.posted_by",
         "unknown_user": "@:recipes.unknown_user",
         "remove": "Entfernen",
