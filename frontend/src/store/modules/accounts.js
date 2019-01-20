@@ -11,7 +11,7 @@ const getters = {
   getUsername: state => state.user ? state.user.username : null,
   isLoggedIn: state => state.loggedIn,
   isSuperUser: state => state.user ? state.user.is_superuser : false,
-  userId: state => state.user ? state.user.id : null,
+  userId: state => state.user ? state.user.pk : null,
 }
 
 const actions = {
@@ -39,10 +39,12 @@ const actions = {
       // TODO: Notification for errors
     }
   },
-  logout({ commit }) {
+  async logout({ commit }) {
     try {
-      api(
-        endpoints.logout()
+      await api(
+        endpoints.logout(),
+        null,
+        {method: 'post'}
       )
     } catch(err) {
       // This can fail silently.

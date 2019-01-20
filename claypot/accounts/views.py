@@ -1,9 +1,9 @@
 from django.shortcuts import redirect
 
 from django.contrib.auth import (
+    get_user_model,
     login,
     logout,
-    get_user_model
 )
 
 from claypot.accounts.serializers import (
@@ -24,6 +24,10 @@ from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import ugettext_lazy as _
 
+from rest_framework import (
+    permissions,
+    viewsets,
+)
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
@@ -123,3 +127,33 @@ class SignupConfirmView(View):
         user.save()
 
         return redirect("/#/accounts/login")
+
+
+class ReadSelf(permissions.BasePermission):
+    message = _('You may only view your own profile.')
+
+    def has_permission(self, request, view):
+        if view.action_map.get(request.method.lower(), None) == 'retrieve':
+            return (
+                request.user.is_authenticated or
+                request.user.is_superuser
+            )
+        return request.user.is_superuser
+
+    def has_object_permission(self, request, view, obj):
+        if view.action_map.get(request.method.lower(), None) == 'retrieve':
+            if request.method in permissions.SAFE_METHODS:
+                if isinstance(obj, get_user_model()):
+                    return obj == request.user
+        return request.user.is_superuser
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    def get_queryset(self):
+        qs = get_user_model().objects.all()
+        if not self.request.user.is_superuser:
+            qs = qs.filter(pk=self.request.user.id)
+        return qs
+
+    serializer_class = UserSerializer
+    permission_classes = [ReadSelf]

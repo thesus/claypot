@@ -10,6 +10,9 @@ const endpoints = {
   fetch_recipe (id) {
     return `/api/recipes/${id}/`
   },
+  fetch_user (id) {
+    return `/accounts/users/${id}/`
+  },
   login () {
     return '/accounts/login'
   },
@@ -68,29 +71,28 @@ async function api(endpoint, data, options) {
   const url = endpoint.url
   const fetchOptions = options || {}
   fetchOptions.credentials = fetchOptions.credentials || 'same-origin'
+  fetchOptions.headers = fetchOptions.headers || {}
 
   if (data) {
     fetchOptions.method = fetchOptions.method || 'POST'
 
     if (!fetchOptions.body) {
       fetchOptions.body = JSON.stringify(data)
-      fetchOptions.headers = fetchOptions.headers || {}
       fetchOptions.headers['Content-Type'] = fetchOptions['Content-Type'] || 'application/json'
     }
+  }
+  fetchOptions.method = fetchOptions.method || 'GET'
 
-    fetchOptions.needsCsrfToken = fetchOptions.needsCsrfToken || _needsCsrfToken(fetchOptions.method)
-    let csrf = getCookie('csrftoken')
-    if (!csrf) {
-      if (fetchOptions.needsCsrfToken) {
-        await api(endpoints.fetch_csrf_token())
-        csrf = getCookie('csrftoken')
-      }
+  fetchOptions.needsCsrfToken = fetchOptions.needsCsrfToken || _needsCsrfToken(fetchOptions.method)
+  let csrf = getCookie('csrftoken')
+  if (!csrf) {
+    if (fetchOptions.needsCsrfToken) {
+      await api(endpoints.fetch_csrf_token())
+      csrf = getCookie('csrftoken')
     }
-
-    if (fetchOptions.needsCsrfToken && csrf) {
-      fetchOptions.headers['X-CSRFToken'] = csrf
-    }
-
+  }
+  if (fetchOptions.needsCsrfToken && csrf) {
+    fetchOptions.headers['X-CSRFToken'] = csrf
   }
   return fetch(url, fetchOptions)
 }
