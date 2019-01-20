@@ -1,20 +1,34 @@
+from django.shortcuts import redirect
+
 from django.contrib.auth import (
     login,
-    logout
+    logout,
+    get_user_model
 )
 
-from .serializers import (
+from claypot.accounts.serializers import (
     LoginSerializer,
     UserSerializer,
     PasswordResetSerializer,
-    PasswordResetConfirmSerializer
+    PasswordResetConfirmSerializer,
+    SignupSerializer
 )
 
+from claypot.accounts.utils import (
+    signup_token_generator
+)
+
+from django.views import View
+
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+
+User = get_user_model()
 
 class LoginView(GenericAPIView):
     serializer_class = LoginSerializer
@@ -76,3 +90,36 @@ class PasswordResetConfirmView(GenericAPIView):
         return Response({
             'detail': _("Password resetted successfully.")
         })
+
+class SignupView(GenericAPIView):
+    serializer_class = SignupSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+
+        return Response({
+            'detail': _("Signup email has been sent.")
+        })
+
+class SignupConfirmView(View):
+    def get(self, request, uid, token):
+        try:
+            uid = force_text(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=uid)
+        except (User.DoesNotExist, TypeError, ValueError, OverflowError):
+            return Response({
+                'detail': _("Signup link is invalid. Have copied it wrong?")
+            })
+        
+        if not signup_token_generator.check_token(user, token):
+            return Response({
+                'detail': _("Signup link is invalid!")
+            })
+        
+        user.is_active = True
+        user.save()
+
+        return redirect("/#/accounts/login")

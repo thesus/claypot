@@ -18,8 +18,10 @@ from django.contrib.auth.forms import (
 
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
 from django.utils.http import urlsafe_base64_decode
+from django.utils.translation import ugettext_lazy as _
+
+from claypot.accounts.utils import send_signup_mail
 
 User = get_user_model()
 
@@ -114,3 +116,46 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
     def save(self):
         return self.form.save()
 
+class SignupSerializer(serializers.Serializer):
+    password1 = serializers.CharField(max_length=128, style={'input_type': 'password'})
+    password2 = serializers.CharField(max_length=128, style={'input_type': 'password'})
+
+    email = serializers.EmailField()
+    username = serializers.CharField()
+
+    def validate_username(self, value):
+        try:
+            # Not sure if Django cares about lower and uppercase.
+            User.objects.get(username__iexact=value)
+        except User.DoesNotExist:
+            return value
+        raise exceptions.ValidationError({'username': [_("The username is already taken.")]})
+
+    def validate_email(self, value):
+        try:
+            User.objects.get(email=value)
+        except User.DoesNotExist:
+            return value
+        raise exceptions.ValidationError({'email': [_("The email address is already used.")]})
+
+    def validate(self, attrs):
+        if attrs['password1'] != attrs['password2']:
+            raise exceptions.ValidationError({'password2': [_("Passwords didn't match!")]})
+
+        return attrs
+
+    def save(self):
+        request = self.context.get('request')
+        self.is_valid()
+
+        user = User.objects.create_user(
+            self.validated_data.get('username'),
+            self.validated_data.get('email'),
+            self.validated_data.get('password1')
+        )
+
+        # Disabling user until email is verified
+        user.is_active = False
+        user.save()
+
+        send_signup_mail(user, request)
