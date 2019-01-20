@@ -1,7 +1,7 @@
 <template>
     <div>
-        You're logged out.
-        <router-link :to="{ name: 'home' }">Home</router-link>
+        {{ $t('logout.message') }}
+        <router-link :to="{ name: 'home' }">{{ $t('logout.home') }}</router-link>
     </div>
 </template>
 

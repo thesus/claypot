@@ -2,9 +2,9 @@
     <div>
         <div class="reset-confirm">
             <form @submit.prevent="submit">
-                <input type="password" v-model="password_1" placeholder="Password">
-                <input type="password" v-model="password_2" placeholder="Password (again)">
-                <button type="submit" class="btn btn-right">Reset Password</button>
+                <input type="password" v-model="password_1" :placeholder="$t('reset_password_confirm.password')">
+                <input type="password" v-model="password_2" :placeholder="$t('reset_password_confirm.password_again')">
+                <button type="submit" class="btn btn-right">{{ $t('reset_password_confirm.reset') }}</button>
             </form>
         </div>
     </div>

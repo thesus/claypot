@@ -7,7 +7,37 @@
     "navbar": {
         "home": "Startseite",
         "logout": "Abmelden",
+        "login": "Anmelden",
+        "signup": "Registrierung"
+    },
+    "login": {
+        "username": "Benutzername",
+        "password": "Kennwort",
+        "forgot_password": "Kennwort vergessen",
+        "signup": "@:navbar.signup",
         "login": "Anmelden"
+    },
+    "logout": {
+        "message": "Erfolgreich abgemeldet.",
+        "home": "@:navbar.home"
+    },
+    "reset_password": {
+        "heading": "Kennwort zurücksetzen",
+        "email": "E-Mail-Adresse",
+        "reset": "Wiederherstellungs-E-Mail anfordern"
+    },
+    "reset_password_confirm": {
+        "password": "@:signup.password",
+        "password_again": "@:reset_password_confirm.password (wiederholen)",
+        "reset": "Kennwort zurücksetzen"
+    },
+    "signup": {
+        "heading": "Registrierung",
+        "email": "E-Mail-Adresse",
+        "username": "Benutzername",
+        "password": "Kennwort",
+        "password_again": "@:signup.password (wiederholen)",
+        "signup": "Registrieren"
     },
     "home": {
         "loading": "@:generic.loading",

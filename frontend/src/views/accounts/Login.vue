@@ -2,11 +2,11 @@
     <div>
         <div class="login">
             <form @submit.prevent="submit">
-                <input type="text" v-model="username" placeholder="Username">
-                <input type="password" v-model="password" placeholder="Password">
-                <router-link :to="{ name: 'reset-password' }">Forgot password</router-link>
-                <router-link :to="{ name: 'signup' }">Signup</router-link>
-                <button type="submit" class="btn btn-right">Login</button>
+                <input type="text" v-model="username" :placeholder="$t('login.username')">
+                <input type="password" v-model="password" :placeholder="$t('login.password')">
+                <router-link :to="{ name: 'reset-password' }">{{ $t('login.forgot_password') }}</router-link>
+                <router-link :to="{ name: 'signup' }">{{ $t('login.signup') }}</router-link>
+                <button type="submit" class="btn btn-right">{{ $t('login.login') }}</button>
             </form>
         </div>
     </div>

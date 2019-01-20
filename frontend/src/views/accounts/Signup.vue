@@ -2,12 +2,12 @@
     <div>
         <div class="signup">
             <form @submit.prevent="submit">
-                <h5>Signup</h5>
-                <input type="email" v-model="email" placeholder="E-Mail Address">
-                <input type="text" v-model="username" placeholder="Username">
-                <input type="password" v-model="password1" placeholder="Password">
-                <input type="password" v-model="password2" placeholder="Password (again)">
-                <button type="submit" class="btn btn-right">Signup</button>
+                <h5>{{ $t('signup.heading') }}</h5>
+                <input type="email" v-model="email" :placeholder="$t('signup.email')">
+                <input type="text" v-model="username" :placeholder="$t('signup.username')">
+                <input type="password" v-model="password1" :placeholder="$t('signup.password')">
+                <input type="password" v-model="password2" :placeholder="$t('signup.password_again')">
+                <button type="submit" class="btn btn-right">{{ $t('signup.signup') }}</button>
             </form>
         </div>
     </div>

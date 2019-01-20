@@ -7,7 +7,37 @@
     "navbar": {
         "home": "Home",
         "logout": "Logout",
+        "login": "Login",
+        "signup": "Sign Up"
+    },
+    "login": {
+        "username": "Username",
+        "password": "Password",
+        "forgot_password": "Forgot password",
+        "signup": "@:navbar.signup",
         "login": "Login"
+    },
+    "logout": {
+        "message": "You're logged out.",
+        "home": "@:navbar.home"
+    },
+    "reset_password": {
+        "heading": "Reset your password",
+        "email": "E-Mail Address",
+        "reset": "Request reset e-mail"
+    },
+    "reset_password_confirm": {
+        "password": "@:signup.password",
+        "password_again": "@:reset_password_confirm.password (again)",
+        "reset": "Reset password"
+    },
+    "signup": {
+        "heading": "Sign Up",
+        "email": "E-Mail Address",
+        "username": "Username",
+        "password": "Password",
+        "password_again": "@:signup.password (again)",
+        "signup": "Sign Up"
     },
     "home": {
         "loading": "@:generic.loading",
