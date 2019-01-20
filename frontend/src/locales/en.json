@@ -11,12 +11,15 @@
     },
     "home": {
         "loading": "@:generic.loading",
-        "all_recipes": "All recipes"
+        "all_recipes": "All recipes",
+        "add": "Add recipe"
     },
     "recipes": {
+        "title": "Title",
         "amount": "Amount",
         "ingredient": "Ingredient",
         "ingredient_extra": "Note",
+        "instructions": "Instructions",
         "unit": "Unit",
         "posted_by": "posted by {user}",
         "unknown_user": "unknown"

@@ -74,8 +74,12 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     recipe_ingredients = RecipeIngredientSerializer(many=True)
 
+    def create(self, validated_data):
+        return self.update(Recipe(), validated_data)
+
     def update(self, instance, validated_data):
         instance.title = validated_data['title']
+        instance.slug = instance.slug or instance.title.lower().replace(' ', '-')
         instance.instructions = validated_data['instructions']
         instance.save()
         existing = set(ri.ingredient for ri in instance.recipe_ingredients.all())

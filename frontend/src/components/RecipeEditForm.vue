@@ -1,7 +1,7 @@
 <template>
   <article>
     <header>
-      <div><input v-model="recipe_dirty.title" :disabled="saving" :class="{'form-error': !!errors.title.length}"></div>
+      <div><input :placeholder="$t('recipes.title')" v-model="recipe_dirty.title" :disabled="saving" :class="{'form-error': !!errors.title.length}"></div>
       <form-field-validation-error :errors="errors.title" />
     </header>
 
@@ -40,7 +40,7 @@
     <button @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
 
     <div>
-      <div><textarea v-model="recipe_dirty.instructions" :disabled="saving"></textarea></div>
+      <div><textarea :placeholder="$t('recipes.instructions')" v-model="recipe_dirty.instructions" :disabled="saving"></textarea></div>
       <form-field-validation-error :errors="errors.instructions" />
     </div>
 
@@ -73,7 +73,9 @@ export default {
   },
   data () {
     return {
-      recipe_dirty: {},
+      recipe_dirty: {
+        recipe_ingredients: [],
+      },
       saving: false,
       errors: {
         title: [],
@@ -121,7 +123,7 @@ export default {
         recipe_ingredients: ri,
       }
       try {
-        const r = await api(endpoints.post_recipe(this.recipe.id), d, {method:'put'})
+        const r = await api(endpoints.post_recipe(this.recipe.id), d, {method: this.recipe.id ? 'put' : 'post'})
         if (r.ok) {
           this.errors.client_side = ''
           this.recipe_dirty = await r.json()

@@ -2,6 +2,7 @@
   <div v-if="!recipes">{{ $t('home.loading') }}</div>
   <article v-else-if="!!recipes">
     <h1>{{ $t('home.all_recipes') }}</h1>
+    <button @click="addRecipe">{{ $t('home.add') }}</button>
     <ul>
       <li v-for="item in recipes" :key="item.id">
         <recipe-link :recipe="item"/>
@@ -41,7 +42,12 @@ export default {
         // TODO: Display some kind of error
         this.recipes.clear()
       }
-    }
+    },
+    addRecipe () {
+      this.$router.push({
+        'name': 'recipe-add'
+      })
+    },
   }
 }
 </script>

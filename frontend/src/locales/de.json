@@ -11,12 +11,15 @@
     },
     "home": {
         "loading": "@:generic.loading",
-        "all_recipes": "Alle Rezepte"
+        "all_recipes": "Alle Rezepte",
+        "add": "Neues Rezept hinzufügen"
     },
     "recipes": {
+        "title": "Titel",
         "amount": "Menge",
         "ingredient": "Zutat",
         "ingredient_extra": "Anmerkung",
+        "instructions": "Anleitung",
         "unit": "Einheit",
         "posted_by": "hinzugefügt von {user}",
         "unknown_user": "unbekanntem Benutzer"
