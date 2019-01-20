@@ -7,9 +7,17 @@ input, textarea {
     border: 1px solid #ccc;
     border-radius: 0;
     font-size: 14px;
-    color: #2c3e50;
+    color: $font_color;
+    font-family: $font_family;
     height: 25px;
     text-indent: 5px;
+}
+
+textarea {
+    padding: 5px;
+    text-indent: 0;
+    min-height: 200px;
+    resize: vertical;
 }
 
 .form-error {

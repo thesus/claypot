@@ -45,7 +45,7 @@
         </tr>
       </tbody>
     </table>
-    <button class="btn" @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
+    <button class="btn btn-right" @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
 
     <div>
       <div><textarea :placeholder="$t('recipes.instructions')" v-model="recipe_dirty.instructions" :disabled="saving"></textarea></div>
@@ -202,5 +202,9 @@ table {
     margin: 0;
     min-height: 25px;
   }
+}
+
+article {
+  margin: 5px;
 }
 </style>
