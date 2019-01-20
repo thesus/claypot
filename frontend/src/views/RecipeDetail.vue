@@ -26,13 +26,14 @@
     <p v-if="recipe">{{ recipe.instructions }}</p>
 
     <footer>
-      <p>{{ $t('recipe_detail.posted_by',  {user: user}) }}</p>
+      <p>{{ $t('recipe_detail.posted_by',  {user: author}) }}</p>
     </footer>
   </article>
   <div v-else>{{ $t('recipe_detail.no_data') }}</div>
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 import {api, endpoints} from '@/api'
 
 export default {
@@ -71,9 +72,9 @@ export default {
     recipeId () {
       return this.$route.params.id
     },
-    user () {
-      return this.$t('recipe_detail.unknown_user')
-    }
+    author () {
+      return this.recipe.author || this.$t('recipe_detail.unknown_user')
+    },
     canEdit () {
       return (
         (

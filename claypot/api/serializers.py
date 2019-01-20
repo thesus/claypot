@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from claypot.models import (
@@ -70,12 +71,21 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
             'unit',
         ]
 
+class UsernameField(serializers.RelatedField):
+    def get_queryset(self):
+        return get_user_model().objects.all()
+
+    def to_representation(self, value):
+        return value.username
+
 
 class RecipeSerializer(serializers.ModelSerializer):
+    author = UsernameField(required=False)
     recipe_ingredients = RecipeIngredientSerializer(many=True)
 
     def create(self, validated_data):
-        return self.update(Recipe(), validated_data)
+        instance = Recipe(author=self.context['request'].user)
+        return self.update(instance, validated_data)
 
     def update(self, instance, validated_data):
         instance.title = validated_data['title']
@@ -108,12 +118,14 @@ class RecipeSerializer(serializers.ModelSerializer):
             'instructions',
             'recipe_ingredients',
             'author',
+            'author_id',
             'published_on',
         ]
         read_only_fields = [
             'id',
             'slug',
             'author',
+            'author_id',
             'published_on',
             'starred_by',
         ]
