@@ -2,7 +2,7 @@
   <div v-if="!recipes">{{ $t('home.loading') }}</div>
   <article v-else-if="!!recipes">
     <h1>{{ $t('home.all_recipes') }}</h1>
-    <button @click="addRecipe">{{ $t('home.add') }}</button>
+    <button v-if="isLoggedIn" @click="addRecipe">{{ $t('home.add') }}</button>
     <ul>
       <li v-for="item in recipes" :key="item.id">
         <recipe-link :recipe="item"/>
@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
+
 import RecipeLink from '@/components/RecipeLink'
 
 import {api, endpoints} from '@/api'
@@ -25,6 +27,11 @@ export default {
     return {
       recipes: []
     }
+  },
+  computed: {
+    ...mapGetters([
+      'isLoggedIn',
+    ]),
   },
   mounted () {
     this.update()

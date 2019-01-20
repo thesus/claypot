@@ -58,6 +58,7 @@
 
     <div><button @click.prevent="save" :disabled="saving">{{ $t('recipe_edit.save') }}</button></div>
     <div v-if="errors.client_side">{{ errors.client_side }}</div>
+    <div v-if="errors.detail">{{ errors.detail }}</div>
   </article>
 </template>
 
@@ -90,6 +91,7 @@ export default {
         recipe_ingredients: [],
         instructions: [],
         client_side: '',
+        detail: '',
       },
     }
   },
@@ -143,6 +145,7 @@ export default {
           this.errors.title = errors.title || []
           this.errors.recipe_ingredients = errors.recipe_ingredients || []
           this.errors.instructions = errors.instructions || []
+          this.errors.detail = errors.detail || ''
         }
       } catch (err) {
         this.errors.client_side = err.message

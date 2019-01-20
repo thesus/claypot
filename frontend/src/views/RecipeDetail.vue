@@ -6,7 +6,7 @@
       <h1>{{ recipe.title }}</h1>
     </header>
 
-    <router-link :to="{name: 'recipe-edit', param: {id: recipeId}}">{{ $t('recipe_detail.edit') }}</router-link>
+    <router-link v-if="canEdit" :to="{name: 'recipe-edit', param: {id: recipeId}}">{{ $t('recipe_detail.edit') }}</router-link>
 
     <table>
       <thead>
@@ -74,6 +74,19 @@ export default {
     user () {
       return this.$t('recipe_detail.unknown_user')
     }
+    canEdit () {
+      return (
+        (
+          this.recipe && this.recipe.author_id &&
+          (this.userId == this.recipe.author_id)
+        ) ||
+        this.isSuperUser
+      )
+    },
+    ...mapGetters([
+      'isSuperUser',
+      'userId',
+    ]),
   },
   watch: {
     recipeId() {

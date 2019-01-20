@@ -10,6 +10,8 @@ const state = {
 const getters = {
   getUsername: state => state.user ? state.user.username : null,
   isLoggedIn: state => state.loggedIn,
+  isSuperUser: state => state.user ? state.user.is_superuser : false,
+  userId: state => state.user ? state.user.id : null,
 }
 
 const actions = {
