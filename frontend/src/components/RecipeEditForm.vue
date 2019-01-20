@@ -12,32 +12,40 @@
           <th>{{ $t('recipe_edit.unit') }}</th>
           <th>{{ $t('recipe_edit.ingredient') }}</th>
           <th>{{ $t('recipe_edit.ingredient_extra') }}</th>
-          <th></th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(ingredient, i) in recipe_dirty.recipe_ingredients" :key="i">
           <td>
-            <div><input v-model="ingredient.amount_numeric" :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length}"></div>
+            <div class="input">
+              <input v-model="ingredient.amount_numeric" :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length}">
+            </div>
             <form-field-validation-error :errors="recipeIngredientError(i).amount_numeric" />
           </td>
           <td>
-            <div><input v-model="ingredient.unit" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).unit.length}"></div>
+            <div class="input">
+              <input v-model="ingredient.unit" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).unit.length}">
+            </div>
             <form-field-validation-error :errors="recipeIngredientError(i).unit" />
           </td>
           <td>
-            <div><input v-model="ingredient.ingredient" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient.length}"></div>
+            <div class="input">
+              <input v-model="ingredient.ingredient" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient.length}">
+            </div>
             <form-field-validation-error :errors="recipeIngredientError(i).ingredient" />
           </td>
           <td>
-            <input v-model="ingredient.ingredient_extra" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient_extra.length}">
+            <div class="input">
+              <input v-model="ingredient.ingredient_extra" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient_extra.length}">
+            </div>
             <form-field-validation-error :errors="recipeIngredientError(i).ingredient_extra" />
           </td>
-          <td><button :disabled="saving" @click="recipe_dirty.recipe_ingredients.splice(i)">{{ $t('recipe_edit.remove') }}</button></td>
+          <td><button class="btn" :disabled="saving" @click="recipe_dirty.recipe_ingredients.splice(i)">{{ $t('recipe_edit.remove') }}</button></td>
         </tr>
       </tbody>
     </table>
-    <button @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
+    <button class="btn" @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
 
     <div>
       <div><textarea :placeholder="$t('recipes.instructions')" v-model="recipe_dirty.instructions" :disabled="saving"></textarea></div>
@@ -168,7 +176,31 @@ export default {
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
 
+.btn {
+  margin: 0;
+}
+
 table {
   width: 100%;
+  border-collapse: collapse;
+  tr {
+  position: relative;
+  }
+
+  td {
+    vertical-align:top;
+    padding: 2px 2px 0 2px;
+    margin: 0;
+    
+    height: 100%;
+    overflow:hidden;
+  }
+
+  .input, td > button {
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    min-height: 25px;
+  }
 }
 </style>
