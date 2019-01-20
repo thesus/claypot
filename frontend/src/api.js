@@ -82,8 +82,7 @@ async function api(endpoint, data, options) {
     let csrf = getCookie('csrftoken')
     if (!csrf) {
       if (fetchOptions.needsCsrfToken) {
-        const r = await api(endpoints.fetch_csrf_token())
-        console.log(r)
+        await api(endpoints.fetch_csrf_token())
         csrf = getCookie('csrftoken')
       }
     }
