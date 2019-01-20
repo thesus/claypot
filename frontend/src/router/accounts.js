@@ -4,6 +4,8 @@ import Logout from '../views/accounts/Logout'
 import ResetPassword from '../views/accounts/ResetPassword'
 import ResetConfirmPassword from '../views/accounts/ResetConfirmPassword'
 
+import Signup from '../views/accounts/Signup'
+
 import store from '@/store'
 
 export default [
@@ -34,5 +36,10 @@ export default [
     path: '/accounts/reset/:uid/:token',
     name: 'reset-confirm-password',
     component: ResetConfirmPassword
+  },
+  {
+    path: '/accounts/signup',
+    name: 'signup',
+    component: Signup
   }
 ]

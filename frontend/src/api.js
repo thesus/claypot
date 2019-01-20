@@ -22,6 +22,9 @@ const endpoints = {
   password_reset_confirm () {
     return '/accounts/confirm'
   },
+  signup () {
+    return '/accounts/signup'
+  },
   post_recipe (id) {
     if (id) {
       return `/api/recipes/${id}/`
