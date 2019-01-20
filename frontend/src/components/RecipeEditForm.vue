@@ -41,7 +41,7 @@
             </div>
             <form-field-validation-error :errors="recipeIngredientError(i).ingredient_extra" />
           </td>
-          <td><button class="btn" :disabled="saving" @click="recipe_dirty.recipe_ingredients.splice(i)">{{ $t('recipe_edit.remove') }}</button></td>
+          <td><button class="btn" :disabled="saving" @click="recipe_dirty.recipe_ingredients.splice(i, 1)">{{ $t('recipe_edit.remove') }}</button></td>
         </tr>
       </tbody>
     </table>
