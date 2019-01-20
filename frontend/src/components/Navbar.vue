@@ -1,10 +1,23 @@
 <template>
     <div class="nav">
         <router-link :to="{ name: 'home' }">{{ $t('navbar.home') }}</router-link>
-        <router-link v-if="$store.getters.isLoggedIn" :to="{ name: 'logout' }">{{ $t('navbar.logout') }}</router-link>
-        <router-link v-else :to="{ name: 'login' }">{{ $t('navbar.login') }}</router-link>
+        <router-link v-if="isLoggedIn" :to="{ name: 'logout' }">{{ $t('navbar.logout') }}</router-link>
+        <router-link v-if="!isLoggedIn" :to="{ name: 'login' }">{{ $t('navbar.login') }}</router-link>
+        <router-link v-if="!isLoggedIn" :to="{ name: 'signup' }">{{ $t('navbar.signup') }}</router-link>
     </div>
 </template>
+
+<script>
+import { mapGetters } from 'vuex'
+
+export default {
+  computed: {
+    ...mapGetters([
+      'isLoggedIn',
+    ]),
+  },
+}
+</script>
 
 <style lang="scss" scoped>
 $border_color: #ddd;
