@@ -42,7 +42,11 @@
     "home": {
         "loading": "@:generic.loading",
         "all_recipes": "All recipes",
-        "add": "Add recipe"
+        "add": "Add recipe",
+        "retry": "Try again",
+        "no_recipes": "There are no recipes, yet.",
+        "error": "@:generic.error"
+
     },
     "recipes": {
         "title": "Title",

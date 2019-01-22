@@ -42,7 +42,10 @@
     "home": {
         "loading": "@:generic.loading",
         "all_recipes": "Alle Rezepte",
-        "add": "Neues Rezept hinzufügen"
+        "add": "Neues Rezept hinzufügen",
+        "retry": "Wiederholen",
+        "no_recipes": "Es sind noch keine Rezepte eingepflegt.",
+        "error": "@:generic.error"
     },
     "recipes": {
         "title": "Titel",

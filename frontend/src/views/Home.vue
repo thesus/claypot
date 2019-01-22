@@ -3,11 +3,16 @@
   <article v-else-if="!!recipes">
     <h1>{{ $t('home.all_recipes') }}</h1>
     <button v-if="isLoggedIn" @click="addRecipe">{{ $t('home.add') }}</button>
-    <ul>
+    <ul v-if="!error && recipes.length > 0">
       <li v-for="item in recipes" :key="item.id">
         <recipe-link :recipe="item"/>
       </li>
     </ul>
+    <div v-if="!error && recipes.length === 0">{{ $t('home.no_recipes') }}</div>
+    <div v-if="error">
+      <div>{{ error }}</div>
+      <div><button @click="update">{{ $t('home.retry') }}</button></div>
+    </div>
   </article>
 </template>
 
@@ -25,7 +30,8 @@ export default {
   },
   data () {
     return {
-      recipes: []
+      recipes: [],
+      error: ''
     }
   },
   computed: {
@@ -42,12 +48,13 @@ export default {
         const r = await api(endpoints.fetch_recipes())
         if (r.ok) {
           this.recipes = await r.json()
+          this.error = ''
         } else {
-          throw new Error("Display some kind of error")
+          throw new Error(this.$t('home.error'))
         }
       } catch (err) {
-        // TODO: Display some kind of error
-        this.recipes.clear()
+        this.error = err.message
+        this.recipes.length = 0
       }
     },
     addRecipe () {
