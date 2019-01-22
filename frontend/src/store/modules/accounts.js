@@ -32,6 +32,7 @@ const actions = {
             user: await response.json()
           }
         )
+        router.push({ 'path': router.currentRoute.query.next || '/' })
       } else {
         throw new Error()
       }
@@ -58,8 +59,6 @@ const mutations = {
   login(state, { user }) {
     state.loggedIn = true
     state.user = user
-
-    router.push({ 'path': router.currentRoute.query.next || '/' })
   },
   logout(state) {
     state.user = null
