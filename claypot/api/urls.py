@@ -12,8 +12,8 @@ from .viewsets import (
 
 
 router = DefaultRouter()
-router.register(r'ingredients', IngredientViewSet)
-router.register(r'recipes', RecipeViewSet)
+router.register('ingredients', IngredientViewSet)
+router.register('recipes', RecipeViewSet)
 
 urlpatterns = [
     path('csrf', csrf_token_view),
