@@ -4,6 +4,8 @@ from rest_framework import (
     permissions,
     viewsets,
 )
+import django_filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 from claypot.models import (
     Ingredient,
@@ -36,12 +38,32 @@ class ReadAllEditOwn(permissions.BasePermission):
             return False
 
 
+class IngredientFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(lookup_expr='istartswith')
+
+    class Meta:
+        model = Ingredient
+        fields = ['name']
+
+
 class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientFilter
+
+
+class RecipeFilter(django_filters.FilterSet):
+    title = django_filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = Recipe
+        fields = ['title']
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [ReadAllEditOwn]
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipeFilter
