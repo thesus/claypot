@@ -35,6 +35,10 @@ const endpoints = {
       return '/api/recipes/'
     }
   },
+  search_ingredients (term) {
+    term = encodeURIComponent(term)
+    return `/api/ingredients/?name=${term}`
+  }
 }
 
 for (let [e, f] of Object.entries(endpoints)) {

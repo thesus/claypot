@@ -31,7 +31,7 @@
           </td>
           <td>
             <div class="input">
-              <input v-model="ingredient.ingredient" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient.length}">
+              <ingredient-input v-model="ingredient.ingredient" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient.length}" />
             </div>
             <form-field-validation-error :errors="recipeIngredientError(i).ingredient" />
           </td>
@@ -65,6 +65,7 @@
 <script>
 import {api, endpoints} from '@/api'
 import FormFieldValidationError from '@/components/FormFieldValidationError'
+import IngredientInput from '@/components/IngredientInput'
 
 const amount_types = {
   none: 1,
@@ -76,6 +77,7 @@ export default {
   name: 'recipe-edit-form',
   components: {
     FormFieldValidationError,
+    IngredientInput,
   },
   props: {
     recipe: Object,
