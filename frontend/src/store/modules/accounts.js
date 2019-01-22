@@ -1,6 +1,6 @@
 import router from '@/router'
 
-import { api, endpoints } from '@/api'
+import { api, endpoints, InvalidRequestError } from '@/api'
 
 const state = {
   user: null,
@@ -16,28 +16,28 @@ const getters = {
 
 const actions = {
   async login({ commit }, { username, password }) {
-    try {
-      const response = await api(
-        endpoints.login(),
+    const response = await api(
+      endpoints.login(),
+      {
+        username: username,
+        password: password
+      }
+    )
+    
+    if (response.ok) {
+      commit(
+        'login',
         {
-          username: username,
-          password: password
+          user: await response.json()
         }
       )
 
-      if (response.ok) {
-        commit(
-          'login',
-          {
-            user: await response.json()
-          }
-        )
-        router.push({ 'path': router.currentRoute.query.next || '/' })
-      } else {
-        throw new Error()
-      }
-   } catch (err) {
-      // TODO: Notification for errors
+      router.push({ 'path': router.currentRoute.query.next || '/' })
+    } else {
+      throw new InvalidRequestError(
+        response.status,
+        await response.json()
+      )
     }
   },
   async logout({ commit }) {

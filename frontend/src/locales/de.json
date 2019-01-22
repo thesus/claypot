@@ -29,7 +29,8 @@
     "reset_password_confirm": {
         "password": "@:signup.password",
         "password_again": "@:reset_password_confirm.password (wiederholen)",
-        "reset": "Kennwort zurücksetzen"
+        "reset": "Kennwort zurücksetzen",
+        "error": "Der Registrierungslink ist ungültig."
     },
     "signup": {
         "heading": "Registrierung",

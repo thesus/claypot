@@ -29,7 +29,8 @@
     "reset_password_confirm": {
         "password": "@:signup.password",
         "password_again": "@:reset_password_confirm.password (again)",
-        "reset": "Reset password"
+        "reset": "Reset password",
+        "error": "The registration link is invalid."
     },
     "signup": {
         "heading": "Sign Up",

@@ -56,6 +56,14 @@ class UnknownEndpointError extends Error {
   }
 }
 
+class InvalidRequestError extends Error {
+  constructor (code, response) {
+    super("Request resulted in an error.")
+    this.code = code
+    this.response = response
+  }
+}
+
 function _needsCsrfToken(method) {
   switch (method.toLowerCase()) {
     case 'head':
@@ -101,4 +109,4 @@ async function api(endpoint, data, options) {
   return fetch(url, fetchOptions)
 }
 
-export { api, endpoints }
+export { api, endpoints, InvalidRequestError }

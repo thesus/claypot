@@ -4,7 +4,9 @@
             <form @submit.prevent="submit">
                 <h5>{{ $t('reset_password.heading') }}</h5>
                 <input type="email" v-model="email" :placeholder="$t('reset_password.email')">
-                <button type="submit" class="btn btn-right">{{ $t('reset_password.reset') }}</button>
+                <form-field-validation-error :errors="errors" />
+                <p v-if="finished && (errors.length < 1)">E-Mail has been sent if the address exists.</p>
+                <button :disabled="finished" type="submit" class="btn btn-right">{{ $t('reset_password.reset') }}</button>
             </form>
         </div>
     </div>
@@ -12,11 +14,17 @@
 
 <script>
 import { api, endpoints } from '@/api'
+import FormFieldValidationError from '@/components/FormFieldValidationError'
 
 export default {
+    components: {
+        FormFieldValidationError
+    },
     data: () => {
         return {
-            email: null
+            finished: false,
+            email: null,
+            errors: []
         }
     },
     methods: {
@@ -28,10 +36,12 @@ export default {
                         email: this.email
                     }
                 )
-                this.$router.push({name: 'home'})
+                
+                /* this.$router.push({name: 'home'}) */
             } catch (err) {
-                // TODO: Show that something went wrong.
-                console.log(err)
+                this.errors = [err.message]
+            } finally {
+                this.finished = !this.finished
             }
         }
     }
@@ -41,4 +51,8 @@ export default {
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
 @import '@/modules/small_form.scss';
+
+p {
+    margin: 0;
+}
 </style>
