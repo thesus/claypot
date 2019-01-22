@@ -22,7 +22,7 @@ class IngredientField(serializers.RelatedField):
     queryset = Ingredient.objects.all()
 
     def to_representation(self, value):
-        return value.name
+        return value and value.name
 
     def to_internal_value(self, data):
         try:
