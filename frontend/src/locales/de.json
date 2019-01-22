@@ -56,7 +56,12 @@
         "instructions": "Anleitung",
         "unit": "Einheit",
         "posted_by": "hinzugefügt von {user}",
-        "unknown_user": "unbekanntem Benutzer"
+        "unknown_user": "unbekanntem Benutzer",
+        "confirm_new_ingredients": {
+            "message": "Diese Aktion würde eine neue Zutat erstellen. Wirklich fortfahren? | Diese Aktion würde {count} neue Zutaten erstellen. Wirklich fortfahren?",
+            "accept": "Neue Zutat erstellen | {count} neue Zutaten erstellen",
+            "decline": "Abbrechen"
+        }
     },
     "recipe_detail": {
         "loading": "@:generic.loading",

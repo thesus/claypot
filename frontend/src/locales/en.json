@@ -47,7 +47,6 @@
         "retry": "Try again",
         "no_recipes": "There are no recipes, yet.",
         "error": "@:generic.error"
-
     },
     "recipes": {
         "title": "Title",
@@ -57,7 +56,12 @@
         "instructions": "Instructions",
         "unit": "Unit",
         "posted_by": "posted by {user}",
-        "unknown_user": "unknown"
+        "unknown_user": "unknown",
+        "confirm_new_ingredients": {
+            "message": "You are about to create a new ingredient. Really continue? | You are about to save {count} new ingredients. Really continue?",
+            "accept": "Create new ingredient | Create {count} new ingredients",
+            "decline": "Cancel"
+        }
     },
     "recipe_detail": {
         "loading": "@:generic.loading",

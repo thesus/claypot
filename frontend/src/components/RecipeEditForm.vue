@@ -58,9 +58,9 @@
 
     <div><button @click.prevent="save" :disabled="saving">{{ $t('recipe_edit.save') }}</button></div>
     <div v-if="newIngredientsDecision">
-      <p>You are about to save {{ newIngredientsCount }} new ingredients. Really continue?</p>
-      <button @click="newIngredientsDecision(true)">Create new ingredients</button>
-      <button @click="newIngredientsDecision(false)">Cancel</button>
+      <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
+      <button @click="newIngredientsDecision(true)">{{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}</button>
+      <button @click="newIngredientsDecision(false)">{{ $tc('recipes.confirm_new_ingredients.decline', newIngredientsCount, {count: newIngredientsCount}) }}</button>
     </div>
     <div v-if="errors.client_side">{{ errors.client_side }}</div>
     <div v-if="errors.detail">{{ errors.detail }}</div>
