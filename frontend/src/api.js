@@ -1,6 +1,12 @@
 import { getCookie } from '@/utils'
 
 const endpoints = {
+  create_many_ingredients () {
+    return '/api/ingredients/create_many/'
+  },
+  check_new_ingredients () {
+    return '/api/ingredients/check_new/'
+  },
   fetch_csrf_token () {
     return '/api/csrf'
   },

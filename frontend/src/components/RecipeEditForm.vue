@@ -57,6 +57,11 @@
     </footer>
 
     <div><button @click.prevent="save" :disabled="saving">{{ $t('recipe_edit.save') }}</button></div>
+    <div v-if="newIngredientsDecision">
+      <p>You are about to save {{ newIngredientsCount }} new ingredients. Really continue?</p>
+      <button @click="newIngredientsDecision(true)">Create new ingredients</button>
+      <button @click="newIngredientsDecision(false)">Cancel</button>
+    </div>
     <div v-if="errors.client_side">{{ errors.client_side }}</div>
     <div v-if="errors.detail">{{ errors.detail }}</div>
   </article>
@@ -95,6 +100,8 @@ export default {
         client_side: '',
         detail: '',
       },
+      newIngredientsDecision: null,
+      newIngredientsCount: 0,
     }
   },
   computed: {
@@ -118,23 +125,65 @@ export default {
     },
     async save () {
       this.saving = true
-      const ri = this.recipe_dirty.recipe_ingredients.map(i => {
-        return {
-          ingredient: i.ingredient,
-          ingredient_extra: '',
-          optional: false,
-          amount_type: amount_types.numeric,
-          amount_numeric: Number(i.amount_numeric),
-          amount_approx: '',
-          unit: i.unit,
-        }
-      })
-      const d = {
-        title: this.recipe_dirty.title,
-        instructions: this.recipe_dirty.instructions,
-        recipe_ingredients: ri,
-      }
       try {
+        // Step 1: Check for new ingredients
+        {
+          const r = await api(endpoints.check_new_ingredients(), {
+            ingredients: this.recipe_dirty.recipe_ingredients.map(i => i.ingredient),
+          })
+          if (r.ok) {
+            const newIngredients = (await r.json()).ingredients
+            if (newIngredients.length > 0) {
+              this.newIngredientsCount = newIngredients.length
+              try {
+              const userDecision = await new Promise((resolve) => {
+                // this will give the user a choice to cancel or continue the process.
+                this.newIngredientsDecision = resolve
+              })
+              if (userDecision) {
+                const newIngredientData = newIngredients.map(i => {
+                  return {
+                    name: i,
+                  }
+                })
+                const r2 = await api(endpoints.create_many_ingredients(), newIngredientData)
+                if (r2.ok) {
+
+                } else {
+                  // TODO: Proper error propagation
+                  throw new Error('it broke. pls fix.')
+                }
+              } else {
+                // cancel process
+                return
+              }
+              } finally {
+                this.newIngredientsDecision = null
+              }
+            }
+          } else {
+            // TODO: Proper error propagation
+            const errors = await r.json()
+            throw new Error(errors.error.join('; '))
+          }
+        }
+
+        const ri = this.recipe_dirty.recipe_ingredients.map(i => {
+          return {
+            ingredient: i.ingredient,
+            ingredient_extra: '',
+            optional: false,
+            amount_type: amount_types.numeric,
+            amount_numeric: Number(i.amount_numeric),
+            amount_approx: '',
+            unit: i.unit,
+          }
+        })
+        const d = {
+          title: this.recipe_dirty.title,
+          instructions: this.recipe_dirty.instructions,
+          recipe_ingredients: ri,
+        }
         const r = await api(endpoints.post_recipe(this.recipe.id), d, {method: this.recipe.id ? 'put' : 'post'})
         if (r.ok) {
           this.errors.client_side = ''
@@ -151,8 +200,9 @@ export default {
         }
       } catch (err) {
         this.errors.client_side = err.message
+      } finally {
+        this.saving = false
       }
-      this.saving = false
     },
   },
   watch: {

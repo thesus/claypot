@@ -2,8 +2,11 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import (
     permissions,
+    status,
     viewsets,
 )
+from rest_framework.decorators import action
+from rest_framework.response import Response
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -14,6 +17,7 @@ from claypot.models import (
 
 from .serializers import (
     IngredientSerializer,
+    ManyIngredientSerializer,
     RecipeSerializer,
 )
 
@@ -52,6 +56,31 @@ class IngredientViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
 
+    @action(detail=False, methods=['post'])
+    def create_many(self, request):
+        serializer = IngredientSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            instances = serializer.save()
+            return Response(
+                IngredientSerializer(instances, many=True).data)
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
+    def check_new(self, request):
+        serializer = ManyIngredientSerializer(data=request.data)
+        if serializer.is_valid():
+            requested = set(serializer.data['ingredients'])
+            existing = set(
+                i.name
+                for i in Ingredient.objects.filter(name__in=requested))
+            new = list(requested - existing)
+            return Response(
+                ManyIngredientSerializer({"ingredients": new}).data)
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RecipeFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(lookup_expr='icontains')

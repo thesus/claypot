@@ -9,6 +9,14 @@ from claypot.models import (
 )
 
 
+class ManyIngredientSerializer(serializers.Serializer):
+    ingredients = serializers.ListField(
+        child=serializers.CharField(),
+        min_length=0,
+        max_length=20,
+    )
+
+
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
