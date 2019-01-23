@@ -90,7 +90,7 @@ export default {
   data () {
     return {
       recipe_dirty: {
-        recipe_ingredients: [],
+        recipe_ingredients: [this.createEmptyIngredient()],
       },
       saving: false,
       errors: {
@@ -120,8 +120,11 @@ export default {
     },
   },
   methods: {
+    createEmptyIngredient () {
+      return {ingredient: '', ingredient_extra: '', amount_numeric: 0, unit: ''}
+    },
     addIngredient () {
-      this.recipe_dirty.recipe_ingredients.push({ingredient: '', ingredient_extra: '', amount_numeric: 0, unit: ''})
+      this.recipe_dirty.recipe_ingredients.push(this.createEmptyIngredient())
     },
     async save () {
       this.saving = true
@@ -171,7 +174,7 @@ export default {
         const ri = this.recipe_dirty.recipe_ingredients.map(i => {
           return {
             ingredient: i.ingredient,
-            ingredient_extra: '',
+            ingredient_extra: i.ingredient_extra,
             optional: false,
             amount_type: amount_types.numeric,
             amount_numeric: Number(i.amount_numeric),
