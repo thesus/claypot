@@ -56,11 +56,11 @@
       <p v-if="recipe.id">{{ $t('recipe_edit.posted_by',  {user: author}) }}</p>
     </footer>
 
-    <div><button @click.prevent="save" :disabled="saving">{{ $t('recipe_edit.save') }}</button></div>
+    <div><button class="btn btn-primary" @click.prevent="save" :disabled="saving">{{ $t('recipe_edit.save') }}</button></div>
     <div v-if="newIngredientsDecision">
       <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
-      <button @click="newIngredientsDecision(true)">{{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}</button>
-      <button @click="newIngredientsDecision(false)">{{ $tc('recipes.confirm_new_ingredients.decline', newIngredientsCount, {count: newIngredientsCount}) }}</button>
+      <button class="btn" @click="newIngredientsDecision(true)">{{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}</button>
+      <button class="btn" @click="newIngredientsDecision(false)">{{ $tc('recipes.confirm_new_ingredients.decline', newIngredientsCount, {count: newIngredientsCount}) }}</button>
     </div>
     <div v-if="errors.client_side">{{ errors.client_side }}</div>
     <div v-if="errors.detail">{{ errors.detail }}</div>
