@@ -130,14 +130,14 @@ class SignupSerializer(serializers.Serializer):
             User.objects.get(username__iexact=value)
         except User.DoesNotExist:
             return value
-        raise exceptions.ValidationError({'username': [_("The username is already taken.")]})
+        raise exceptions.ValidationError(_("The username is already taken."))
 
     def validate_email(self, value):
         try:
             User.objects.get(email=value)
         except User.DoesNotExist:
             return value
-        raise exceptions.ValidationError({'email': [_("The email address is already used.")]})
+        raise exceptions.ValidationError(_("The email address is already used."))
 
     def validate(self, attrs):
         if attrs['password1'] != attrs['password2']:

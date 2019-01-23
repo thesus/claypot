@@ -2,9 +2,9 @@
     <div>
         <div class="reset-confirm">
             <form @submit.prevent="submit">
-                <input blank="false" type="password" v-model="passwords.new_password1" :placeholder="$t('reset_password_confirm.password')">
+                <input blank="false" type="password" v-model="form.new_password1" :placeholder="$t('reset_password_confirm.password')">
                 <form-field-validation-error :errors="errors.new_password1" />
-                <input type="password" v-model="passwords.new_password2" :placeholder="$t('reset_password_confirm.password_again')">
+                <input type="password" v-model="form.new_password2" :placeholder="$t('reset_password_confirm.password_again')">
                 <form-field-validation-error :errors="errors.new_password2" />
 
                 <form-field-validation-error :errors="errors.other" />
@@ -25,7 +25,7 @@ export default {
     },
     data: () => {
         return {
-            passwords: {
+            form: {
                 new_password1: null,
                 new_password2: null,
             },
@@ -42,7 +42,7 @@ export default {
                 const response = await api(
                     endpoints.password_reset_confirm(),
                     {
-                        ...this.passwords,
+                        ...this.form,
                         uid: this.$route.params.uid,
                         token: this.$route.params.token
                     }
