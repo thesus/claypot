@@ -53,7 +53,7 @@
     </div>
 
     <footer>
-      <p>{{ $t('recipe_edit.posted_by',  {user: user}) }}</p>
+      <p v-if="recipe.id">{{ $t('recipe_edit.posted_by',  {user: author}) }}</p>
     </footer>
 
     <div><button @click.prevent="save" :disabled="saving">{{ $t('recipe_edit.save') }}</button></div>
@@ -105,8 +105,8 @@ export default {
     }
   },
   computed: {
-    user () {
-      return this.$t('recipe_edit.unknown_user')
+    author () {
+      return this.recipe.author || this.$t('recipe_edit.unknown_user')
     },
     recipeIngredientError () {
       return i => {
