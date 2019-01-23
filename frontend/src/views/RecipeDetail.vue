@@ -18,7 +18,7 @@
       <tbody v-if="recipe && recipe.recipe_ingredients">
         <tr v-for="ingredient in recipe.recipe_ingredients" :key="ingredient.ingredient">
           <td>{{ ingredient.amount_numeric }}&nbsp;{{ ingredient.unit }}</td>
-          <td>{{ ingredient.ingredient }}</td>
+          <td>{{ ingredient.ingredient }}<span v-if="ingredient.ingredient_extra">, {{ ingredient.ingredient_extra }}</span></td>
         </tr>
       </tbody>
     </table>
