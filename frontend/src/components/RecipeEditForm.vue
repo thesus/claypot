@@ -270,11 +270,9 @@ export default {
       margin: 0;
       
       height: 100%;
-      overflow:hidden;
     }
 
     .input, td > button {
-      overflow: hidden;
       padding: 0;
       margin: 0;
       min-height: 25px;

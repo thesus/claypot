@@ -1,14 +1,14 @@
 <template>
-  <div>
-    <div class="suggestions" v-if="showSuggestions && suggestions.length">
+  <div class="wrapper" tabindex="-1" @blur.native="onBlur()">
+    <div class="suggestions"  v-if="showSuggestions && suggestions.length">
       <ul>
-        <li v-for="(suggestion, i) in suggestions" :key="i" :class="{highlighted: isHighlighted(i)}" @click="applySuggestion(i)">{{ suggestion }}</li>
+        <li v-for="(suggestion, i) in suggestions" :key="i" @mouseover="highlightThis(i)" :class="{highlighted: isHighlighted(i)}" @click="applySuggestion(i)">{{ suggestion }}</li>
       </ul>
     </div>
     <input
+      bubbles="true"
       v-model="dirtyValue"
-      @focus="onFocus"
-      @blur="onBlur"
+      @focus="onFocus()"
       @keyup.down="moveHighlightDown()"
       @keyup.up="moveHighlightUp()"
       @keyup.enter="applySuggestion()"
@@ -106,6 +106,9 @@ export default {
         this.highlighted = false
       }
     },
+    highlightThis (i) {
+      this.highlighted = i;
+    },
     applySuggestion (highlighted) {
       if (typeof highlighted !== "undefined") {
         this.highlighted = highlighted
@@ -121,21 +124,32 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
+.wrapper {
+  width: 100%;
+  position: relative;
+  overflow: visible;
+  outline: none;
+}
 
 .suggestions {
   border: 1px solid pink;
   background-color: white;
   position: absolute;
-  top: 100%;
-  display: inline;
-  z-index: 1;
-  width: 12em;
+  top: 26px;
+  z-index: 100;
+  width: 100%;
+  min-height: 22px;
+  box-sizing: border-box;
+
   ul {
     list-style-type: none;
     padding-left: 0;
+    margin: 0;
+    li {
+      cursor: pointer;
+    }
   }
 }
-
 
 .highlighted {
   background-color: lime;
