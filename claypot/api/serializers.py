@@ -90,6 +90,10 @@ class UsernameField(serializers.RelatedField):
 class RecipeSerializer(serializers.ModelSerializer):
     author = UsernameField(required=False)
     recipe_ingredients = RecipeIngredientSerializer(many=True)
+    is_starred = serializers.SerializerMethodField()
+
+    def get_is_starred(self, obj):
+        return obj.starred_by.filter(pk=self.context['request'].user.id).exists()
 
     def create(self, validated_data):
         instance = Recipe(author=self.context['request'].user)
@@ -128,6 +132,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'author',
             'author_id',
             'published_on',
+            'is_starred',
         ]
         read_only_fields = [
             'id',

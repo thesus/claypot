@@ -61,7 +61,10 @@
             "message": "You are about to create a new ingredient. Really continue? | You are about to save {count} new ingredients. Really continue?",
             "accept": "Create new ingredient | Create {count} new ingredients",
             "decline": "Cancel"
-        }
+        },
+        "starred": "Starred",
+        "star": "Star",
+        "unstar": "Unstar"
     },
     "recipe_detail": {
         "loading": "@:generic.loading",

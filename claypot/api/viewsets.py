@@ -96,3 +96,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [ReadAllEditOwn]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+
+    @action(detail=True, methods=['post'])
+    def star(self, request, pk=None):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        recipe.starred_by.add(request.user)
+        return Response(True)
+
+    @action(detail=True, methods=['post'])
+    def unstar(self, request, pk=None):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        recipe.starred_by.remove(request.user)
+        return Response(False)

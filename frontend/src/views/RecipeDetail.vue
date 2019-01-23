@@ -6,6 +6,10 @@
       <h1>{{ recipe.title }}</h1>
     </header>
 
+    <div>
+      <recipe-star-input :recipeId="recipeId" v-model="recipe.is_starred" />
+    </div>
+
     <router-link v-if="canEdit" :to="{name: 'recipe-edit', param: {id: recipeId}}">{{ $t('recipe_detail.edit') }}</router-link>
 
     <table>
@@ -36,7 +40,12 @@
 import {mapGetters} from 'vuex'
 import {api, endpoints} from '@/api'
 
+import RecipeStarInput from '@/components/RecipeStarInput'
+
 export default {
+  components: {
+    RecipeStarInput,
+  },
   data () {
     return {
       loading: false,

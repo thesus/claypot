@@ -31,6 +31,12 @@ const endpoints = {
   password_reset_confirm () {
     return '/accounts/confirm'
   },
+  recipe_star (id) {
+    return `/api/recipes/${id}/star/`
+  },
+  recipe_unstar (id) {
+    return `/api/recipes/${id}/unstar/`
+  },
   signup () {
     return '/accounts/signup'
   },

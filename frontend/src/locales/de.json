@@ -61,7 +61,10 @@
             "message": "Diese Aktion würde eine neue Zutat erstellen. Wirklich fortfahren? | Diese Aktion würde {count} neue Zutaten erstellen. Wirklich fortfahren?",
             "accept": "Neue Zutat erstellen | {count} neue Zutaten erstellen",
             "decline": "Abbrechen"
-        }
+        },
+        "starred": "Gemerkt",
+        "star": "Merken",
+        "unstar": "Nicht mehr merken"
     },
     "recipe_detail": {
         "loading": "@:generic.loading",
