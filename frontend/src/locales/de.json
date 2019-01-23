@@ -46,7 +46,7 @@
         "add": "Neues Rezept hinzufügen",
         "retry": "Wiederholen",
         "no_recipes": "Es sind noch keine Rezepte eingepflegt.",
-        "error": "@:generic.error"
+        "error": "@:generic.loading_error"
     },
     "recipes": {
         "title": "Titel",
