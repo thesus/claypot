@@ -64,7 +64,8 @@
         },
         "starred": "Starred",
         "star": "Star",
-        "unstar": "Unstar"
+        "unstar": "Unstar",
+        "stars": "Not starred | Starred once | Starred {count} times"
     },
     "recipe_detail": {
         "loading": "@:generic.loading",

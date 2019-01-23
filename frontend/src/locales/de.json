@@ -64,7 +64,8 @@
         },
         "starred": "Gemerkt",
         "star": "Merken",
-        "unstar": "Nicht mehr merken"
+        "unstar": "Nicht mehr merken",
+        "stars": "Kein Mal gemerkt | Ein Mal gemerkt | {count} Mal gemerkt"
     },
     "recipe_detail": {
         "loading": "@:generic.loading",

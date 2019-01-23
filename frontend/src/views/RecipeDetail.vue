@@ -6,6 +6,8 @@
       <h1>{{ recipe.title }}</h1>
     </header>
 
+    <div>{{ $tc('recipes.stars', recipe.stars, {count: recipe.stars}) }}</div>
+
     <div v-if="isLoggedIn">
       <recipe-star-input :recipeId="recipeId" v-model="recipe.is_starred" />
     </div>

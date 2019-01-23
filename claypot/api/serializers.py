@@ -91,9 +91,13 @@ class RecipeSerializer(serializers.ModelSerializer):
     author = UsernameField(required=False)
     recipe_ingredients = RecipeIngredientSerializer(many=True)
     is_starred = serializers.SerializerMethodField()
+    stars = serializers.SerializerMethodField()
 
     def get_is_starred(self, obj):
         return obj.starred_by.filter(pk=self.context['request'].user.id).exists()
+
+    def get_stars(self, obj):
+        return obj.starred_by.all().count()
 
     def create(self, validated_data):
         instance = Recipe(author=self.context['request'].user)
@@ -133,6 +137,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             'author_id',
             'published_on',
             'is_starred',
+            'stars',
         ]
         read_only_fields = [
             'id',
@@ -142,4 +147,5 @@ class RecipeSerializer(serializers.ModelSerializer):
             'published_on',
             'starred_by',
             'is_starred',
+            'stars',
         ]
