@@ -1,14 +1,22 @@
 <template>
-  <div class="wrapper" tabindex="-1" @blur.native="onBlur()">
+  <div class="wrapper">
     <div class="suggestions"  v-if="showSuggestions && suggestions.length">
       <ul>
-        <li v-for="(suggestion, i) in suggestions" :key="i" @mouseover="highlightThis(i)" :class="{highlighted: isHighlighted(i)}" @click="applySuggestion(i)">{{ suggestion }}</li>
+        <li
+          v-for="(suggestion, i) in suggestions"
+          :key="i"
+          :class="{highlighted: isHighlighted(i)}"
+          @mouseover="highlightThis(i)"
+          @mouseout="highlighted = false"
+          @mousedown="applySuggestion(i)"
+          >{{ suggestion }}</li>
       </ul>
     </div>
     <input
       bubbles="true"
       v-model="dirtyValue"
       @focus="onFocus()"
+      @blur="onBlur()"
       @keyup.down="moveHighlightDown()"
       @keyup.up="moveHighlightUp()"
       @keyup.enter="applySuggestion()"
@@ -75,7 +83,7 @@ export default {
     onFocus () {
       this.updateSuggestions()
     },
-    onBlur () {
+    async onBlur () {
       this.closeSuggestions()
     },
     openSuggestions () {
@@ -132,7 +140,7 @@ export default {
 }
 
 .suggestions {
-  border: 1px solid pink;
+  border: 1px solid #ccc;
   background-color: white;
   position: absolute;
   top: 26px;
@@ -152,6 +160,6 @@ export default {
 }
 
 .highlighted {
-  background-color: lime;
+  background-color: rgba(52, 73, 94, 0.1);
 }
 </style>
