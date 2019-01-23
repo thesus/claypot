@@ -282,5 +282,11 @@ export default {
 
 article {
   margin: 5px;
+  /* smaller after threshold?
+  @media screen and (min-width: 1000px) {
+    width: 60%;
+    margin: auto;
+  }
+  */
 }
 </style>

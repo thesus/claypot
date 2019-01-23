@@ -1,9 +1,8 @@
 <template>
   <div v-if="value">
-    <span>{{ $t('recipes.starred') }}</span>
-    <button class="btn" @click="doUnstar" :disabled="saving">{{ $t('recipes.unstar') }}</button>
+    <div class="button starred" @click="doUnstar" :disabled="saving">{{ $t('recipes.unstar') }}</div>
   </div>
-  <button v-else class="btn" @click="doStar" :disabled="saving">{{ $t('recipes.star') }}</button>
+  <div v-else class="button" @click="doStar" :disabled="saving">{{ $t('recipes.star') }}</div>
 </template>
 
 <script>
@@ -54,5 +53,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/modules/inputs.scss';
+@import '@/modules/variables.scss';
+
+.button {
+  cursor: pointer;
+  display: inline-block;
+
+  &:hover {
+    background-color: $font_color;
+    color: white;
+  }
+}
 </style>

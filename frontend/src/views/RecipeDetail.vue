@@ -6,10 +6,10 @@
       <h1>{{ recipe.title }}</h1>
     </header>
 
-    <div>{{ $tc('recipes.stars', recipe.stars, {count: recipe.stars}) }}</div>
+    <div class="stars">
+      <div class="countainer">{{ $tc('recipes.stars', recipe.stars, {count: recipe.stars}) }}</div>
 
-    <div v-if="isLoggedIn">
-      <recipe-star-input :recipeId="recipeId" v-model="recipe.is_starred" />
+      <recipe-star-input class="button" v-if="isLoggedIn" :recipeId="recipeId" v-model="recipe.is_starred" />
     </div>
 
     <router-link v-if="canEdit" :to="{name: 'recipe-edit', param: {id: recipeId}}">{{ $t('recipe_detail.edit') }}</router-link>
@@ -108,3 +108,21 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.stars {
+  border: solid 1px #ccc;
+  display: inline;
+  white-space: nowrap;
+
+  .countainer, .button {
+    padding: 0 5px 0 5px;
+    display: inline-block;
+    border: none;
+  }
+
+  .button {
+    border-left: solid 1px #ccc;
+  }
+}
+</style>
