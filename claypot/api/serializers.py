@@ -141,4 +141,5 @@ class RecipeSerializer(serializers.ModelSerializer):
             'author_id',
             'published_on',
             'starred_by',
+            'is_starred',
         ]
