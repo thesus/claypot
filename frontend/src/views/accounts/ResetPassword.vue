@@ -3,7 +3,7 @@
         <div class="reset">
             <form @submit.prevent="submit">
                 <h5>{{ $t('reset_password.heading') }}</h5>
-                <input type="email" v-model="email" :placeholder="$t('reset_password.email')">
+                <input required type="email" v-model="email" :placeholder="$t('reset_password.email')">
                 <form-field-validation-error :errors="errors" />
                 <p v-if="finished">{{ $t('reset_password.confirm') }}</p>
                 <button :disabled="finished" type="submit" class="btn btn-right">{{ $t('reset_password.reset') }}</button>

@@ -24,7 +24,8 @@
     "reset_password": {
         "heading": "Reset your password",
         "email": "E-Mail Address",
-        "reset": "Request reset e-mail"
+        "reset": "Request reset e-mail",
+        "confirm": "We send an email to the given address."
     },
     "reset_password_confirm": {
         "password": "@:signup.password",
@@ -38,7 +39,8 @@
         "username": "Username",
         "password": "Password",
         "password_again": "@:signup.password (again)",
-        "signup": "Sign Up"
+        "signup": "Sign Up",
+        "confirm": "Successfull. You received an email with a confirmation link."
     },
     "home": {
         "loading": "@:generic.loading",

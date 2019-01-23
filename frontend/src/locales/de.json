@@ -24,7 +24,9 @@
     "reset_password": {
         "heading": "Kennwort zurücksetzen",
         "email": "E-Mail-Adresse",
-        "reset": "Wiederherstellungs-E-Mail anfordern"
+        "reset": "Wiederherstellungs-E-Mail anfordern",
+        "error": "Der Registrierungslink ist ungültig.",
+        "confirm": "Wiederherstellungs-E-Mail gesendet."
     },
     "reset_password_confirm": {
         "password": "@:signup.password",
@@ -38,7 +40,8 @@
         "username": "Benutzername",
         "password": "Kennwort",
         "password_again": "@:signup.password (wiederholen)",
-        "signup": "Registrieren"
+        "signup": "Registrieren",
+        "confirm": "Herzlichen Glückwunsch! Das Anlegen des Benutzers war erfolgreich."
     },
     "home": {
         "loading": "@:generic.loading",
