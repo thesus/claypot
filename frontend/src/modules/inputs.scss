@@ -33,7 +33,7 @@ textarea {
     height: 25px;
     cursor: pointer;
 
-    padding: 0 5px 0 5px;
+    padding: 0 5px 0 5px !important;
 
     &:hover {
         background-color: $font_color;

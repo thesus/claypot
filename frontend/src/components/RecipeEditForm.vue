@@ -5,47 +5,49 @@
       <form-field-validation-error :errors="errors.title" />
     </header>
 
-    <table>
-      <thead>
-        <tr>
-          <th>{{ $t('recipe_edit.amount') }}</th>
-          <th>{{ $t('recipe_edit.unit') }}</th>
-          <th>{{ $t('recipe_edit.ingredient') }}</th>
-          <th>{{ $t('recipe_edit.ingredient_extra') }}</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(ingredient, i) in recipe_dirty.recipe_ingredients" :key="i">
-          <td>
-            <div class="input">
-              <input v-model="ingredient.amount_numeric" :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length}">
-            </div>
-            <form-field-validation-error :errors="recipeIngredientError(i).amount_numeric" />
-          </td>
-          <td>
-            <div class="input">
-              <input v-model="ingredient.unit" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).unit.length}">
-            </div>
-            <form-field-validation-error :errors="recipeIngredientError(i).unit" />
-          </td>
-          <td>
-            <div class="input">
-              <ingredient-input v-model="ingredient.ingredient" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient.length}" />
-            </div>
-            <form-field-validation-error :errors="recipeIngredientError(i).ingredient" />
-          </td>
-          <td>
-            <div class="input">
-              <input v-model="ingredient.ingredient_extra" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient_extra.length}">
-            </div>
-            <form-field-validation-error :errors="recipeIngredientError(i).ingredient_extra" />
-          </td>
-          <td><button class="btn" :disabled="saving" @click="recipe_dirty.recipe_ingredients.splice(i, 1)">{{ $t('recipe_edit.remove') }}</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <button class="btn btn-right" @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
+    <div class="ingredients">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ $t('recipe_edit.amount') }}</th>
+            <th>{{ $t('recipe_edit.unit') }}</th>
+            <th>{{ $t('recipe_edit.ingredient') }}</th>
+            <th>{{ $t('recipe_edit.ingredient_extra') }}</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(ingredient, i) in recipe_dirty.recipe_ingredients" :key="i">
+            <td>
+              <div class="input">
+                <input v-model="ingredient.amount_numeric" :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length}">
+              </div>
+              <form-field-validation-error :errors="recipeIngredientError(i).amount_numeric" />
+            </td>
+            <td>
+              <div class="input">
+                <input v-model="ingredient.unit" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).unit.length}">
+              </div>
+              <form-field-validation-error :errors="recipeIngredientError(i).unit" />
+            </td>
+            <td>
+              <div class="input">
+                <ingredient-input v-model="ingredient.ingredient" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient.length}" />
+              </div>
+              <form-field-validation-error :errors="recipeIngredientError(i).ingredient" />
+            </td>
+            <td>
+              <div class="input">
+                <input v-model="ingredient.ingredient_extra" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient_extra.length}">
+              </div>
+              <form-field-validation-error :errors="recipeIngredientError(i).ingredient_extra" />
+            </td>
+            <td><button class="btn btn-right remove" :disabled="saving" @click="recipe_dirty.recipe_ingredients.splice(i, 1)">{{ $t('recipe_edit.remove') }}</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="btn btn-right submit" @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
+    </div>
 
     <div>
       <div><textarea :placeholder="$t('recipes.instructions')" v-model="recipe_dirty.instructions" :disabled="saving"></textarea></div>
@@ -56,7 +58,7 @@
       <p v-if="recipe.id">{{ $t('recipe_edit.posted_by',  {user: author}) }}</p>
     </footer>
 
-    <div><button class="btn btn-primary" @click.prevent="save" :disabled="saving">{{ $t('recipe_edit.save') }}</button></div>
+    <div><button class="btn btn-right btn-primary" @click.prevent="save" :disabled="saving">{{ $t('recipe_edit.save') }}</button></div>
     <div v-if="newIngredientsDecision">
       <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
       <button class="btn" @click="newIngredientsDecision(true)">{{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}</button>
@@ -233,32 +235,50 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
+@import '@/modules/variables.scss';
 
 .btn {
   margin: 0;
 }
 
-table {
+.ingredients {
+  border: solid 1px #ccc;
+  display: inline-block;
+  box-sizing: border-box;
   width: 100%;
-  border-collapse: collapse;
-  tr {
-  position: relative;
+  padding: 4px;
+
+  .submit {
+    margin: 2px 2px 3px 0;
   }
 
-  td {
-    vertical-align:top;
-    padding: 2px 2px 0 2px;
-    margin: 0;
-    
-    height: 100%;
-    overflow:hidden;
-  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
 
-  .input, td > button {
-    overflow: hidden;
-    padding: 0;
-    margin: 0;
-    min-height: 25px;
+    .remove {
+      float: right;
+    }
+
+    tr {
+      position: relative;
+    }
+
+    td {
+      vertical-align:top;
+      padding: 2px 2px 0 2px;
+      margin: 0;
+      
+      height: 100%;
+      overflow:hidden;
+    }
+
+    .input, td > button {
+      overflow: hidden;
+      padding: 0;
+      margin: 0;
+      min-height: 25px;
+    }
   }
 }
 

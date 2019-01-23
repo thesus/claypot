@@ -91,7 +91,7 @@
         "posted_by": "@:recipes.posted_by",
         "unknown_user": "@:recipes.unknown_user",
         "remove": "Remove",
-        "add": "Add",
+        "add": "Add new Ingredient",
         "save": "Save"
     }
 }
