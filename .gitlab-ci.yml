@@ -22,6 +22,17 @@ test:backend:
     paths:
       - .cache/pip/
 
+test:frontend:
+  image: node:latest
+  stage: test
+  tags:
+    - docker
+  before_script:
+    - cd frontend/
+    - npm install -g eslint
+  script:
+    - eslint ./
+  allow_failure: yes
 
 pages:
   stage: deploy
