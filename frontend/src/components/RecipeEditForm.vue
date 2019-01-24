@@ -51,9 +51,15 @@
       <button class="btn btn-right submit" @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
     </div>
 
+    <ol>
+      <li v-for="(instruction, i) in recipe_dirty.instructions" ref="instructions">
+        <div><textarea class="small" :placeholder="$t('recipes.instructions')" v-model="instruction.text" :disabled="saving"></textarea></div>
+        <form-field-validation-error :errors="recipeInstructionError(i).text" />
+        <button tabindex="-1" class="btn btn-right remove" :disabled="saving" @click="recipe_dirty.instructions.splice(i, 1)">{{ $t('recipe_edit.remove') }}</button>
+      </li>
+    </ol>
     <div>
-      <div><textarea :placeholder="$t('recipes.instructions')" v-model="recipe_dirty.instructions" :disabled="saving"></textarea></div>
-      <form-field-validation-error :errors="errors.instructions" />
+      <button class="btn btn-right submit" @click.prevent="addInstruction" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
     </div>
 
     <div><button class="btn btn-right btn-primary" @click.prevent="save" :disabled="saving">{{ $t('recipe_edit.save') }}</button></div>
@@ -95,6 +101,7 @@ export default {
     return {
       recipe_dirty: {
         ingredients: [this.createEmptyIngredient()],
+        instructions: [this.createEmptyInstruction()],
       },
       saving: false,
       errors: {
@@ -122,10 +129,23 @@ export default {
         return r
       }
     },
+    recipeInstructionError () {
+      return i => {
+        const e = this.errors.instructions
+        const r = e.length > i ? e[i] : {}
+        for (let p of ['text']) {
+          r[p] = r[p] || []
+        }
+        return r
+      }
+    },
   },
   methods: {
     createEmptyIngredient () {
       return {ingredient: '', ingredient_extra: '', amount_numeric: 0, unit: ''}
+    },
+    createEmptyInstruction () {
+      return {text: ''}
     },
     addIngredient () {
       this.recipe_dirty.ingredients.push(this.createEmptyIngredient())
@@ -134,6 +154,14 @@ export default {
       /* Select the first field in the input after it was created */
       /* And yeah. This is pretty dirty. */
       this.$nextTick(() => { this.$refs.ingredients[pos].children[0].children[0].children[0].focus() })
+    },
+    addInstruction () {
+      this.recipe_dirty.instructions.push(this.createEmptyInstruction())
+
+      const pos = this.recipe_dirty.instructions.length - 1
+      /* Select the first field in the input after it was created */
+      /* And yeah. This is pretty dirty. */
+      this.$nextTick(() => { this.$refs.instructions[pos].children[0].children[0].focus() })
     },
     async save () {
       this.saving = true
@@ -194,7 +222,7 @@ export default {
         })
         const d = {
           title: this.recipe_dirty.title,
-          instructions: this.recipe_dirty.instructions,
+          instructions: this.recipe_dirty.instructions.map((instruction, i) => { return {order: i, text: instruction.text}}),
           ingredients: ri,
           ingredient_groups: [],
         }

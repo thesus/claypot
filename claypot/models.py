@@ -58,8 +58,6 @@ class Recipe(models.Model):
         verbose_name=ugettext_lazy('Title'),
     )
     slug = models.SlugField(max_length=200)
-    instructions = models.TextField(
-        verbose_name=ugettext_lazy('Instructions'))
 
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -283,3 +281,32 @@ class IngredientTag(models.Model):
         verbose_name = ugettext_lazy('Tag')
         verbose_name_plural = ugettext_lazy('Tags')
         unique_together = ('tag',)
+
+
+class RecipeInstructionManager(models.Manager):
+    def get_by_natural_key(self, recipe, order):
+        recipe = Recipe.objects.get_by_natural_key(*recipe)
+        return self.get(recipe=recipe, order=order)
+
+
+class RecipeInstruction(models.Model):
+    objects = RecipeInstructionManager()
+
+    recipe = models.ForeignKey(
+        'Recipe',
+        on_delete=models.CASCADE,
+        related_name='instructions',
+    )
+    order = models.IntegerField()
+    text = models.TextField(blank=True)
+
+    def natural_key(self):
+        return (
+            self.recipe.natural_key(),
+            self.order,
+        )
+
+    class Meta:
+        verbose_name = ugettext_lazy('Recipe instruction')
+        verbose_name_plural = ugettext_lazy('Recipe instructions')
+        unique_together = ('recipe', 'order')

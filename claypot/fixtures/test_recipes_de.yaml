@@ -2,8 +2,27 @@
   fields:
     title: Pizzateig
     slug: pizzateig
-    instructions: Alles vermengen, mindestens eine Stunde gehen lassen, ausziehen, belegen, im auf 250 Grad Umluft vorgeheizten Backofen für 5 Minuten ausbacken.
     published_on: "2018-09-01T13:55:00+02:00"
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [pizzateig]
+    order: 1
+    text: Alles vermengen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [pizzateig]
+    order: 2
+    text: Mindestens eine Stunde gehen lassen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [pizzateig]
+    order: 3
+    text: Ausziehen und belegen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [pizzateig]
+    order: 4
+    text: Im auf 250 Grad Umluft vorgeheizten Backofen für 5 Minuten ausbacken.
 - model: claypot.RecipeIngredient
   fields:
     recipe: [pizzateig]
@@ -40,8 +59,27 @@
   fields:
     title: Kartoffelbrot
     slug: kartoffelbrot
-    instructions: Alles vermengen, mindestens eine Stunde gehen lassen, bei 180 Grad für 20 Minuten backen, dann bei 160 Grad für 40 weiter Minuten ausbacken.
     published_on: "2018-09-01T13:59:00+02:00"
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [kartoffelbrot]
+    order: 1
+    text: Alles vermengen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [kartoffelbrot]
+    order: 2
+    text: Mindestens eine Stunde gehen lassen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [kartoffelbrot]
+    order: 3
+    text: Bei 180 Grad für 20 Minuten backen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [kartoffelbrot]
+    order: 4
+    text: Dann bei 160 Grad für 40 weiter Minuten ausbacken.
 - model: claypot.RecipeIngredient
   fields:
     recipe: [kartoffelbrot]

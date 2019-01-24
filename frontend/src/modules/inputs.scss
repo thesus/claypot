@@ -18,6 +18,9 @@ textarea {
     text-indent: 0;
     min-height: 200px;
     resize: vertical;
+    &.small {
+        min-height: 50px;
+    }
 }
 
 .form-error {

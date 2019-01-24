@@ -9,8 +9,15 @@ from claypot.models import (
     RecipeIngredient,
     RecipeIngredientGroup,
     RecipeIngredientGroupIngredient,
+    RecipeInstruction,
     Unit,
 )
+
+
+class OrderedListSerializer(serializers.ListSerializer):
+    def to_representation(self, data):
+        data = data.order_by('order')
+        return super().to_representation(data)
 
 
 class ManyIngredientSerializer(serializers.Serializer):
@@ -91,6 +98,7 @@ class RecipeIngredientGroupIngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RecipeIngredientGroupIngredient
+        list_serializer_class = OrderedListSerializer
         fields = [
             'order',
             'ingredient',
@@ -108,6 +116,7 @@ class RecipeIngredientGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RecipeIngredientGroup
+        list_serializer_class = OrderedListSerializer
         fields = [
             'order',
             'title',
@@ -122,8 +131,19 @@ class UsernameField(serializers.RelatedField):
         return value.username
 
 
+class RecipeInstructionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecipeInstruction
+        list_serializer_class = OrderedListSerializer
+        fields = [
+            'order',
+            'text',
+        ]
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     author = UsernameField(required=False)
+    instructions = RecipeInstructionSerializer(many=True)
     ingredients = RecipeIngredientSerializer(many=True)
     ingredient_groups = RecipeIngredientGroupSerializer(many=True)
     is_starred = serializers.SerializerMethodField()
@@ -143,8 +163,27 @@ class RecipeSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.title = validated_data['title']
         instance.slug = instance.slug or instance.title.lower().replace(' ', '-')
-        instance.instructions = validated_data['instructions']
         instance.save()
+
+        print(validated_data)
+        # save instructions
+        existing = set(ri.order for ri in instance.instructions.all())
+        new = set(ri['order'] for ri in validated_data['instructions'])
+        remove = existing - new
+        instance.instructions.filter(order__in=remove).delete()
+        for ri in validated_data['instructions']:
+            obj = instance.instructions.filter(
+                order=ri['order'],
+            ).first()
+            if obj is None:
+                obj = RecipeInstruction(
+                    recipe=instance,
+                    order=ri['order'],
+                )
+            obj.text = ri['text']
+            obj.save()
+
+        # save ingredients
         existing = set(ri.order for ri in instance.ingredients.all())
         new = set(ri['order'] for ri in validated_data['ingredients'])
         remove = existing - new

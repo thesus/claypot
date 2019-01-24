@@ -34,7 +34,11 @@
       </div>
     </div>
 
-    <p class="instructions" v-if="recipe">{{ recipe.instructions }}</p>
+    <ol class="instructions" v-if="recipe">
+      <li v-for="instruction in recipe.instructions">
+        <p>{{ instruction.text }}</p>
+      </li>
+    </ol>
 
     <footer>
       <p>{{ $t('recipe_detail.posted_by',  {user: author}) }}</p>
