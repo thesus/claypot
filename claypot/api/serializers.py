@@ -148,7 +148,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         existing = set(ri.order for ri in instance.ingredients.all())
         new = set(ri['order'] for ri in validated_data['ingredients'])
         remove = existing - new
-        instance.ingredients.filter(ingredient__in=remove).delete()
+        instance.ingredients.filter(order__in=remove).delete()
         for ri in validated_data['ingredients']:
             obj = instance.ingredients.filter(
                 order=ri['order'],
