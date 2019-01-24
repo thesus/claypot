@@ -6,46 +6,48 @@
     </header>
 
     <div class="ingredients">
-      <table v-show="recipe_dirty.recipe_ingredients.length > 0">
-        <thead>
-          <tr>
-            <th>{{ $t('recipe_edit.amount') }}</th>
-            <th>{{ $t('recipe_edit.unit') }}</th>
-            <th>{{ $t('recipe_edit.ingredient') }}</th>
-            <th>{{ $t('recipe_edit.ingredient_extra') }}</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(ingredient, i) in recipe_dirty.recipe_ingredients" :key="i">
-            <td>
-              <div class="input">
-                <input v-model="ingredient.amount_numeric" :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length}">
-              </div>
-              <form-field-validation-error :errors="recipeIngredientError(i).amount_numeric" />
-            </td>
-            <td>
-              <div class="input">
-                <input v-model="ingredient.unit" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).unit.length}">
-              </div>
-              <form-field-validation-error :errors="recipeIngredientError(i).unit" />
-            </td>
-            <td>
-              <div class="input">
-                <ingredient-input v-model="ingredient.ingredient" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient.length}" />
-              </div>
-              <form-field-validation-error :errors="recipeIngredientError(i).ingredient" />
-            </td>
-            <td>
-              <div class="input">
-                <input v-model="ingredient.ingredient_extra" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient_extra.length}">
-              </div>
-              <form-field-validation-error :errors="recipeIngredientError(i).ingredient_extra" />
-            </td>
-            <td><button class="btn btn-right remove" :disabled="saving" @click="recipe_dirty.recipe_ingredients.splice(i, 1)">{{ $t('recipe_edit.remove') }}</button></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table">
+        <table v-show="recipe_dirty.recipe_ingredients.length > 0">
+          <thead>
+            <tr>
+              <th>{{ $t('recipe_edit.amount') }}</th>
+              <th>{{ $t('recipe_edit.unit') }}</th>
+              <th>{{ $t('recipe_edit.ingredient') }}</th>
+              <th>{{ $t('recipe_edit.ingredient_extra') }}</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(ingredient, i) in recipe_dirty.recipe_ingredients" :key="i" ref="ingredients">
+              <td>
+                <div class="input">
+                  <input v-model="ingredient.amount_numeric" :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length}">
+                </div>
+                <form-field-validation-error :errors="recipeIngredientError(i).amount_numeric" />
+              </td>
+              <td>
+                <div class="input">
+                  <input v-model="ingredient.unit" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).unit.length}">
+                </div>
+                <form-field-validation-error :errors="recipeIngredientError(i).unit" />
+              </td>
+              <td>
+                <div class="input">
+                  <ingredient-input v-model="ingredient.ingredient" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient.length}" />
+                </div>
+                <form-field-validation-error :errors="recipeIngredientError(i).ingredient" />
+              </td>
+              <td>
+                <div class="input">
+                  <input v-model="ingredient.ingredient_extra" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient_extra.length}">
+                </div>
+                <form-field-validation-error :errors="recipeIngredientError(i).ingredient_extra" />
+              </td>
+              <td><button tabindex="-1" class="btn btn-right remove" :disabled="saving" @click="recipe_dirty.recipe_ingredients.splice(i, 1)">{{ $t('recipe_edit.remove') }}</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <button class="btn btn-right submit" @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
     </div>
 
@@ -53,10 +55,6 @@
       <div><textarea :placeholder="$t('recipes.instructions')" v-model="recipe_dirty.instructions" :disabled="saving"></textarea></div>
       <form-field-validation-error :errors="errors.instructions" />
     </div>
-
-    <footer>
-      <p v-if="recipe.id">{{ $t('recipe_edit.posted_by',  {user: author}) }}</p>
-    </footer>
 
     <div><button class="btn btn-right btn-primary" @click.prevent="save" :disabled="saving">{{ $t('recipe_edit.save') }}</button></div>
     <div v-if="newIngredientsDecision">
@@ -66,6 +64,10 @@
     </div>
     <div v-if="errors.client_side">{{ errors.client_side }}</div>
     <div v-if="errors.detail">{{ errors.detail }}</div>
+
+    <footer>
+      <p v-if="recipe.id">{{ $t('recipe_edit.posted_by',  {user: author}) }}</p>
+    </footer>
   </article>
 </template>
 
@@ -127,6 +129,11 @@ export default {
     },
     addIngredient () {
       this.recipe_dirty.recipe_ingredients.push(this.createEmptyIngredient())
+
+      const pos = this.recipe_dirty.recipe_ingredients.length - 1
+      /* Select the first field in the input after it was created */
+      /* And yeah. This is pretty dirty. */
+      this.$nextTick(() => { this.$refs.ingredients[pos].children[0].children[0].children[0].focus() })
     },
     async save () {
       this.saving = true
@@ -246,6 +253,7 @@ export default {
 }
 
 .ingredients {
+  margin-bottom: 5px;
   border: solid 1px #ccc;
   display: inline-block;
   box-sizing: border-box;
@@ -254,6 +262,10 @@ export default {
 
   .submit {
     margin: 2px 2px 3px 0;
+  }
+
+  .table {
+    overflow-x: auto;
   }
 
   table {
