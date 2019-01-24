@@ -61,7 +61,7 @@
     <div><button class="btn btn-right btn-primary" @click.prevent="save" :disabled="saving">{{ $t('recipe_edit.save') }}</button></div>
     <div v-if="newIngredientsDecision">
       <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
-      <button class="btn" @click="newIngredientsDecision(true)">{{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}</button>
+      <button class="btn new-ingredient" @click="newIngredientsDecision(true)">{{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}</button>
       <button class="btn" @click="newIngredientsDecision(false)">{{ $tc('recipes.confirm_new_ingredients.decline', newIngredientsCount, {count: newIngredientsCount}) }}</button>
     </div>
     <div v-if="errors.client_side">{{ errors.client_side }}</div>
@@ -239,6 +239,10 @@ export default {
 
 .btn {
   margin: 0;
+}
+
+.new-ingredient {
+  border-right: none;
 }
 
 .ingredients {

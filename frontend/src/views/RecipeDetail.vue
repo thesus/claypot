@@ -6,30 +6,35 @@
       <h1>{{ recipe.title }}</h1>
     </header>
 
-    <div class="stars">
-      <div class="countainer">{{ $tc('recipes.stars', recipe.stars, {count: recipe.stars}) }}</div>
-
-      <recipe-star-input class="button" v-if="isLoggedIn" :recipeId="recipeId" v-model="recipe.is_starred" />
+    <div class="functions">
+      <div class="stars">
+        <div class="countainer">{{ $tc('recipes.stars', recipe.stars, {count: recipe.stars}) }}</div>
+        <recipe-star-input class="button" v-if="isLoggedIn" :recipeId="recipeId" v-model="recipe.is_starred" />
+      </div>
+      <router-link v-if="canEdit" :to="{name: 'recipe-edit', param: {id: recipeId}}">{{ $t('recipe_detail.edit') }}</router-link>
     </div>
 
-    <router-link v-if="canEdit" :to="{name: 'recipe-edit', param: {id: recipeId}}">{{ $t('recipe_detail.edit') }}</router-link>
+    <div class="header">
+      <table class="ingredients">
+        <thead>
+          <tr>
+            <th class="amount">{{ $t('recipe_detail.amount') }}</th>
+            <th class="ingredient">{{ $t('recipe_detail.ingredient') }}</th>
+          </tr>
+        </thead>
+        <tbody v-if="recipe && recipe.recipe_ingredients">
+          <tr v-for="ingredient in recipe.recipe_ingredients" :key="ingredient.ingredient">
+            <td class="amount">{{ ingredient.amount_numeric }}&nbsp;{{ ingredient.unit }}</td>
+            <td class="ingredient">{{ ingredient.ingredient }}<span v-if="ingredient.ingredient_extra">, {{ ingredient.ingredient_extra }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="images">
+        image
+      </div>
+    </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>{{ $t('recipe_detail.amount') }}</th>
-          <th>{{ $t('recipe_detail.ingredient') }}</th>
-        </tr>
-      </thead>
-      <tbody v-if="recipe && recipe.recipe_ingredients">
-        <tr v-for="ingredient in recipe.recipe_ingredients" :key="ingredient.ingredient">
-          <td>{{ ingredient.amount_numeric }}&nbsp;{{ ingredient.unit }}</td>
-          <td>{{ ingredient.ingredient }}<span v-if="ingredient.ingredient_extra">, {{ ingredient.ingredient_extra }}</span></td>
-        </tr>
-      </tbody>
-    </table>
-
-    <p v-if="recipe">{{ recipe.instructions }}</p>
+    <p class="instructions" v-if="recipe">{{ recipe.instructions }}</p>
 
     <footer>
       <p>{{ $t('recipe_detail.posted_by',  {user: author}) }}</p>
@@ -125,5 +130,47 @@ export default {
   .button {
     border-left: solid 1px #ccc;
   }
+}
+
+.functions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 15px -10px;
+
+  @media screen and (max-width: 850px) {
+    flex-wrap: wrap-reverse;
+    .images, .ingredients {
+      flex-basis: 100% !important;
+    }
+  }
+
+  .ingredients {
+    padding: 0 5px 0 5px;
+    width: 25%;
+
+    .amount {
+      text-align: right;
+    }
+
+    .ingredient {
+      text-align: left;
+      padding-left: 10px;
+    }
+  }
+  .images {
+    margin: 0 10px;
+    border: solid 1px #ccc;
+    flex: 1;
+    height: 400px;
+  }
+}
+
+.instructions {
+  text-align: justify;
 }
 </style>
