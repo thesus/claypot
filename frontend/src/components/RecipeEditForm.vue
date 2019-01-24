@@ -7,7 +7,7 @@
 
     <div class="ingredients">
       <div class="table">
-        <table v-show="recipe_dirty.recipe_ingredients.length > 0">
+        <table v-show="recipe_dirty.ingredients.length > 0">
           <thead>
             <tr>
               <th>{{ $t('recipe_edit.amount') }}</th>
@@ -18,7 +18,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(ingredient, i) in recipe_dirty.recipe_ingredients" :key="i" ref="ingredients">
+            <tr v-for="(ingredient, i) in recipe_dirty.ingredients" :key="i" ref="ingredients">
               <td>
                 <div class="input">
                   <input v-model="ingredient.amount_numeric" :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length}">
@@ -43,7 +43,7 @@
                 </div>
                 <form-field-validation-error :errors="recipeIngredientError(i).ingredient_extra" />
               </td>
-              <td><button tabindex="-1" class="btn btn-right remove" :disabled="saving" @click="recipe_dirty.recipe_ingredients.splice(i, 1)">{{ $t('recipe_edit.remove') }}</button></td>
+              <td><button tabindex="-1" class="btn btn-right remove" :disabled="saving" @click="recipe_dirty.ingredients.splice(i, 1)">{{ $t('recipe_edit.remove') }}</button></td>
             </tr>
           </tbody>
         </table>
@@ -94,12 +94,12 @@ export default {
   data () {
     return {
       recipe_dirty: {
-        recipe_ingredients: [this.createEmptyIngredient()],
+        ingredients: [this.createEmptyIngredient()],
       },
       saving: false,
       errors: {
         title: [],
-        recipe_ingredients: [],
+        ingredients: [],
         instructions: [],
         client_side: '',
         detail: '',
@@ -114,7 +114,7 @@ export default {
     },
     recipeIngredientError () {
       return i => {
-        const e = this.errors.recipe_ingredients
+        const e = this.errors.ingredients
         const r = e.length > i ? e[i] : {}
         for (let p of ['ingredient', 'ingredient_extra', 'amount_numeric', 'unit']) {
           r[p] = r[p] || []
@@ -128,9 +128,9 @@ export default {
       return {ingredient: '', ingredient_extra: '', amount_numeric: 0, unit: ''}
     },
     addIngredient () {
-      this.recipe_dirty.recipe_ingredients.push(this.createEmptyIngredient())
+      this.recipe_dirty.ingredients.push(this.createEmptyIngredient())
 
-      const pos = this.recipe_dirty.recipe_ingredients.length - 1
+      const pos = this.recipe_dirty.ingredients.length - 1
       /* Select the first field in the input after it was created */
       /* And yeah. This is pretty dirty. */
       this.$nextTick(() => { this.$refs.ingredients[pos].children[0].children[0].children[0].focus() })
@@ -141,7 +141,7 @@ export default {
         // Step 1: Check for new ingredients
         {
           const r = await api(endpoints.check_new_ingredients(), {
-            ingredients: this.recipe_dirty.recipe_ingredients.map(i => i.ingredient),
+            ingredients: this.recipe_dirty.ingredients.map(i => i.ingredient),
           })
           if (r.ok) {
             const newIngredients = (await r.json()).ingredients
@@ -180,8 +180,9 @@ export default {
           }
         }
 
-        const ri = this.recipe_dirty.recipe_ingredients.map(i => {
+        const ri = this.recipe_dirty.ingredients.map((i, order) => {
           return {
+            order: order,
             ingredient: i.ingredient,
             ingredient_extra: i.ingredient_extra,
             optional: false,
@@ -194,7 +195,8 @@ export default {
         const d = {
           title: this.recipe_dirty.title,
           instructions: this.recipe_dirty.instructions,
-          recipe_ingredients: ri,
+          ingredients: ri,
+          ingredient_groups: [],
         }
         const r = await api(endpoints.post_recipe(this.recipe.id), d, {method: this.recipe.id ? 'put' : 'post'})
         if (r.ok) {
@@ -206,7 +208,7 @@ export default {
           // TODO: Notify user about broken fields?
           const errors = await r.json()
           this.errors.title = errors.title || []
-          this.errors.recipe_ingredients = errors.recipe_ingredients || []
+          this.errors.ingredients = errors.ingredients || []
           this.errors.instructions = errors.instructions || []
           this.errors.detail = errors.detail || ''
         }
@@ -222,11 +224,11 @@ export default {
       const r = this.recipe
       this.recipe_dirty = {
         title: r.title,
-        recipe_ingredients: [],
+        ingredients: [],
         instructions: r.instructions,
       }
-      for (let ri of r.recipe_ingredients) {
-        this.recipe_dirty.recipe_ingredients.push({
+      for (let ri of r.ingredients) {
+        this.recipe_dirty.ingredients.push({
           amount_numeric: ri.amount_numeric,
           amount_approx: ri.amount_approx,
           amount_type: ri.amount_type,

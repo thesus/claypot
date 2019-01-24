@@ -22,8 +22,8 @@
             <th class="ingredient">{{ $t('recipe_detail.ingredient') }}</th>
           </tr>
         </thead>
-        <tbody v-if="recipe && recipe.recipe_ingredients">
-          <tr v-for="ingredient in recipe.recipe_ingredients" :key="ingredient.ingredient">
+        <tbody v-if="recipe && recipe.ingredients">
+          <tr v-for="ingredient in recipe.ingredients" :key="ingredient.ingredient">
             <td class="amount">{{ ingredient.amount_numeric }}&nbsp;{{ ingredient.unit }}</td>
             <td class="ingredient">{{ ingredient.ingredient }}<span v-if="ingredient.ingredient_extra">, {{ ingredient.ingredient_extra }}</span></td>
           </tr>

@@ -7,6 +7,7 @@
 - model: claypot.RecipeIngredient
   fields:
     recipe: [pizzateig]
+    order: 1
     ingredient: [Mehl]
     amount_type: 2
     amount_numeric: 0.1486
@@ -14,6 +15,7 @@
 - model: claypot.RecipeIngredient
   fields:
     recipe: [pizzateig]
+    order: 2
     ingredient: [Wasser]
     amount_type: 2
     amount_numeric: 96.6
@@ -21,6 +23,7 @@
 - model: claypot.RecipeIngredient
   fields:
     recipe: [pizzateig]
+    order: 3
     ingredient: [Salz]
     amount_type: 2
     amount_numeric: 4.5
@@ -29,6 +32,7 @@
   fields:
     recipe: [pizzateig]
     ingredient: [Hefe]
+    order: 4
     amount_type: 2
     amount_numeric: 0.3
     unit: [Gramm]
@@ -41,6 +45,7 @@
 - model: claypot.RecipeIngredient
   fields:
     recipe: [kartoffelbrot]
+    order: 1
     ingredient: [Mehl]
     amount_type: 2
     amount_numeric: 1
@@ -48,6 +53,7 @@
 - model: claypot.RecipeIngredient
   fields:
     recipe: [kartoffelbrot]
+    order: 2
     ingredient: [Kartoffeln]
     amount_type: 2
     amount_numeric: 500
@@ -55,6 +61,7 @@
 - model: claypot.RecipeIngredient
   fields:
     recipe: [kartoffelbrot]
+    order: 3
     ingredient: [Wasser]
     amount_type: 2
     amount_numeric: 0.5
@@ -62,6 +69,7 @@
 - model: claypot.RecipeIngredient
   fields:
     recipe: [kartoffelbrot]
+    order: 4
     ingredient: [Joghurt]
     amount_type: 2
     amount_numeric: 200
@@ -69,6 +77,7 @@
 - model: claypot.RecipeIngredient
   fields:
     recipe: [kartoffelbrot]
+    order: 5
     ingredient: [Salz]
     amount_type: 2
     amount_numeric: 2
@@ -76,6 +85,7 @@
 - model: claypot.RecipeIngredient
   fields:
     recipe: [kartoffelbrot]
+    order: 6
     ingredient: [Hefe]
     amount_type: 2
     amount_numeric: 42

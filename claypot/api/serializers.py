@@ -1,10 +1,14 @@
 from django.contrib.auth import get_user_model
+from django.db import transaction
+from django.utils.decorators import method_decorator
 from rest_framework import serializers
 
 from claypot.models import (
     Ingredient,
     Recipe,
     RecipeIngredient,
+    RecipeIngredientGroup,
+    RecipeIngredientGroupIngredient,
     Unit,
 )
 
@@ -70,6 +74,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeIngredient
         fields = [
+            'order',
             'ingredient',
             'ingredient_extra',
             'optional',
@@ -78,6 +83,36 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
             'amount_approx',
             'unit',
         ]
+
+
+class RecipeIngredientGroupIngredientSerializer(serializers.ModelSerializer):
+    ingredient = IngredientField()
+    unit = UnitField()
+
+    class Meta:
+        model = RecipeIngredientGroupIngredient
+        fields = [
+            'order',
+            'ingredient',
+            'ingredient_extra',
+            'optional',
+            'amount_type',
+            'amount_numeric',
+            'amount_approx',
+            'unit',
+        ]
+
+
+class RecipeIngredientGroupSerializer(serializers.ModelSerializer):
+    ingredients = RecipeIngredientGroupIngredientSerializer(many=True)
+
+    class Meta:
+        model = RecipeIngredientGroup
+        fields = [
+            'order',
+            'title',
+        ]
+
 
 class UsernameField(serializers.RelatedField):
     def get_queryset(self):
@@ -89,7 +124,8 @@ class UsernameField(serializers.RelatedField):
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = UsernameField(required=False)
-    recipe_ingredients = RecipeIngredientSerializer(many=True)
+    ingredients = RecipeIngredientSerializer(many=True)
+    ingredient_groups = RecipeIngredientGroupSerializer(many=True)
     is_starred = serializers.SerializerMethodField()
     stars = serializers.SerializerMethodField()
 
@@ -103,19 +139,26 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance = Recipe(author=self.context['request'].user)
         return self.update(instance, validated_data)
 
+    @method_decorator(transaction.atomic)
     def update(self, instance, validated_data):
         instance.title = validated_data['title']
         instance.slug = instance.slug or instance.title.lower().replace(' ', '-')
         instance.instructions = validated_data['instructions']
         instance.save()
-        existing = set(ri.ingredient for ri in instance.recipe_ingredients.all())
-        new = set(ri['ingredient'] for ri in validated_data['recipe_ingredients'])
+        existing = set(ri.order for ri in instance.ingredients.all())
+        new = set(ri['order'] for ri in validated_data['ingredients'])
         remove = existing - new
-        instance.recipe_ingredients.filter(ingredient__in=remove).delete()
-        for ri in validated_data['recipe_ingredients']:
-            obj = instance.recipe_ingredients.filter(ingredient=ri['ingredient']).first()
+        instance.ingredients.filter(ingredient__in=remove).delete()
+        for ri in validated_data['ingredients']:
+            obj = instance.ingredients.filter(
+                order=ri['order'],
+            ).first()
             if obj is None:
-                obj = RecipeIngredient(recipe=instance, ingredient=ri['ingredient'])
+                obj = RecipeIngredient(
+                    recipe=instance,
+                    order=ri['order'],
+                )
+            obj.ingredient = ri['ingredient']
             obj.ingredient_extra = ri['ingredient_extra']
             obj.optional = ri['optional']
             obj.amount_type = ri['amount_type']
@@ -132,7 +175,8 @@ class RecipeSerializer(serializers.ModelSerializer):
             'title',
             'slug',
             'instructions',
-            'recipe_ingredients',
+            'ingredients',
+            'ingredient_groups',
             'author',
             'author_id',
             'published_on',
