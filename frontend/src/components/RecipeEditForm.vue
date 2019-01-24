@@ -264,10 +264,6 @@ export default {
     margin: 2px 2px 3px 0;
   }
 
-  .table {
-    overflow-x: auto;
-  }
-
   table {
     width: 100%;
     border-collapse: collapse;
