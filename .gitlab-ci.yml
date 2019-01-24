@@ -29,9 +29,9 @@ test:frontend:
     - docker
   before_script:
     - cd frontend/
-    - npm install -g eslint
+    - yarn install
   script:
-    - eslint ./
+    - node_modules/eslint/bin/eslint.js --ext .js,.vue src
   allow_failure: yes
 
 pages:
