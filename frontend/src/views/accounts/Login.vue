@@ -2,10 +2,12 @@
     <div>
         <div class="login">
             <form @submit.prevent="submit">
-                <input autofocus ref="username_input" type="text" v-model="credentials.username" :placeholder="$t('login.username')">
-                <input type="password" v-model="credentials.password" :placeholder="$t('login.password')">
-                <form-field-validation-error :errors="errors" />
+                <input autofocus ref="username_input" type="text" v-model="credentials.username" :placeholder="$t('login.username')" :class="{'form-error': !!errors.username.length}">
+                <form-field-validation-error :errors="errors.username" />
+                <input type="password" v-model="credentials.password" :placeholder="$t('login.password')"  :class="{'form-error': !!errors.password.length}">
+                <form-field-validation-error :errors="errors.password" />
 
+                <form-field-validation-error :errors="errors.other" />
                 <router-link tabindex="-1" :to="{ name: 'reset-password' }">{{ $t('login.forgot_password') }}</router-link>
                 <router-link tabindex="-1" :to="{ name: 'signup' }">{{ $t('login.signup') }}</router-link>
                 <button type="submit" class="btn btn-right">{{ $t('login.login') }}</button>
@@ -28,7 +30,11 @@ export default {
                 username: null,
                 password: null,
             },
-            errors: []
+            errors: {
+                username: [],
+                password: [],
+                other: []
+            }
         }
     },
     methods: {
@@ -36,11 +42,12 @@ export default {
             try {
                 await this.$store.dispatch('login', this.$data.credentials)
             } catch(err) {
-                /* Login errors are not specified for separate fields */
                 if (err instanceof InvalidRequestError) {
-                    this.errors = err.response.non_field_errors || []
+                    this.errors.username = err.response.username || []
+                    this.errors.password = err.response.password || []
+                    this.errors.other = err.response.non_field_errors || []
                 } else {
-                    this.errors = [err.message]
+                    this.errors.other = [err.message]
                 }
             }
         }

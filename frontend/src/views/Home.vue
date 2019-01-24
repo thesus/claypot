@@ -2,12 +2,8 @@
   <div v-if="!recipes">{{ $t('home.loading') }}</div>
   <article v-else-if="!!recipes">
     <h1>{{ $t('home.all_recipes') }}</h1>
-    <button v-if="isLoggedIn" @click="addRecipe">{{ $t('home.add') }}</button>
-    <ul v-if="!error && recipes.length > 0">
-      <li v-for="item in recipes" :key="item.id">
-        <recipe-link :recipe="item"/>
-      </li>
-    </ul>
+    <router-link v-if="isLoggedIn" :to="{name: 'recipe-add'}">{{ $t('home.add') }}</router-link>
+    <component :is="'recipe-table'" class="recipes" :recipes="recipes"></component>
     <div v-if="!error && recipes.length === 0">{{ $t('home.no_recipes') }}</div>
     <div v-if="error">
       <div>{{ error }}</div>
@@ -17,16 +13,18 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 
 import RecipeLink from '@/components/RecipeLink'
+import RecipeTableView from '@/components/RecipeTableView'
 
-import {api, endpoints} from '@/api'
+import { api, endpoints } from '@/api'
 
 export default {
   name: 'home',
   components: {
-    RecipeLink
+    RecipeLink,
+    'recipe-table': RecipeTableView
   },
   data () {
     return {
@@ -65,3 +63,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scopd>
+.recipes {
+  padding: 5px;
+}
+</style>

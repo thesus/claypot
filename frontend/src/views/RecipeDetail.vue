@@ -81,7 +81,7 @@ export default {
   },
   computed: {
     recipeId () {
-      return this.$route.params.id
+      return Number(this.$route.params.id)
     },
     author () {
       return this.recipe.author || this.$t('recipe_detail.unknown_user')
@@ -114,6 +114,7 @@ export default {
   border: solid 1px #ccc;
   display: inline;
   white-space: nowrap;
+  margin-right: 5px;
 
   .countainer, .button {
     padding: 0 5px 0 5px;

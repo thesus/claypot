@@ -11,7 +11,7 @@ import {api, endpoints} from '@/api'
 export default {
   name: 'recipe-star-input',
   props: {
-    recipeId: String,
+    recipeId: Number,
     value: Boolean,
   },
   data () {

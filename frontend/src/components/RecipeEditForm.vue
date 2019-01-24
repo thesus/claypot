@@ -6,7 +6,7 @@
     </header>
 
     <div class="ingredients">
-      <table>
+      <table v-show="recipe_dirty.recipe_ingredients.length > 0">
         <thead>
           <tr>
             <th>{{ $t('recipe_edit.amount') }}</th>
