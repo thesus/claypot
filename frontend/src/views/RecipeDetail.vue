@@ -15,20 +15,7 @@
     </div>
 
     <div class="header">
-      <table class="ingredients">
-        <thead>
-          <tr>
-            <th class="amount">{{ $t('recipe_detail.amount') }}</th>
-            <th class="ingredient">{{ $t('recipe_detail.ingredient') }}</th>
-          </tr>
-        </thead>
-        <tbody v-if="recipe && recipe.ingredients">
-          <tr v-for="ingredient in recipe.ingredients" :key="ingredient.ingredient">
-            <td class="amount">{{ ingredient.amount_numeric }}&nbsp;{{ ingredient.unit }}</td>
-            <td class="ingredient">{{ ingredient.ingredient }}<span v-if="ingredient.ingredient_extra">, {{ ingredient.ingredient_extra }}</span></td>
-          </tr>
-        </tbody>
-      </table>
+      <recipe-ingredient-table v-if="recipe" v-for="i in allIngredients" :ingredients="i.isGroup ? i.ingredients : i" :caption="i.isGroup ? i.title : ''" />
       <div class="images">
         image
       </div>
@@ -52,9 +39,11 @@ import {mapGetters} from 'vuex'
 import {api, endpoints} from '@/api'
 
 import RecipeStarInput from '@/components/RecipeStarInput'
+import RecipeIngredientTable from '@/components/RecipeIngredientTable'
 
 export default {
   components: {
+    RecipeIngredientTable,
     RecipeStarInput,
   },
   data () {
@@ -103,6 +92,37 @@ export default {
         ) ||
         this.isSuperUser
       )
+    },
+    allIngredients () {
+      if (!this.recipe || !this.recipe.ingredients || !this.recipe.ingredient_groups) {
+        return []
+      }
+      const sorted = [
+        ...this.recipe.ingredients,
+        ...this.recipe.ingredient_groups.map(i => {
+          const r = Object.assign({isGroup: true}, i)
+          r.ingredients = r.ingredients.sort(i => -i.order)
+          return r
+        }),
+      ].sort(i => -i.order)
+      // pack ungrouped ingredients into arrays
+      const result = []
+      let tmp = []
+      for (let i of sorted) {
+        if (!i.isGroup) {
+          tmp.push(i)
+        } else {
+          if (tmp.length > 0) {
+            result.push(tmp)
+            tmp = []
+          }
+          result.push(i)
+        }
+      }
+      if (tmp.length > 0) {
+        result.push(tmp)
+      }
+      return result
     },
     ...mapGetters([
       'isSuperUser',
