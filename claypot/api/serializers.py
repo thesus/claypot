@@ -120,6 +120,7 @@ class RecipeIngredientGroupSerializer(serializers.ModelSerializer):
         fields = [
             'order',
             'title',
+            'ingredients',
         ]
 
 
