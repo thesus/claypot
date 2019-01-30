@@ -19,6 +19,14 @@
 - model: claypot.Ingredient
   fields: { name: "Hefe" }
 - model: claypot.Ingredient
+  fields: { name: "Öl" }
+- model: claypot.Ingredient
+  fields: { name: "Zwiebeln" }
+- model: claypot.Ingredient
+  fields: { name: "Pfeffer" }
+- model: claypot.Ingredient
+  fields: { name: "Paprikapulver" }
+- model: claypot.Ingredient
   fields:
     name: Joghurt
     tags:
@@ -31,3 +39,19 @@
     name: Speck
     tags:
       - [Fleisch]
+- model: claypot.Ingredient
+  fields:
+    name: "Schinkenwürfel"
+    tags:
+      - [Fleisch]
+- model: claypot.Ingredient
+  fields:
+    name: "Schmand"
+    tags:
+      - [Laktose]
+      - [Milch]
+- model: claypot.Ingredient
+  fields:
+    name: "Emmentaler"
+    tags:
+      - [Milch]

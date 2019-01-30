@@ -190,8 +190,15 @@ class RecipeIngredient(AbstractIngredient):
         unique_together = ('recipe', 'order')
 
 
+class RecipeIngredientGroupManager(models.Manager):
+    def get_by_natural_key(self, recipe, order):
+        recipe = Recipe.objects.get_by_natural_key(*recipe)
+        return self.get(recipe=recipe, order=order)
+
 
 class RecipeIngredientGroup(models.Model):
+    objects = RecipeIngredientGroupManager()
+
     recipe = models.ForeignKey(
         'Recipe',
         on_delete=models.CASCADE,
@@ -199,6 +206,12 @@ class RecipeIngredientGroup(models.Model):
     )
     order = models.IntegerField()
     title = models.CharField(max_length=1000)
+
+    def natural_key(self):
+        return (
+            self.recipe.natural_key(),
+            self.order,
+        )
 
     class Meta:
         verbose_name = ugettext_lazy('Recipe ingredient group')
@@ -213,7 +226,7 @@ class RecipeIngredientGroupIngredientManager(models.Manager):
 
 
 class RecipeIngredientGroupIngredient(AbstractIngredient):
-    objects = RecipeIngredientGroupIngredientManager
+    objects = RecipeIngredientGroupIngredientManager()
 
     group = models.ForeignKey(
         'RecipeIngredientGroup',

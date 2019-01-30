@@ -128,3 +128,133 @@
     amount_type: 2
     amount_numeric: 42
     unit: [Gramm]
+- model: claypot.Recipe
+  fields:
+    title: Flammkuchen
+    slug: flammkuchen
+    published_on: "2019-01-30T19:02:00+01:00"
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [flammkuchen]
+    order: 1
+    ingredient: [Emmentaler]
+    amount_type: 2
+    amount_numeric: 200
+    unit: [Gramm]
+- { model: claypot.RecipeIngredientGroup, fields: { recipe: [flammkuchen], order: 2, title: "Teig" } }
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 2]
+    order: 1
+    ingredient: [Mehl]
+    amount_type: 2
+    amount_numeric: 450
+    unit: [Gramm]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 2]
+    order: 2
+    ingredient: [Hefe]
+    ingredient_extra: frische
+    amount_type: 2
+    amount_numeric: 21
+    unit: [Gramm]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 2]
+    order: 3
+    ingredient: [Wasser]
+    ingredient_extra: lauwarm
+    amount_type: 2
+    amount_numeric: 200
+    unit: [Gramm]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 2]
+    order: 4
+    ingredient: [Salz]
+    amount_type: 2
+    amount_numeric: 1
+    unit: [Teelöffel]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 2]
+    order: 5
+    ingredient: [Öl]
+    amount_type: 2
+    amount_numeric: 30
+    unit: [Gramm]
+- { model: claypot.RecipeIngredientGroup, fields: { recipe: [flammkuchen], order: 3, title: "Belag" } }
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 3]
+    order: 1
+    ingredient: [Zwiebeln]
+    amount_type: 2
+    amount_numeric: 200
+    unit: [Gramm]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 3]
+    order: 2
+    ingredient: [Schinkenwürfel]
+    amount_type: 2
+    amount_numeric: 150
+    unit: [Gramm]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 3]
+    order: 3
+    ingredient: [Schmand]
+    amount_type: 2
+    amount_numeric: 200
+    unit: [Gramm]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 3]
+    order: 4
+    ingredient: [Salz]
+    amount_type: 2
+    amount_numeric: 0.5
+    unit: [Teelöffel]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 3]
+    order: 5
+    ingredient: [Pfeffer]
+    amount_type: 2
+    amount_numeric: 0.125
+    unit: [Teelöffel]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 3]
+    order: 6
+    ingredient: [Paprikapulver]
+    amount_type: 2
+    amount_numeric: 0.125
+    unit: [Teelöffel]
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [flammkuchen]
+    order: 1
+    text: Emmentaler reiben.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [flammkuchen]
+    order: 2
+    text: Alle Teigzutaten vermengen, Teig kneten, auf einem Blech ausrollen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [flammkuchen]
+    order: 3
+    text: Zwiebeln fein würfeln, mit den restlichen Belagzutaten vermengen, auf dem Teig verteilen, mit Käse bestreuen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [flammkuchen]
+    order: 4
+    text: Teig mindestens 20 Minuten gehen lassen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [flammkuchen]
+    order: 5
+    text: Im vorgeheizten Backofen bei 200 °C für 25 bis 30 Miuten backen.
