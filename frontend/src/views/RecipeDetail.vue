@@ -15,7 +15,7 @@
     </div>
 
     <div class="header">
-      <recipe-ingredient-table v-if="recipe" v-for="i in allIngredients" :ingredients="i.isGroup ? i.ingredients : i" :caption="i.isGroup ? i.title : ''" />
+      <recipe-ingredient-table v-if="recipe" v-for="i, c in allIngredients" :ingredients="i.isGroup ? i.ingredients : i.ingredients" :caption="i.isGroup ? i.title : ''" :key="c + 1" />
       <div class="images">
         image
       </div>
@@ -37,6 +37,7 @@
 <script>
 import {mapGetters} from 'vuex'
 import {api, endpoints} from '@/api'
+import {sortedUnifiedIngredients} from '@/utils'
 
 import RecipeStarInput from '@/components/RecipeStarInput'
 import RecipeIngredientTable from '@/components/RecipeIngredientTable'
@@ -94,35 +95,7 @@ export default {
       )
     },
     allIngredients () {
-      if (!this.recipe || !this.recipe.ingredients || !this.recipe.ingredient_groups) {
-        return []
-      }
-      const sorted = [
-        ...this.recipe.ingredients,
-        ...this.recipe.ingredient_groups.map(i => {
-          const r = Object.assign({isGroup: true}, i)
-          r.ingredients = r.ingredients.sort(i => -i.order)
-          return r
-        }),
-      ].sort(i => -i.order)
-      // pack ungrouped ingredients into arrays
-      const result = []
-      let tmp = []
-      for (let i of sorted) {
-        if (!i.isGroup) {
-          tmp.push(i)
-        } else {
-          if (tmp.length > 0) {
-            result.push(tmp)
-            tmp = []
-          }
-          result.push(i)
-        }
-      }
-      if (tmp.length > 0) {
-        result.push(tmp)
-      }
-      return result
+      return sortedUnifiedIngredients(this.recipe)
     },
     ...mapGetters([
       'isSuperUser',

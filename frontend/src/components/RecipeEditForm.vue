@@ -7,54 +7,21 @@
 
     <div class="ingredients">
       <div class="table">
-        <table v-show="recipe_dirty.ingredients.length > 0">
-          <thead>
-            <tr>
-              <th>{{ $t('recipe_edit.amount') }}</th>
-              <th>{{ $t('recipe_edit.unit') }}</th>
-              <th>{{ $t('recipe_edit.ingredient') }}</th>
-              <th>{{ $t('recipe_edit.ingredient_extra') }}</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(ingredient, i) in recipe_dirty.ingredients" :key="i" ref="ingredients">
-              <td>
-                <div class="input">
-                  <input v-model="ingredient.amount_numeric" :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length}">
-                </div>
-                <form-field-validation-error :errors="recipeIngredientError(i).amount_numeric" />
-              </td>
-              <td>
-                <div class="input">
-                  <input v-model="ingredient.unit" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).unit.length}">
-                </div>
-                <form-field-validation-error :errors="recipeIngredientError(i).unit" />
-              </td>
-              <td>
-                <div class="input">
-                  <ingredient-input v-model="ingredient.ingredient" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient.length}" />
-                </div>
-                <form-field-validation-error :errors="recipeIngredientError(i).ingredient" />
-              </td>
-              <td>
-                <div class="input">
-                  <input v-model="ingredient.ingredient_extra" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient_extra.length}">
-                </div>
-                <form-field-validation-error :errors="recipeIngredientError(i).ingredient_extra" />
-              </td>
-              <td><button tabindex="-1" class="btn btn-right remove" :disabled="saving" @click="recipe_dirty.ingredients.splice(i, 1)">{{ $t('recipe_edit.remove') }}</button></td>
-            </tr>
-          </tbody>
-        </table>
+        <recipe-edit-ingredient-table
+          v-for="(ingredientBatch,i) in recipe_dirty.ingredients"
+          v-model="recipe_dirty.ingredients[i]"
+          :recipeIngredientError="recipeIngredientError"
+          :saving="saving"
+          @remove="recipe_dirty.ingredients.splice(i, 1)"
+        />
       </div>
-      <button class="btn btn-right submit" @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
+      <button class="btn btn-right submit" @click.prevent="addIngredientGroup" :disabled="saving">{{ $t('recipe_edit.add_group') }}</button>
     </div>
 
     <ol>
       <li v-for="(instruction, i) in recipe_dirty.instructions" ref="instructions">
         <div><textarea class="small" :placeholder="$t('recipes.instructions')" v-model="instruction.text" :disabled="saving"></textarea></div>
-        <form-field-validation-error :errors="recipeInstructionError(i).text" />
+        <form-field-validation-error :errors="recipeInstructionError(i).text" :saving="saving" />
         <button tabindex="-1" class="btn btn-right remove" :disabled="saving" @click="recipe_dirty.instructions.splice(i, 1)">{{ $t('recipe_edit.remove') }}</button>
       </li>
     </ol>
@@ -79,7 +46,9 @@
 
 <script>
 import {api, endpoints} from '@/api'
+import {sortedUnifiedIngredients} from '@/utils'
 import FormFieldValidationError from '@/components/FormFieldValidationError'
+import RecipeEditIngredientTable from '@/components/RecipeEditIngredientTable'
 import IngredientInput from '@/components/IngredientInput'
 
 const amount_types = {
@@ -93,14 +62,20 @@ export default {
   components: {
     FormFieldValidationError,
     IngredientInput,
+    RecipeEditIngredientTable,
   },
   props: {
-    recipe: Object,
+    recipe: {
+      type: Object,
+      default: function () {
+        return {}
+      },
+    },
   },
   data () {
     return {
       recipe_dirty: {
-        ingredients: [this.createEmptyIngredient()],
+        ingredients: [],
         instructions: [this.createEmptyInstruction()],
       },
       saving: false,
@@ -141,27 +116,14 @@ export default {
     },
   },
   methods: {
-    createEmptyIngredient () {
-      return {ingredient: '', ingredient_extra: '', amount_numeric: 0, unit: ''}
+    addIngredientGroup () {
+      this.recipe_dirty.ingredients.push(this.createEmptyIngredientGroup())
+    },
+    createEmptyIngredientGroup () {
+      return {isGroup: true, title: '', ingredients: []}
     },
     createEmptyInstruction () {
       return {text: ''}
-    },
-    addIngredient () {
-      this.recipe_dirty.ingredients.push(this.createEmptyIngredient())
-
-      const pos = this.recipe_dirty.ingredients.length - 1
-      /* Select the first field in the input after it was created */
-      /* And yeah. This is pretty dirty. */
-      this.$nextTick(() => { this.$refs.ingredients[pos].children[0].children[0].children[0].focus() })
-    },
-    addInstruction () {
-      this.recipe_dirty.instructions.push(this.createEmptyInstruction())
-
-      const pos = this.recipe_dirty.instructions.length - 1
-      /* Select the first field in the input after it was created */
-      /* And yeah. This is pretty dirty. */
-      this.$nextTick(() => { this.$refs.instructions[pos].children[0].children[0].focus() })
     },
     async save () {
       this.saving = true
@@ -169,7 +131,7 @@ export default {
         // Step 1: Check for new ingredients
         {
           const r = await api(endpoints.check_new_ingredients(), {
-            ingredients: this.recipe_dirty.ingredients.map(i => i.ingredient),
+            ingredients: [].concat(...this.recipe_dirty.ingredients.map(group => group.ingredients.map(i => i.ingredient))),
           })
           if (r.ok) {
             const newIngredients = (await r.json()).ingredients
@@ -208,23 +170,43 @@ export default {
           }
         }
 
-        const ri = this.recipe_dirty.ingredients.map((i, order) => {
-          return {
-            order: order,
-            ingredient: i.ingredient,
-            ingredient_extra: i.ingredient_extra,
-            optional: false,
-            amount_type: amount_types.numeric,
-            amount_numeric: Number(i.amount_numeric),
-            amount_approx: '',
-            unit: i.unit,
+        const ri = []
+        let order = 1
+        const rig = []
+        for (let groupLike of this.recipe_dirty.ingredients) {
+          const target = groupLike.isGroup ? [] : ri
+          let innerOrder = 1
+          for (let i of groupLike.ingredients) {
+            target.push({
+              order: groupLike.isGroup ? innerOrder : order,
+              ingredient: i.ingredient,
+              ingredient_extra: i.ingredient_extra,
+              optional: false,
+              amount_type: amount_types.numeric,
+              amount_numeric: Number(i.amount_numeric),
+              amount_approx: '',
+              unit: i.unit,
+            })
+            if (!groupLike.isGroup) {
+              order++
+            } else {
+              innerOrder++
+            }
           }
-        })
+          if (groupLike.isGroup) {
+            rig.push({
+              order: order,
+              title: groupLike.title,
+              ingredients: target,
+            })
+            order++
+          }
+        }
         const d = {
           title: this.recipe_dirty.title,
           instructions: this.recipe_dirty.instructions.map((instruction, i) => { return {order: i, text: instruction.text}}),
           ingredients: ri,
-          ingredient_groups: [],
+          ingredient_groups: rig,
         }
         const r = await api(endpoints.post_recipe(this.recipe.id), d, {method: this.recipe.id ? 'put' : 'post'})
         if (r.ok) {
@@ -254,23 +236,14 @@ export default {
         title: r.title,
         ingredients: [],
         instructions: r.instructions,
-      }
-      for (let ri of r.ingredients) {
-        this.recipe_dirty.ingredients.push({
-          amount_numeric: ri.amount_numeric,
-          amount_approx: ri.amount_approx,
-          amount_type: ri.amount_type,
-          ingredient: ri.ingredient,
-          ingredient_extra: ri.ingredient_extra,
-          unit: ri.unit,
-        })
+        ingredients: sortedUnifiedIngredients(r),
       }
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import '@/modules/inputs.scss';
 @import '@/modules/variables.scss';
 
