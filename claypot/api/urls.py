@@ -15,6 +15,7 @@ router = DefaultRouter()
 router.register('ingredients', IngredientViewSet)
 router.register('recipes', RecipeViewSet)
 
+app_name = 'api'
 urlpatterns = [
     path('csrf', csrf_token_view),
     path('', include(router.urls)),

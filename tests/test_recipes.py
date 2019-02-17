@@ -1,3 +1,4 @@
+from django.urls import reverse
 import pytest
 
 
@@ -10,3 +11,19 @@ def test_tagging(
     tag1 = ingredient_tag_factory()
     recipe_ingredient.ingredient.tags.add(tag1)
     assert recipe.tags() == set((tag1,))
+
+
+@pytest.mark.django_db
+def test_recipe_list(api_client, recipe_factory, user):
+    recipe = recipe_factory(author=user)
+    api_client.force_login(user)
+    recipe_details = api_client.get(reverse('api:recipe-detail', kwargs={'pk': recipe.pk}))
+    assert recipe_details.data['is_starred'] is False
+    recipe_star = api_client.post(reverse('api:recipe-star', kwargs={'pk': recipe.pk}))
+    assert recipe_star.data is True
+    recipe_details = api_client.get(reverse('api:recipe-detail', kwargs={'pk': recipe.pk}))
+    assert recipe_details.data['is_starred'] is True
+    recipe_unstar = api_client.post(reverse('api:recipe-unstar', kwargs={'pk': recipe.pk}))
+    assert recipe_unstar.data is False
+    recipe_details = api_client.get(reverse('api:recipe-detail', kwargs={'pk': recipe.pk}))
+    assert recipe_details.data['is_starred'] is False

@@ -1,4 +1,5 @@
 from django.conf import settings
+from rest_framework.test import APIClient
 import factory
 import pytest
 import pytest_factoryboy
@@ -72,3 +73,8 @@ class IngredientTagFactory(factory.DjangoModelFactory):
     class Meta:
         model = 'claypot.IngredientTag'
         django_get_or_create = ('tag',)
+
+
+@pytest.fixture
+def api_client():
+    return APIClient()
