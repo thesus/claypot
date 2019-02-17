@@ -97,7 +97,7 @@ export default {
     },
     recipeIngredientError () {
       return i => {
-        const subsetOfErrors = this.sortedUnifiedErrors.ingredients[i].ingredients
+        const subsetOfErrors = (this.sortedUnifiedErrors.ingredients[i] || {}).ingredients
         return j => {
           const e = subsetOfErrors || []
           const r = e.length > j ? e[j] : {}
