@@ -26,7 +26,7 @@
       </li>
     </ol>
     <div>
-      <button class="btn btn-right submit" @click.prevent="addInstruction" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
+      <button class="btn btn-right submit" @click.prevent="addInstruction" :disabled="saving">{{ $t('recipe_edit.add_instruction') }}</button>
     </div>
 
     <div><button class="btn btn-right btn-primary" @click.prevent="save" :disabled="saving">{{ $t('recipe_edit.save') }}</button></div>
@@ -180,6 +180,9 @@ export default {
     },
     createEmptyInstruction () {
       return {text: ''}
+    },
+    addInstruction () {
+      this.recipe_dirty.instructions.push(this.createEmptyInstruction())
     },
     async save () {
       this.saving = true
