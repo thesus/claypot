@@ -1,5 +1,9 @@
 :80 {
     root /var/www/html
+    prometheus {
+        use_caddy_addr
+        path /caddy-metrics
+    }
 
     proxy /accounts/ claypot:80 {
         transparent
