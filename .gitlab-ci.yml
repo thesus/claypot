@@ -57,3 +57,17 @@ pages:
     paths:
       - public
   when: always
+
+build:
+  stage: build
+  tags:
+    - docker-cli
+  only:
+    - tags
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+  after_script:
+    - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
