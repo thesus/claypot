@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  caddy:
+    image: dev.cryptec.at:5000/root/claypot/caddy:master
+    build:
+      context: .
+      dockerfile: compose/caddy/Dockerfile
+    ports:
+      - "80:80"
+
+  claypot:
+    image: dev.cryptec.at:5000/root/claypot:master
+    build:
+      context: .
+      dockerfile: compose/claypot/Dockerfile
+    environment: &env
+      DJANGO_SECRET_KEY: also-secret
+      DJANGO_ALLOWED_HOSTS: "*"
+      DATABASE_URL: postgresql://claypot@secretdb/claypot
+      POSTGRES_USER: claypot
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: claypot
+
+  db:
+    image: postgres:alpine
+    environment:
+      <<: *env
+    volumes:
+      - db:/var/lib/postgresql/data
+
+volumes:
+  db: {}
