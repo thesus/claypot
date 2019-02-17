@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: compose/caddy/Dockerfile
+      args:
+        plugins: git,filebrowser,cors,realip,expires,cache,prometheus
     ports:
       - "80:80"
 
