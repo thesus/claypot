@@ -1,18 +1,31 @@
 <template>
   <div v-if="value">
-    <div class="button starred" @click="doUnstar" :disabled="saving">{{ $t('recipes.unstar') }}</div>
+    <div
+      :disabled="saving"
+      class="button starred"
+      @click="doUnstar">{{ $t('recipes.unstar') }}</div>
   </div>
-  <div v-else class="button" @click="doStar" :disabled="saving">{{ $t('recipes.star') }}</div>
+  <div
+    v-else
+    :disabled="saving"
+    class="button"
+    @click="doStar">{{ $t('recipes.star') }}</div>
 </template>
 
 <script>
 import {api, endpoints} from '@/api'
 
 export default {
-  name: 'recipe-star-input',
+  name: 'RecipeStarInput',
   props: {
-    recipeId: Number,
-    value: Boolean,
+    recipeId: {
+      type: Number,
+      required: true,
+    },
+    value: {
+      type: Boolean,
+      default: false,
+    }
   },
   data () {
     return {

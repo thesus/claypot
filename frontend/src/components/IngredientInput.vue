@@ -1,6 +1,8 @@
 <template>
   <div class="wrapper">
-    <div class="suggestions"  v-if="showSuggestions && suggestions.length">
+    <div
+      v-if="showSuggestions && suggestions.length"
+      class="suggestions">
       <ul>
         <li
           v-for="(suggestion, i) in suggestions"
@@ -9,19 +11,19 @@
           @mouseover="highlightThis(i)"
           @mouseout="highlighted = false"
           @mousedown="applySuggestion(i)"
-          >{{ suggestion }}</li>
+        >{{ suggestion }}</li>
       </ul>
     </div>
     <input
-      bubbles="true"
       v-model="dirtyValue"
+      bubbles="true"
       @focus="onFocus()"
       @blur="onBlur()"
       @keyup.down="moveHighlightDown()"
       @keyup.up="moveHighlightUp()"
       @keyup.enter="applySuggestion()"
       @input="updateSuggestions"
-    />
+    >
   </div>
 </template>
 
@@ -29,9 +31,12 @@
 import {api, endpoints} from '@/api'
 
 export default {
-  name: 'ingredient-input',
+  name: 'IngredientInput',
   props: {
-    value: String,
+    value: {
+      type: String,
+      default: '',
+    },
   },
   data () {
     return {
@@ -41,9 +46,6 @@ export default {
       highlighted: false,
     }
   },
-  mounted () {
-    this.dirtyValue = this.value
-  },
   watch: {
     value (v) {
       this.dirtyValue = v
@@ -51,6 +53,9 @@ export default {
     dirtyValue (v) {
       this.$emit('input', v)
     },
+  },
+  mounted () {
+    this.dirtyValue = this.value
   },
   methods: {
     async updateSuggestions () {

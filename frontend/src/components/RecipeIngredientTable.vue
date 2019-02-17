@@ -8,7 +8,9 @@
       </tr>
     </thead>
     <tbody v-if="ingredients">
-      <tr v-for="ingredient in ingredients" :key="ingredient.ingredient">
+      <tr
+        v-for="ingredient in ingredients"
+        :key="ingredient.ingredient">
         <td class="amount">{{ ingredient.amount_numeric }}&nbsp;{{ ingredient.unit }}</td>
         <td class="ingredient">{{ ingredient.ingredient }}<span v-if="ingredient.ingredient_extra">, {{ ingredient.ingredient_extra }}</span></td>
       </tr>
@@ -18,10 +20,16 @@
 
 <script>
 export default {
-  name: 'recipe-ingredient-table',
+  name: 'RecipeIngredientTable',
   props: {
-    caption: String,
-    ingredients: Array,
+    caption: {
+      type: String,
+      default: '',
+    },
+    ingredients: {
+      type: Array,
+      default: () => [],
+    },
   },
 }
 </script>

@@ -1,7 +1,10 @@
 <template>
   <div v-if="loading">{{ $t('recipe_edit.loading') }}</div>
   <div v-else-if="error">{{ $t('recipe_edit.loading_error') }}</div>
-  <recipe-edit-form v-else-if="recipe" :recipe="recipe" @input="onUpdate" />
+  <RecipeEditForm
+    v-else-if="recipe"
+    :recipe="recipe"
+    @input="onUpdate" />
   <div v-else>{{ $t('recipe_edit.no_data') }}</div>
 </template>
 
@@ -20,13 +23,13 @@ export default {
       recipe: {},
     }
   },
-  mounted () {
-    this.update()
-  },
   computed: {
     recipeId () {
       return this.$route.params.id
     },
+  },
+  mounted () {
+    this.update()
   },
   methods: {
     async update () {

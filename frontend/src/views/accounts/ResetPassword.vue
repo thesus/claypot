@@ -1,15 +1,22 @@
 <template>
-    <div>
-        <div class="reset">
-            <form @submit.prevent="submit">
-                <h5>{{ $t('reset_password.heading') }}</h5>
-                <input required type="email" v-model="email" :placeholder="$t('reset_password.email')">
-                <form-field-validation-error :errors="errors" />
-                <p v-if="finished">{{ $t('reset_password.confirm') }}</p>
-                <button :disabled="finished" type="submit" class="btn btn-right">{{ $t('reset_password.reset') }}</button>
-            </form>
-        </div>
+  <div>
+    <div class="reset">
+      <form @submit.prevent="submit">
+        <h5>{{ $t('reset_password.heading') }}</h5>
+        <input
+          v-model="email"
+          :placeholder="$t('reset_password.email')"
+          required
+          type="email">
+        <FormFieldValidationError :errors="errors" />
+        <p v-if="finished">{{ $t('reset_password.confirm') }}</p>
+        <button
+          :disabled="finished"
+          type="submit"
+          class="btn btn-right">{{ $t('reset_password.reset') }}</button>
+      </form>
     </div>
+  </div>
 </template>
 
 <script>
@@ -17,34 +24,34 @@ import { api, endpoints } from '@/api'
 import FormFieldValidationError from '@/components/FormFieldValidationError'
 
 export default {
-    components: {
-        FormFieldValidationError
-    },
-    data: () => {
-        return {
-            finished: false,
-            email: null,
-            errors: []
-        }
-    },
-    methods: {
-        async submit () {
-            try {
-                await api(
-                    endpoints.password_reset(),
-                    {
-                        email: this.email
-                    }
-                )
-                
-                /* this.$router.push({name: 'home'}) */
-            } catch (err) {
-                this.errors = [err.message]
-            } finally {
-                this.finished = !this.finished
-            }
-        }
+  components: {
+    FormFieldValidationError,
+  },
+  data: () => {
+    return {
+      finished: false,
+      email: null,
+      errors: [],
     }
+  },
+  methods: {
+    async submit () {
+      try {
+        await api(
+          endpoints.password_reset(),
+          {
+            email: this.email,
+          }
+        )
+
+        /* this.$router.push({name: 'home'}) */
+      } catch (err) {
+        this.errors = [err.message]
+      } finally {
+        this.finished = !this.finished
+      }
+    },
+  },
 }
 </script>
 

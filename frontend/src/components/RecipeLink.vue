@@ -1,12 +1,15 @@
 <template>
-  <router-link :to=to>{{ title }}</router-link>
+  <router-link :to="to">{{ title }}</router-link>
 </template>
 
 <script>
 export default {
-  name: 'recipe-link',
+  name: 'RecipeLink',
   props: {
-    recipe: Object
+    recipe: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   computed: {
     title () {

@@ -1,10 +1,24 @@
 <template>
-    <div class="nav">
-        <router-link :to="{ name: 'home' }">{{ $t('navbar.home') }}</router-link>
-        <router-link v-if="isLoggedIn" :to="{ name: 'logout' }">{{ $t('navbar.logout') }}</router-link>
-        <router-link v-if="!isLoggedIn" :to="{ name: 'login' }">{{ $t('navbar.login') }}</router-link>
-        <router-link v-if="!isLoggedIn" :to="{ name: 'signup' }">{{ $t('navbar.signup') }}</router-link>
-    </div>
+  <div class="nav">
+    <router-link :to="{ name: 'home' }">
+      {{ $t('navbar.home') }}
+    </router-link>
+    <router-link
+      v-if="isLoggedIn"
+      :to="{ name: 'logout' }">
+      {{ $t('navbar.logout') }}
+    </router-link>
+    <router-link
+      v-if="!isLoggedIn"
+      :to="{ name: 'login' }">
+      {{ $t('navbar.login') }}
+    </router-link>
+    <router-link
+      v-if="!isLoggedIn"
+      :to="{ name: 'signup' }">
+      {{ $t('navbar.signup') }}
+    </router-link>
+  </div>
 </template>
 
 <script>

@@ -1,5 +1,7 @@
 <template>
-  <recipe-edit-form :recipe="recipe" @input="onUpdate" />
+  <RecipeEditForm
+    :recipe="recipe"
+    @input="onUpdate" />
 </template>
 
 <script>

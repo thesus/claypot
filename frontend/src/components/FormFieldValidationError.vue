@@ -2,7 +2,9 @@
   <div v-if="errors">
     <p v-if="errors.length === 1">{{ errors[0] }}</p>
     <ul v-else>
-      <li v-for="(err, i) in errors" :key="i">
+      <li
+        v-for="(err, i) in errors"
+        :key="i">
         <p>{{ err }}</p>
       </li>
     </ul>
@@ -11,9 +13,12 @@
 
 <script>
 export default {
-  name: 'form-field-validation-error',
+  name: 'FormFieldValidationError',
   props: {
-    errors: Array
+    errors: {
+      type: Array,
+      default: () => [],
+    },
   }
 }
 </script>

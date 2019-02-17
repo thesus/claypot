@@ -9,26 +9,42 @@
     <div class="functions">
       <div class="stars">
         <div class="countainer">{{ $tc('recipes.stars', recipe.stars, {count: recipe.stars}) }}</div>
-        <recipe-star-input class="button" v-if="isLoggedIn" :recipeId="recipeId" v-model="recipe.is_starred" />
+        <RecipeStarInput
+          v-if="isLoggedIn"
+          :recipe-id="recipeId"
+          v-model="recipe.is_starred"
+          class="button" />
       </div>
-      <router-link v-if="canEdit" :to="{name: 'recipe-edit', param: {id: recipeId}}">{{ $t('recipe_detail.edit') }}</router-link>
+      <router-link
+        v-if="canEdit"
+        :to="{name: 'recipe-edit', param: {id: recipeId}}">{{ $t('recipe_detail.edit') }}</router-link>
     </div>
 
-    <div class="header">
-      <recipe-ingredient-table v-if="recipe" v-for="i, c in allIngredients" :ingredients="i.isGroup ? i.ingredients : i.ingredients" :caption="i.isGroup ? i.title : ''" :key="c + 1" />
+    <div
+      v-if="recipe"
+      class="header">
+      <RecipeIngredientTable
+        v-for="(i, c) in allIngredients"
+        :ingredients="i.isGroup ? i.ingredients : i.ingredients"
+        :caption="i.isGroup ? i.title : ''"
+        :key="c + 1" />
       <div class="images">
         image
       </div>
     </div>
 
-    <ol class="instructions" v-if="recipe">
-      <li v-for="instruction in recipe.instructions">
+    <ol
+      v-if="recipe"
+      class="instructions">
+      <li
+        v-for="instruction in recipe.instructions"
+        :key="instruction.order">
         <p>{{ instruction.text }}</p>
       </li>
     </ol>
 
     <footer>
-      <p>{{ $t('recipe_detail.posted_by',  {user: author}) }}</p>
+      <p>{{ $t('recipe_detail.posted_by', {user: author}) }}</p>
     </footer>
   </article>
   <div v-else>{{ $t('recipe_detail.no_data') }}</div>
@@ -52,29 +68,6 @@ export default {
       loading: false,
       error: false,
       recipe: {
-      }
-    }
-  },
-  mounted () {
-    this.update()
-  },
-  methods: {
-    async update () {
-      if (!this.recipeId) {
-        return
-      }
-      try {
-        this.loading = true
-        const r = await api(endpoints.fetch_recipe(this.recipeId))
-        this.loading = false
-        if (r.ok) {
-          this.recipe = await r.json()
-        } else {
-          throw new Error("Display some kind of error")
-        }
-      } catch (err) {
-        // TODO: Display some kind of error
-        this.error = true
       }
     }
   },
@@ -107,7 +100,30 @@ export default {
     recipeId() {
       this.update()
     }
-  }
+  },
+  mounted () {
+    this.update()
+  },
+  methods: {
+    async update () {
+      if (!this.recipeId) {
+        return
+      }
+      try {
+        this.loading = true
+        const r = await api(endpoints.fetch_recipe(this.recipeId))
+        this.loading = false
+        if (r.ok) {
+          this.recipe = await r.json()
+        } else {
+          throw new Error("Display some kind of error")
+        }
+      } catch (err) {
+        // TODO: Display some kind of error
+        this.error = true
+      }
+    }
+  },
 }
 </script>
 

@@ -1,6 +1,11 @@
 <template>
-  <div class="table" :class="{group: dirty.isGroup}">
-    <input v-if="dirty.isGroup" v-model="dirty.title" placeholder="Ingredient group title"/>
+  <div
+    :class="{group: dirty.isGroup}"
+    class="table">
+    <input
+      v-if="dirty.isGroup"
+      v-model="dirty.title"
+      placeholder="Ingredient group title">
     <table v-show="dirty.ingredients.length > 0">
       <thead>
         <tr>
@@ -12,37 +17,61 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(ingredient, i) in dirty.ingredients" :key="i" ref="ingredientsNode">
+        <tr
+          v-for="(ingredient, i) in dirty.ingredients"
+          ref="ingredientsNode"
+          :key="i">
           <td>
             <div class="input">
-              <input v-model="ingredient.amount_numeric" :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length}">
+              <input
+                v-model="ingredient.amount_numeric"
+                :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length}">
             </div>
-            <form-field-validation-error :errors="recipeIngredientError(i).amount_numeric" />
+            <FormFieldValidationError :errors="recipeIngredientError(i).amount_numeric" />
           </td>
           <td>
             <div class="input">
-              <input v-model="ingredient.unit" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).unit.length}">
+              <input
+                v-model="ingredient.unit"
+                :disabled="saving"
+                :class="{'form-error': !!recipeIngredientError(i).unit.length}">
             </div>
-            <form-field-validation-error :errors="recipeIngredientError(i).unit" />
+            <FormFieldValidationError :errors="recipeIngredientError(i).unit" />
           </td>
           <td>
             <div class="input">
-              <ingredient-input v-model="ingredient.ingredient" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient.length}" />
+              <IngredientInput
+                v-model="ingredient.ingredient"
+                :disabled="saving"
+                :class="{'form-error': !!recipeIngredientError(i).ingredient.length}" />
             </div>
-            <form-field-validation-error :errors="recipeIngredientError(i).ingredient" />
+            <FormFieldValidationError :errors="recipeIngredientError(i).ingredient" />
           </td>
           <td>
             <div class="input">
-              <input v-model="ingredient.ingredient_extra" :disabled="saving" :class="{'form-error': !!recipeIngredientError(i).ingredient_extra.length}">
+              <input
+                v-model="ingredient.ingredient_extra"
+                :disabled="saving"
+                :class="{'form-error': !!recipeIngredientError(i).ingredient_extra.length}">
             </div>
-            <form-field-validation-error :errors="recipeIngredientError(i).ingredient_extra" />
+            <FormFieldValidationError :errors="recipeIngredientError(i).ingredient_extra" />
           </td>
-          <td><button tabindex="-1" class="btn btn-right remove" :disabled="saving" @click="dirty.ingredients.splice(i, 1)">{{ $t('recipe_edit.remove') }}</button></td>
+          <td><button
+            :disabled="saving"
+            tabindex="-1"
+            class="btn btn-right remove"
+            @click="dirty.ingredients.splice(i, 1)">{{ $t('recipe_edit.remove') }}</button></td>
         </tr>
       </tbody>
     </table>
-    <button class="btn btn-right submit" @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add_ingredient') }}</button>
-    <button class="btn btn-right submit" @click.prevent="removeGroup" :disabled="saving">{{ $t('recipe_edit.remove_group') }}</button>
+    <button
+      :disabled="saving"
+      class="btn btn-right submit"
+      @click.prevent="addIngredient">{{ $t('recipe_edit.add_ingredient') }}</button>
+    <button
+      :disabled="saving"
+      class="btn btn-right submit"
+      @click.prevent="removeGroup">{{ $t('recipe_edit.remove_group') }}</button>
   </div>
 </template>
 
@@ -51,7 +80,7 @@ import IngredientInput from '@/components/IngredientInput'
 import FormFieldValidationError from '@/components/FormFieldValidationError'
 
 export default {
-  name: 'recipe-edit-ingredient-table',
+  name: 'RecipeEditIngredientTable',
   components: {
     FormFieldValidationError,
     IngredientInput,

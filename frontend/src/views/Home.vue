@@ -2,8 +2,13 @@
   <div v-if="!recipes">{{ $t('home.loading') }}</div>
   <article v-else-if="!!recipes">
     <h1>{{ $t('home.all_recipes') }}</h1>
-    <router-link v-if="isLoggedIn" :to="{name: 'recipe-add'}">{{ $t('home.add') }}</router-link>
-    <component :is="'recipe-table'" class="recipes" :recipes="recipes"></component>
+    <router-link
+      v-if="isLoggedIn"
+      :to="{name: 'recipe-add'}">{{ $t('home.add') }}</router-link>
+    <component
+      :is="'RecipeTableView'"
+      :recipes="recipes"
+      class="recipes"/>
     <div v-if="!error && recipes.length === 0">{{ $t('home.no_recipes') }}</div>
     <div v-if="error">
       <div>{{ error }}</div>
@@ -21,10 +26,10 @@ import RecipeTableView from '@/components/RecipeTableView'
 import { api, endpoints } from '@/api'
 
 export default {
-  name: 'home',
+  name: 'Home',
   components: {
     RecipeLink,
-    'recipe-table': RecipeTableView
+    RecipeTableView,
   },
   data () {
     return {
