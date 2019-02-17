@@ -89,7 +89,7 @@ class RecipeFilter(django_filters.FilterSet):
         field_name='author',
         queryset=User.objects.all(),
     )
-    is_starred=django_filters.BooleanFilter(
+    is_starred = django_filters.BooleanFilter(
         label='Is starred',
         method='filter_is_starred',
     )
