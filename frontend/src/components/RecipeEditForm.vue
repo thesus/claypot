@@ -75,7 +75,7 @@ export default {
   data () {
     return {
       recipe_dirty: {
-        ingredients: [],
+        ingredients: [{isGroup: false, title: '', ingredients: [{}]}],
         instructions: [this.createEmptyInstruction()],
       },
       saving: false,
