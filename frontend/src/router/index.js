@@ -20,6 +20,22 @@ export default new Router({
       component: Home
     },
     {
+      path: '/favorites',
+      name: 'recipe-favorites',
+      component: Home,
+      props: {
+        filters: {is_starred: 2},
+      },
+    },
+    {
+      path: '/my-recipes',
+      name: 'recipe-my-recipes',
+      component: Home,
+      props: {
+        filters: {is_my_recipe: 2},
+      },
+    },
+    {
       path: '/recipes/add',
       name: 'recipe-add',
       component: RecipeAdd

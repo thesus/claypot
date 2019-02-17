@@ -6,6 +6,8 @@
     },
     "navbar": {
         "home": "Startseite",
+        "my_favorites": "Gemerkte Rezepte",
+        "my_recipes": "Meine Rezepte",
         "logout": "Abmelden",
         "login": "Anmelden",
         "signup": "Registrierung"
