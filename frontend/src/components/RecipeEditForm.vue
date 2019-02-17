@@ -10,7 +10,7 @@
         <recipe-edit-ingredient-table
           v-for="(ingredientBatch,i) in recipe_dirty.ingredients"
           v-model="recipe_dirty.ingredients[i]"
-          :recipeIngredientError="recipeIngredientError"
+          :recipeIngredientError="recipeIngredientError(i)"
           :saving="saving"
           @remove="recipe_dirty.ingredients.splice(i, 1)"
         />
@@ -82,6 +82,7 @@ export default {
       errors: {
         title: [],
         ingredients: [],
+        ingredient_groups: [],
         instructions: [],
         client_side: '',
         detail: '',
@@ -96,17 +97,72 @@ export default {
     },
     recipeIngredientError () {
       return i => {
-        const e = this.errors.ingredients
-        const r = e.length > i ? e[i] : {}
-        for (let p of ['ingredient', 'ingredient_extra', 'amount_numeric', 'unit']) {
-          r[p] = r[p] || []
+        const subsetOfErrors = this.sortedUnifiedErrors.ingredients[i].ingredients
+        return j => {
+          const e = subsetOfErrors || []
+          const r = e.length > j ? e[j] : {}
+          for (let p of ['ingredient', 'ingredient_extra', 'amount_numeric', 'unit']) {
+            r[p] = r[p] || []
+          }
+          return r
         }
-        return r
+      }
+    },
+    unifiedErrors () {
+      const addKeys = function (src, setter) {
+        if (typeof src === 'string' || typeof src === 'number' || src === null || typeof src === 'undefined' || typeof src === 'boolean') {
+          setter([])
+        } else if (Array.isArray(src)) {
+          const c = []
+          c.length = src.length
+          src.forEach((item, i) => {
+            addKeys(item, function (v) {c[i]=v})
+          })
+          setter(c)
+        } else if (typeof src === 'object') {
+          const c = {}
+          for (let k of Object.keys(src)) {
+            addKeys(src[k], function (v) {c[k]=v})
+          }
+          setter(c)
+        } else {
+          throw new Error('you missed a spot:' + src)
+        }
+      }
+      let r
+      addKeys(this.recipe, function (v) {r=v})
+      // mixin errors
+      const addErrors = function (src, unifiedErrorPart, setter) {
+        if (typeof src === 'string' || typeof src === 'number' || src === null || typeof src === 'undefined' || typeof src === 'boolean') {
+          setter(src)
+        } else if (Array.isArray(src)) {
+          src.forEach((item, i) => {
+            addErrors(item, unifiedErrorPart[i], function (v) {unifiedErrorPart[i]=v})
+          })
+        } else if (typeof src === 'object') {
+          for (let k of Object.keys(src)) {
+            addErrors(src[k], unifiedErrorPart[k], function (v) {unifiedErrorPart[k]=v})
+          }
+        } else {
+          throw new Error('you missed a spot: ' + src)
+        }
+      }
+      addErrors(this.errors, r, function (v) {r=v})
+      return r
+    },
+    sortedUnifiedErrors () {
+      const unifiedErrors = this.unifiedErrors
+      const {title, instructions} = unifiedErrors
+      const ingredients = sortedUnifiedIngredients(unifiedErrors)
+      return {
+        title,
+        instructions,
+        ingredients,
       }
     },
     recipeInstructionError () {
       return i => {
-        const e = this.errors.instructions
+        const e = this.sortedUnifiedErrors
         const r = e.length > i ? e[i] : {}
         for (let p of ['text']) {
           r[p] = r[p] || []
@@ -219,6 +275,7 @@ export default {
           const errors = await r.json()
           this.errors.title = errors.title || []
           this.errors.ingredients = errors.ingredients || []
+          this.errors.ingredient_groups = errors.ingredient_groups || []
           this.errors.instructions = errors.instructions || []
           this.errors.detail = errors.detail || ''
         }
@@ -234,7 +291,6 @@ export default {
       const r = this.recipe
       this.recipe_dirty = {
         title: r.title,
-        ingredients: [],
         instructions: r.instructions,
         ingredients: sortedUnifiedIngredients(r),
       }
