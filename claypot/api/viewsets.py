@@ -89,6 +89,26 @@ class RecipeFilter(django_filters.FilterSet):
         field_name='author',
         queryset=User.objects.all(),
     )
+    is_starred=django_filters.BooleanFilter(
+        label='Is starred',
+        method='filter_is_starred',
+    )
+
+    def filter_is_starred(self, queryset, name, value):
+        if value is True:
+            if self.request.user.pk is not None:
+                return queryset.filter(starred_by__id=self.request.user.pk)
+            else:
+                # anonymous
+                return queryset.none()
+        if value is False:
+            if self.request.user.pk is not None:
+                return queryset.exclude(starred_by__id=self.request.user.pk)
+            else:
+                # anonymous
+                return queryset
+        return queryset
+
 
     class Meta:
         model = Recipe
