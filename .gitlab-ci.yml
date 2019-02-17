@@ -81,7 +81,7 @@ build:caddy:
   before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
-    - docker build -t $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_TAG -f compose/caddy/Dockerfile .
+    - docker build -t $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_TAG -f compose/caddy/Dockerfile --build-arg plugins="git,filebrowser,cors,realip,expires,cache,prometheus" .
     - docker push $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_TAG
   after_script:
     - docker rmi $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_TAG
@@ -104,4 +104,4 @@ deploy:cooking.cryptec.at:
     - eval $(ssh-agent -s)
     - ssh-add <(echo "$COOKING_CRYPTEC_AT_SSH_PRIVATE_KEY")
   script:
-    - ssh -t $COOKING_CRYPTEC_AT_SSH_USER@$COOKING_CRYPTEC_AT_SSH_HOST sudo /home/till/infrastructure/claypot/update.sh
+    - ssh -t $COOKING_CRYPTEC_AT_SSH_USER@$COOKING_CRYPTEC_AT_SSH_HOST sudo /home/till/infrastructure/claypot/update.sh --version "$CI_COMMIT_TAG"
