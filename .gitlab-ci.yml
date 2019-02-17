@@ -33,6 +33,9 @@ test:frontend:
   script:
     - node_modules/eslint/bin/eslint.js --ext .js,.vue src
   allow_failure: yes
+  cache:
+    paths:
+      - frontend/node_modules/
 
 pages:
   stage: deploy
