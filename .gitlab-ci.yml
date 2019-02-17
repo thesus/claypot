@@ -19,6 +19,7 @@ test:backend:
     paths:
       - htmlcov
   cache:
+    key: backend
     paths:
       - .cache/pip/
 
@@ -34,6 +35,7 @@ test:frontend:
     - node_modules/eslint/bin/eslint.js --ext .js,.vue src
   allow_failure: yes
   cache:
+    key: frontend
     paths:
       - frontend/node_modules/
 
