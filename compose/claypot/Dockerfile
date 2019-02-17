@@ -2,6 +2,7 @@ FROM python
 COPY requirements/ /tmp/requirements
 RUN pip install -r /tmp/requirements/production.txt \
     && rm -rf /tmp/requirements
+COPY manage.py /code/manage.py
 COPY config/ /code/config
 COPY claypot/ /code/claypot
 WORKDIR "/code"
