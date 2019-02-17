@@ -43,7 +43,6 @@ class UnitFactory(factory.DjangoModelFactory):
 class RecipeFactory(factory.DjangoModelFactory):
     title = factory.Faker('sentence')
     slug = factory.Faker('sentence')
-    instructions = factory.Faker('text')
     author = factory.SubFactory(UserFactory)
 
     class Meta:
@@ -55,6 +54,7 @@ class RecipeFactory(factory.DjangoModelFactory):
 class RecipeIngredientFactory(factory.DjangoModelFactory):
     recipe = factory.SubFactory(RecipeFactory)
     ingredient = factory.SubFactory(IngredientFactory)
+    order = factory.Faker('random_int')
     ingredient_extra = factory.Faker('word')
     optional = factory.Faker('boolean')
     amount_numeric = factory.Faker('random_number')
