@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import (
@@ -84,6 +85,10 @@ class IngredientViewSet(viewsets.ModelViewSet):
 
 class RecipeFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(lookup_expr='icontains')
+    author_id = django_filters.ModelChoiceFilter(
+        field_name='author',
+        queryset=User.objects.all(),
+    )
 
     class Meta:
         model = Recipe
