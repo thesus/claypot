@@ -85,3 +85,23 @@ build:caddy:
     - docker push $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_TAG
   after_script:
     - docker rmi $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_TAG
+
+deploy:cooking.cryptec.at:
+  stage: deploy
+  environment:
+    name: cooking.cryptec.at
+    url: https://cooking.cryptec.at
+  only:
+    - tags
+  tags:
+    - docker
+  image: ubuntu
+  before_script:
+    - apt-get update -qqy
+    - apt-get install openssh-client -qqy
+    - mkdir -p ~/.ssh
+    - printf "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$COOKING_CRYPTEC_AT_SSH_PRIVATE_KEY")
+  script:
+    - ssh -t $COOKING_CRYPTEC_AT_SSH_USER@$COOKING_CRYPTEC_AT_SSH_HOST sudo /home/till/infrastructure/claypot/update.sh
