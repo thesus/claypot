@@ -1,0 +1,87 @@
+test:backend:
+  image: python:latest
+  stage: test
+  tags:
+    - docker
+  variables:
+    DATABASE_URL: sqlite:////tmp/claypot.sqlite3
+    DJANGO_SECRET_KEY: running-tests
+    DJANGO_DEBUG: "true"
+  coverage: "/\\d+\\%\\s*$/"
+  before_script:
+    - python -V
+    - pip install --cache-dir .cache/pip -r requirements/testing.txt
+  script:
+    - pytest --cov=claypot --cov-report=term --cov-report=html
+  artifacts:
+    expire_in: "1 week"
+    when: always
+    paths:
+      - htmlcov
+  cache:
+    key: backend
+    paths:
+      - .cache/pip/
+
+test:frontend:
+  image: node:latest
+  stage: test
+  tags:
+    - docker
+  before_script:
+    - cd frontend/
+    - yarn install
+  script:
+    - node_modules/eslint/bin/eslint.js --ext .js,.vue src
+  allow_failure: yes
+  cache:
+    key: frontend
+    paths:
+      - frontend/node_modules/
+
+pages:
+  stage: deploy
+  tags:
+    - docker
+  only:
+    - master
+    - develop
+  dependencies:
+    - test:backend
+  script:
+    - mkdir .public
+    - cp -r htmlcov .public/htmlcov-backend
+    - echo '<html><head></head><body><ul><li><a href="htmlcov-backend/index.html">Backend Coverage Report</a></li></ul></body></html>' > .public/index.html
+    - mv .public public
+  artifacts:
+    paths:
+      - public
+  when: always
+
+build:claypot:
+  stage: build
+  tags:
+    - docker-cli
+  only:
+    - tags
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG -f compose/claypot/Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+  after_script:
+    - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+
+build:caddy:
+  stage: build
+  tags:
+    - docker-cli
+  only:
+    - tags
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_TAG -f compose/caddy/Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_TAG
+  after_script:
+    - docker rmi $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_TAG

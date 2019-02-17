@@ -1,0 +1,25 @@
+- model: claypot.Unit
+  fields:
+    name: kilogram
+    name_plural: kilograms
+    code: kg
+- model: claypot.Unit
+  fields:
+    name: gram
+    name_plural: grams
+    code: g
+- model: claypot.Unit
+  fields:
+    name: litre
+    name_plural: litres
+    code: l
+- model: claypot.Unit
+  fields:
+    name: millilitre
+    name_plural: millilitres
+    code: ml
+- model: claypot.Unit
+  fields:
+    name: pinch
+    name_plural: pinches
+    code: ""

@@ -1,0 +1,260 @@
+- model: claypot.Recipe
+  fields:
+    title: Pizzateig
+    slug: pizzateig
+    published_on: "2018-09-01T13:55:00+02:00"
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [pizzateig]
+    order: 1
+    text: Alles vermengen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [pizzateig]
+    order: 2
+    text: Mindestens eine Stunde gehen lassen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [pizzateig]
+    order: 3
+    text: Ausziehen und belegen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [pizzateig]
+    order: 4
+    text: Im auf 250 Grad Umluft vorgeheizten Backofen für 5 Minuten ausbacken.
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [pizzateig]
+    order: 1
+    ingredient: [Mehl]
+    amount_type: 2
+    amount_numeric: 0.1486
+    unit: [Kilogramm]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [pizzateig]
+    order: 2
+    ingredient: [Wasser]
+    amount_type: 2
+    amount_numeric: 96.6
+    unit: [Milliliter]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [pizzateig]
+    order: 3
+    ingredient: [Salz]
+    amount_type: 2
+    amount_numeric: 4.5
+    unit: [Gramm]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [pizzateig]
+    ingredient: [Hefe]
+    order: 4
+    amount_type: 2
+    amount_numeric: 0.3
+    unit: [Gramm]
+- model: claypot.Recipe
+  fields:
+    title: Kartoffelbrot
+    slug: kartoffelbrot
+    published_on: "2018-09-01T13:59:00+02:00"
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [kartoffelbrot]
+    order: 1
+    text: Alles vermengen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [kartoffelbrot]
+    order: 2
+    text: Mindestens eine Stunde gehen lassen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [kartoffelbrot]
+    order: 3
+    text: Bei 180 Grad für 20 Minuten backen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [kartoffelbrot]
+    order: 4
+    text: Dann bei 160 Grad für 40 weiter Minuten ausbacken.
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [kartoffelbrot]
+    order: 1
+    ingredient: [Mehl]
+    amount_type: 2
+    amount_numeric: 1
+    unit: [Kilogramm]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [kartoffelbrot]
+    order: 2
+    ingredient: [Kartoffeln]
+    amount_type: 2
+    amount_numeric: 500
+    unit: [Gramm]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [kartoffelbrot]
+    order: 3
+    ingredient: [Wasser]
+    amount_type: 2
+    amount_numeric: 0.5
+    unit: [Liter]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [kartoffelbrot]
+    order: 4
+    ingredient: [Joghurt]
+    amount_type: 2
+    amount_numeric: 200
+    unit: [Gramm]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [kartoffelbrot]
+    order: 5
+    ingredient: [Salz]
+    amount_type: 2
+    amount_numeric: 2
+    unit: [Teelöffel]
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [kartoffelbrot]
+    order: 6
+    ingredient: [Hefe]
+    amount_type: 2
+    amount_numeric: 42
+    unit: [Gramm]
+- model: claypot.Recipe
+  fields:
+    title: Flammkuchen
+    slug: flammkuchen
+    published_on: "2019-01-30T19:02:00+01:00"
+- model: claypot.RecipeIngredient
+  fields:
+    recipe: [flammkuchen]
+    order: 1
+    ingredient: [Emmentaler]
+    amount_type: 2
+    amount_numeric: 200
+    unit: [Gramm]
+- { model: claypot.RecipeIngredientGroup, fields: { recipe: [flammkuchen], order: 2, title: "Teig" } }
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 2]
+    order: 1
+    ingredient: [Mehl]
+    amount_type: 2
+    amount_numeric: 450
+    unit: [Gramm]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 2]
+    order: 2
+    ingredient: [Hefe]
+    ingredient_extra: frische
+    amount_type: 2
+    amount_numeric: 21
+    unit: [Gramm]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 2]
+    order: 3
+    ingredient: [Wasser]
+    ingredient_extra: lauwarm
+    amount_type: 2
+    amount_numeric: 200
+    unit: [Gramm]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 2]
+    order: 4
+    ingredient: [Salz]
+    amount_type: 2
+    amount_numeric: 1
+    unit: [Teelöffel]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 2]
+    order: 5
+    ingredient: [Öl]
+    amount_type: 2
+    amount_numeric: 30
+    unit: [Gramm]
+- { model: claypot.RecipeIngredientGroup, fields: { recipe: [flammkuchen], order: 3, title: "Belag" } }
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 3]
+    order: 1
+    ingredient: [Zwiebeln]
+    amount_type: 2
+    amount_numeric: 200
+    unit: [Gramm]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 3]
+    order: 2
+    ingredient: [Schinkenwürfel]
+    amount_type: 2
+    amount_numeric: 150
+    unit: [Gramm]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 3]
+    order: 3
+    ingredient: [Schmand]
+    amount_type: 2
+    amount_numeric: 200
+    unit: [Gramm]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 3]
+    order: 4
+    ingredient: [Salz]
+    amount_type: 2
+    amount_numeric: 0.5
+    unit: [Teelöffel]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 3]
+    order: 5
+    ingredient: [Pfeffer]
+    amount_type: 2
+    amount_numeric: 0.125
+    unit: [Teelöffel]
+- model: claypot.RecipeIngredientGroupIngredient
+  fields:
+    group: [[flammkuchen], 3]
+    order: 6
+    ingredient: [Paprikapulver]
+    amount_type: 2
+    amount_numeric: 0.125
+    unit: [Teelöffel]
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [flammkuchen]
+    order: 1
+    text: Emmentaler reiben.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [flammkuchen]
+    order: 2
+    text: Alle Teigzutaten vermengen, Teig kneten, auf einem Blech ausrollen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [flammkuchen]
+    order: 3
+    text: Zwiebeln fein würfeln, mit den restlichen Belagzutaten vermengen, auf dem Teig verteilen, mit Käse bestreuen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [flammkuchen]
+    order: 4
+    text: Teig mindestens 20 Minuten gehen lassen.
+- model: claypot.RecipeInstruction
+  fields:
+    recipe: [flammkuchen]
+    order: 5
+    text: Im vorgeheizten Backofen bei 200 °C für 25 bis 30 Miuten backen.

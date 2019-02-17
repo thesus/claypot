@@ -1,0 +1,10 @@
+{% load i18n %}{% autoescape off %}
+
+{% blocktrans %}
+You registered an account at {{ site_name }}.{% endblocktrans %}
+
+{% trans "Click the following link to verify your email address: " %}
+
+{{ protocol }}://{{ domain }}{% url 'activate' uid=uid token=token %}
+
+{% endautoescape %}

@@ -1,0 +1,102 @@
+{
+    "generic": {
+        "loading": "Loading...",
+        "loading_error": "Error loading data.",
+        "no_data": "No result"
+    },
+    "navbar": {
+        "home": "Home",
+        "my_favorites": "My Favorites",
+        "my_recipes": "My Recipes",
+        "logout": "Logout",
+        "login": "Login",
+        "signup": "Sign Up"
+    },
+    "login": {
+        "username": "Username",
+        "password": "Password",
+        "forgot_password": "Forgot password",
+        "signup": "@:navbar.signup",
+        "login": "Login"
+    },
+    "logout": {
+        "message": "You're logged out.",
+        "home": "@:navbar.home"
+    },
+    "reset_password": {
+        "heading": "Reset your password",
+        "email": "E-Mail Address",
+        "reset": "Request reset e-mail",
+        "confirm": "We send an email to the given address."
+    },
+    "reset_password_confirm": {
+        "password": "@:signup.password",
+        "password_again": "@:reset_password_confirm.password (again)",
+        "reset": "Reset password",
+        "error": "The registration link is invalid."
+    },
+    "signup": {
+        "heading": "Sign Up",
+        "email": "E-Mail Address",
+        "username": "Username",
+        "password": "Password",
+        "password_again": "@:signup.password (again)",
+        "signup": "Sign Up",
+        "confirm": "Successfull. You received an email with a confirmation link."
+    },
+    "home": {
+        "loading": "@:generic.loading",
+        "all_recipes": "All recipes",
+        "add": "Add recipe",
+        "retry": "Try again",
+        "no_recipes": "There are no recipes, yet.",
+        "error": "@:generic.error"
+    },
+    "recipes": {
+        "title": "Title",
+        "amount": "Amount",
+        "ingredient": "Ingredient",
+        "ingredient_extra": "Note",
+        "instructions": "Instructions",
+        "unit": "Unit",
+        "posted_by": "posted by {user}",
+        "unknown_user": "unknown",
+        "confirm_new_ingredients": {
+            "message": "You are about to create a new ingredient. Really continue? | You are about to save {count} new ingredients. Really continue?",
+            "accept": "Create new ingredient | Create {count} new ingredients",
+            "decline": "Cancel"
+        },
+        "starred": "Starred",
+        "star": "Star",
+        "unstar": "Unstar",
+        "stars": "Not starred | Starred once | Starred {count} times"
+    },
+    "recipe_detail": {
+        "loading": "@:generic.loading",
+        "loading_error": "@:generic.loading_error",
+        "no_data": "@:generic.no_data",
+        "amount": "@:recipes.amount",
+        "ingredient": "@:recipes.ingredient",
+        "ingredient_extra": "@:recipes.ingredient_extra",
+        "posted_by": "@:recipes.posted_by",
+        "unknown_user": "@:recipes.unknown_user",
+        "edit": "Edit"
+    },
+    "recipe_edit": {
+        "loading": "@:generic.loading",
+        "loading_error": "@:generic.loading_error",
+        "no_data": "@:generic.no_data",
+        "amount": "@:recipes.amount",
+        "unit": "@:recipes.unit",
+        "ingredient": "@:recipes.ingredient",
+        "ingredient_extra": "@:recipes.ingredient_extra",
+        "posted_by": "@:recipes.posted_by",
+        "unknown_user": "@:recipes.unknown_user",
+        "remove": "Remove",
+        "remove_group": "Remove group",
+        "add_ingredient": "Add new Ingredient",
+        "add_instruction": "Add new instruction",
+        "add_group": "Add new Ingredient Group",
+        "save": "Save"
+    }
+}

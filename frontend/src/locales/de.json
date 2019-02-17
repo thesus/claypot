@@ -1,0 +1,103 @@
+{
+    "generic": {
+        "loading": "Lädt...",
+        "loading_error": "Fehler beim Laden der Daten.",
+        "no_data": "Kein Ergebnis"
+    },
+    "navbar": {
+        "home": "Startseite",
+        "my_favorites": "Gemerkte Rezepte",
+        "my_recipes": "Meine Rezepte",
+        "logout": "Abmelden",
+        "login": "Anmelden",
+        "signup": "Registrierung"
+    },
+    "login": {
+        "username": "Benutzername",
+        "password": "Kennwort",
+        "forgot_password": "Kennwort vergessen",
+        "signup": "@:navbar.signup",
+        "login": "Anmelden"
+    },
+    "logout": {
+        "message": "Erfolgreich abgemeldet.",
+        "home": "@:navbar.home"
+    },
+    "reset_password": {
+        "heading": "Kennwort zurücksetzen",
+        "email": "E-Mail-Adresse",
+        "reset": "Wiederherstellungs-E-Mail anfordern",
+        "error": "Der Registrierungslink ist ungültig.",
+        "confirm": "Wiederherstellungs-E-Mail gesendet."
+    },
+    "reset_password_confirm": {
+        "password": "@:signup.password",
+        "password_again": "@:reset_password_confirm.password (wiederholen)",
+        "reset": "Kennwort zurücksetzen",
+        "error": "Der Registrierungslink ist ungültig."
+    },
+    "signup": {
+        "heading": "Registrierung",
+        "email": "E-Mail-Adresse",
+        "username": "Benutzername",
+        "password": "Kennwort",
+        "password_again": "@:signup.password (wiederholen)",
+        "signup": "Registrieren",
+        "confirm": "Herzlichen Glückwunsch! Das Anlegen des Benutzers war erfolgreich."
+    },
+    "home": {
+        "loading": "@:generic.loading",
+        "all_recipes": "Alle Rezepte",
+        "add": "Neues Rezept hinzufügen",
+        "retry": "Wiederholen",
+        "no_recipes": "Es sind noch keine Rezepte eingepflegt.",
+        "error": "@:generic.loading_error"
+    },
+    "recipes": {
+        "title": "Titel",
+        "amount": "Menge",
+        "ingredient": "Zutat",
+        "ingredient_extra": "Anmerkung",
+        "instructions": "Anleitung",
+        "unit": "Einheit",
+        "posted_by": "hinzugefügt von {user}",
+        "unknown_user": "unbekanntem Benutzer",
+        "confirm_new_ingredients": {
+            "message": "Diese Aktion würde eine neue Zutat erstellen. Wirklich fortfahren? | Diese Aktion würde {count} neue Zutaten erstellen. Wirklich fortfahren?",
+            "accept": "Neue Zutat erstellen | {count} neue Zutaten erstellen",
+            "decline": "Abbrechen"
+        },
+        "starred": "Gemerkt",
+        "star": "Merken",
+        "unstar": "Nicht mehr merken",
+        "stars": "Kein Mal gemerkt | Ein Mal gemerkt | {count} Mal gemerkt"
+    },
+    "recipe_detail": {
+        "loading": "@:generic.loading",
+        "loading_error": "@:generic.loading_error",
+        "no_data": "@:generic.no_data",
+        "amount": "@:recipes.amount",
+        "ingredient": "@:recipes.ingredient",
+        "ingredient_extra": "@:recipes.ingredient_extra",
+        "posted_by": "@:recipes.posted_by",
+        "unknown_user": "@:recipes.unknown_user",
+        "edit": "Bearbeiten"
+    },
+    "recipe_edit": {
+        "loading": "@:generic.loading",
+        "loading_error": "@:generic.loading_error",
+        "no_data": "@:generic.no_data",
+        "amount": "@:recipes.amount",
+        "unit": "@:recipes.unit",
+        "ingredient": "@:recipes.ingredient",
+        "ingredient_extra": "@:recipes.ingredient_extra",
+        "posted_by": "@:recipes.posted_by",
+        "unknown_user": "@:recipes.unknown_user",
+        "remove": "Entfernen",
+        "remove_group": "Gruppe entfernen",
+        "add_ingredient": "Hinzufügen",
+        "add_instruction": "Hinzufügen",
+        "add_group": "Gruppe hinzufügen",
+        "save": "Speichern"
+    }
+}

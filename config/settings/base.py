@@ -10,7 +10,7 @@ ROOT_DIR = environ.Path(__file__) - 3
 APPS_DIR = ROOT_DIR.path('claypot')
 
 env = environ.Env()
-
+env.read_env(str(ROOT_DIR.path(env.path('ENVIRONMENT_FILE', '.env'))))
 
 DEBUG = env.bool('DJANGO_DEBUG', default=False)
 
@@ -22,13 +22,18 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'django.contrib.humanize',
     'django.contrib.messages',
+    'django.contrib.sessions',
     'django.contrib.staticfiles',
+
+    'rest_framework',
+    'django_filters',
 ]
 
 INSTALLED_APPS += [
-    'claypot'
+    'claypot',
+    'claypot.api',
 ]
 
 MIDDLEWARE = [
@@ -58,6 +63,10 @@ TEMPLATES = [
         },
     },
 ]
+
+if DEBUG:
+    TEMPLATES[0]['DIRS'] += ['claypot/contrib']
+
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
@@ -93,9 +102,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = env('LANGUAGE_CODE', default='en-us')
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = env('TIME_ZONE', default='UTC')
 
 USE_I18N = True
 
@@ -107,10 +116,21 @@ USE_TZ = True
 # Static files and Media (CSS, JavaScript, Images)
 
 STATIC_ROOT = str(ROOT_DIR('static'))
-STATICFILES_DIRS = [
-    str(APPS_DIR.path('static'))
-]
 STATIC_URL = '/static/'
 
 MEDIA_ROOT = str(APPS_DIR('media'))
 MEDIA_URL = '/media/'
+
+
+# Email
+EMAIL_BACKEND = env(
+    'DJANGO_EMAIL_BACKEND',
+    default='django.core.mail.backends.console.EmailBackend'
+)
+
+# Rest Framework
+REST_FRAMEWORK = {
+    'AUTHENTICATION_BACKENDS': (
+        'rest_framework.authentication.SessionAuthentication'
+    )
+}
