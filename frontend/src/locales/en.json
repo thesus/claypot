@@ -92,7 +92,8 @@
         "unknown_user": "@:recipes.unknown_user",
         "remove": "Remove",
         "remove_group": "Remove group",
-        "add": "Add new Ingredient",
+        "add_ingredient": "Add new Ingredient",
+        "add_instruction": "Add new instruction",
         "add_group": "Add new Ingredient Group",
         "save": "Save"
     }

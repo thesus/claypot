@@ -41,7 +41,7 @@
         </tr>
       </tbody>
     </table>
-    <button class="btn btn-right submit" @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add') }}</button>
+    <button class="btn btn-right submit" @click.prevent="addIngredient" :disabled="saving">{{ $t('recipe_edit.add_ingredient') }}</button>
     <button class="btn btn-right submit" @click.prevent="removeGroup" :disabled="saving">{{ $t('recipe_edit.remove_group') }}</button>
   </div>
 </template>
