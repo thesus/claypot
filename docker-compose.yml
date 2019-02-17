@@ -16,8 +16,8 @@ services:
       dockerfile: compose/claypot/Dockerfile
     environment: &env
       DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY}"
-      DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS}"
-      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}"
+      DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS:-*}"
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-claypot}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB:-claypot}"
       POSTGRES_USER: ${POSTGRES_USER:-claypot}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB:-claypot}
