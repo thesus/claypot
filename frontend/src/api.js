@@ -92,7 +92,7 @@ async function api(endpoint, data, options) {
   if (!endpoint.earmarked) {
     throw new UnknownEndpointError()
   }
-  const url = endpoint.url
+  let url = endpoint.url
   const fetchOptions = options || {}
   fetchOptions.credentials = fetchOptions.credentials || 'same-origin'
   fetchOptions.headers = fetchOptions.headers || {}
@@ -100,9 +100,11 @@ async function api(endpoint, data, options) {
   if (data) {
     fetchOptions.method = fetchOptions.method || 'POST'
 
-    if (!fetchOptions.body) {
+    if (!fetchOptions.body && fetchOptions.method.toLowerCase() !== 'head' && fetchOptions.method.toLowerCase() !== 'get') {
       fetchOptions.body = JSON.stringify(data)
       fetchOptions.headers['Content-Type'] = fetchOptions['Content-Type'] || 'application/json'
+    } else if (Object.keys(data).length > 0) {
+      url += "?" + Object.entries(data).map(([k, v]) => `${encodeURI(k)}=${encodeURI(v)}`).join('&')
     }
   }
   fetchOptions.method = fetchOptions.method || 'GET'

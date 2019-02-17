@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import (
@@ -84,6 +85,48 @@ class IngredientViewSet(viewsets.ModelViewSet):
 
 class RecipeFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(lookup_expr='icontains')
+    author_id = django_filters.ModelChoiceFilter(
+        field_name='author',
+        queryset=User.objects.all(),
+    )
+    is_starred = django_filters.BooleanFilter(
+        label='Is starred',
+        method='filter_is_starred',
+    )
+    is_my_recipe = django_filters.BooleanFilter(
+        label='Is my recipe',
+        method='filter_is_my_recipe',
+    )
+
+    def filter_is_starred(self, queryset, name, value):
+        if value is True:
+            if self.request.user.pk is not None:
+                return queryset.filter(starred_by__id=self.request.user.pk)
+            else:
+                # anonymous
+                return queryset.none()
+        if value is False:
+            if self.request.user.pk is not None:
+                return queryset.exclude(starred_by__id=self.request.user.pk)
+            else:
+                # anonymous
+                return queryset
+        return queryset
+
+    def filter_is_my_recipe(self, queryset, name, value):
+        if value is True:
+            if self.request.user.pk is not None:
+                return queryset.filter(author=self.request.user)
+            else:
+                # anonymous
+                return queryset.none()
+        if value is False:
+            if self.request.user.pk is not None:
+                return queryset.exclude(author=self.request.user)
+            else:
+                # anonymous
+                return queryset
+        return queryset
 
     class Meta:
         model = Recipe

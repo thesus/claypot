@@ -5,6 +5,18 @@
     </router-link>
     <router-link
       v-if="isLoggedIn"
+      :to="{name: 'recipe-favorites'}"
+    >
+      {{ $t('navbar.my_favorites') }}
+    </router-link>
+    <router-link
+      v-if="isLoggedIn"
+      :to="{name: 'recipe-my-recipes'}"
+    >
+      {{ $t('navbar.my_recipes') }}
+    </router-link>
+    <router-link
+      v-if="isLoggedIn"
       :to="{ name: 'logout' }"
     >
       {{ $t('navbar.logout') }}

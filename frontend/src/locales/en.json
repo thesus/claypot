@@ -6,6 +6,8 @@
     },
     "navbar": {
         "home": "Home",
+        "my_favorites": "My Favorites",
+        "my_recipes": "My Recipes",
         "logout": "Logout",
         "login": "Login",
         "signup": "Sign Up"
