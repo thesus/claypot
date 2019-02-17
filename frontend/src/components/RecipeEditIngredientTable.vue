@@ -151,7 +151,7 @@ export default {
         const changed = (
           (this.dirty.isGroup !== this.value.isGroup) ||
           (this.dirty.title !== this.value.title) ||
-          (this.dirty.ingredients.some((ingredient, i) => !equalIngredients(this.value.ingredients[i], ingredient)))
+          (this.dirty.ingredients.some((ingredient, i) => !equalIngredients(this.value.ingredients[i] || {}, ingredient)))
         )
         if (changed) {
           this.$emit('input', {
