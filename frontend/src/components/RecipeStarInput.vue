@@ -3,13 +3,19 @@
     <div
       :disabled="saving"
       class="button starred"
-      @click="doUnstar">{{ $t('recipes.unstar') }}</div>
+      @click="doUnstar"
+    >
+      {{ $t('recipes.unstar') }}
+    </div>
   </div>
   <div
     v-else
     :disabled="saving"
     class="button"
-    @click="doStar">{{ $t('recipes.star') }}</div>
+    @click="doStar"
+  >
+    {{ $t('recipes.star') }}
+  </div>
 </template>
 
 <script>

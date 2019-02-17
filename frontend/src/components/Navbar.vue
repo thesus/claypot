@@ -5,17 +5,20 @@
     </router-link>
     <router-link
       v-if="isLoggedIn"
-      :to="{ name: 'logout' }">
+      :to="{ name: 'logout' }"
+    >
       {{ $t('navbar.logout') }}
     </router-link>
     <router-link
       v-if="!isLoggedIn"
-      :to="{ name: 'login' }">
+      :to="{ name: 'login' }"
+    >
       {{ $t('navbar.login') }}
     </router-link>
     <router-link
       v-if="!isLoggedIn"
-      :to="{ name: 'signup' }">
+      :to="{ name: 'signup' }"
+    >
       {{ $t('navbar.signup') }}
     </router-link>
   </div>

@@ -6,18 +6,23 @@
           v-model="form.new_password1"
           :placeholder="$t('reset_password_confirm.password')"
           blank="false"
-          type="password">
+          type="password"
+        >
         <FormFieldValidationError :errors="errors.new_password1" />
         <input
           v-model="form.new_password2"
           :placeholder="$t('reset_password_confirm.password_again')"
-          type="password">
+          type="password"
+        >
         <FormFieldValidationError :errors="errors.new_password2" />
 
         <FormFieldValidationError :errors="errors.other" />
         <button
           type="submit"
-          class="btn btn-right">{{ $t('reset_password_confirm.reset') }}</button>
+          class="btn btn-right"
+        >
+          {{ $t('reset_password_confirm.reset') }}
+        </button>
       </form>
     </div>
   </div>

@@ -8,25 +8,36 @@
           :placeholder="$t('login.username')"
           :class="{'form-error': !!errors.username.length}"
           autofocus
-          type="text">
+          type="text"
+        >
         <FormFieldValidationError :errors="errors.username" />
         <input
           v-model="credentials.password"
           :placeholder="$t('login.password')"
           :class="{'form-error': !!errors.password.length}"
-          type="password">
+          type="password"
+        >
         <FormFieldValidationError :errors="errors.password" />
 
         <FormFieldValidationError :errors="errors.other" />
         <router-link
           :to="{ name: 'reset-password' }"
-          tabindex="-1">{{ $t('login.forgot_password') }}</router-link>
+          tabindex="-1"
+        >
+          {{ $t('login.forgot_password') }}
+        </router-link>
         <router-link
           :to="{ name: 'signup' }"
-          tabindex="-1">{{ $t('login.signup') }}</router-link>
+          tabindex="-1"
+        >
+          {{ $t('login.signup') }}
+        </router-link>
         <button
           type="submit"
-          class="btn btn-right">{{ $t('login.login') }}</button>
+          class="btn btn-right"
+        >
+          {{ $t('login.login') }}
+        </button>
       </form>
     </div>
   </div>

@@ -7,33 +7,42 @@
           v-model="form.email"
           :placeholder="$t('signup.email')"
           :class="{'form-error': !!getErrors.email.length}"
-          type="email">
+          type="email"
+        >
         <FormFieldValidationError :errors="getErrors.email" />
         <input
           v-model="form.username"
           :placeholder="$t('signup.username')"
           :class="{'form-error': !!getErrors.username.length}"
-          type="text">
+          type="text"
+        >
         <FormFieldValidationError :errors="getErrors.username" />
         <input
           v-model="form.password1"
           :placeholder="$t('signup.password')"
           :class="{'form-error': !!getErrors.password1.length}"
-          type="password">
+          type="password"
+        >
         <FormFieldValidationError :errors="getErrors.password1" />
         <input
           v-model="form.password2"
           :placeholder="$t('signup.password_again')"
           :class="{'form-error': !!getErrors.password2.length}"
-          type="password">
+          type="password"
+        >
         <FormFieldValidationError :errors="getErrors.password2" />
 
         <FormFieldValidationError :errors="getErrors.other" />
 
-        <p v-if="finished">{{ $t("signup.confirm") }}</p>
+        <p v-if="finished">
+          {{ $t("signup.confirm") }}
+        </p>
         <button
           type="submit"
-          class="btn btn-right">{{ $t('signup.signup') }}</button>
+          class="btn btn-right"
+        >
+          {{ $t('signup.signup') }}
+        </button>
       </form>
     </div>
   </div>

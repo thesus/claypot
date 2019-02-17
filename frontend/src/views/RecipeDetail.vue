@@ -1,6 +1,10 @@
 <template>
-  <div v-if="loading">{{ $t('recipe_detail.loading') }}</div>
-  <div v-else-if="error">{{ $t('recipe_detail.loading_error') }}</div>
+  <div v-if="loading">
+    {{ $t('recipe_detail.loading') }}
+  </div>
+  <div v-else-if="error">
+    {{ $t('recipe_detail.loading_error') }}
+  </div>
   <article v-else-if="recipe">
     <header>
       <h1>{{ recipe.title }}</h1>
@@ -8,26 +12,34 @@
 
     <div class="functions">
       <div class="stars">
-        <div class="countainer">{{ $tc('recipes.stars', recipe.stars, {count: recipe.stars}) }}</div>
+        <div class="countainer">
+          {{ $tc('recipes.stars', recipe.stars, {count: recipe.stars}) }}
+        </div>
         <RecipeStarInput
           v-if="isLoggedIn"
-          :recipe-id="recipeId"
           v-model="recipe.is_starred"
-          class="button" />
+          :recipe-id="recipeId"
+          class="button"
+        />
       </div>
       <router-link
         v-if="canEdit"
-        :to="{name: 'recipe-edit', param: {id: recipeId}}">{{ $t('recipe_detail.edit') }}</router-link>
+        :to="{name: 'recipe-edit', param: {id: recipeId}}"
+      >
+        {{ $t('recipe_detail.edit') }}
+      </router-link>
     </div>
 
     <div
       v-if="recipe"
-      class="header">
+      class="header"
+    >
       <RecipeIngredientTable
         v-for="(i, c) in allIngredients"
+        :key="c + 1"
         :ingredients="i.isGroup ? i.ingredients : i.ingredients"
         :caption="i.isGroup ? i.title : ''"
-        :key="c + 1" />
+      />
       <div class="images">
         image
       </div>
@@ -35,10 +47,12 @@
 
     <ol
       v-if="recipe"
-      class="instructions">
+      class="instructions"
+    >
       <li
         v-for="instruction in recipe.instructions"
-        :key="instruction.order">
+        :key="instruction.order"
+      >
         <p>{{ instruction.text }}</p>
       </li>
     </ol>
@@ -47,7 +61,9 @@
       <p>{{ $t('recipe_detail.posted_by', {user: author}) }}</p>
     </footer>
   </article>
-  <div v-else>{{ $t('recipe_detail.no_data') }}</div>
+  <div v-else>
+    {{ $t('recipe_detail.no_data') }}
+  </div>
 </template>
 
 <script>

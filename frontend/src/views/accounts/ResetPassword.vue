@@ -7,13 +7,19 @@
           v-model="email"
           :placeholder="$t('reset_password.email')"
           required
-          type="email">
+          type="email"
+        >
         <FormFieldValidationError :errors="errors" />
-        <p v-if="finished">{{ $t('reset_password.confirm') }}</p>
+        <p v-if="finished">
+          {{ $t('reset_password.confirm') }}
+        </p>
         <button
           :disabled="finished"
           type="submit"
-          class="btn btn-right">{{ $t('reset_password.reset') }}</button>
+          class="btn btn-right"
+        >
+          {{ $t('reset_password.reset') }}
+        </button>
       </form>
     </div>
   </div>

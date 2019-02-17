@@ -2,7 +2,8 @@
   <div class="wrapper">
     <div
       v-if="showSuggestions && suggestions.length"
-      class="suggestions">
+      class="suggestions"
+    >
       <ul>
         <li
           v-for="(suggestion, i) in suggestions"
@@ -11,7 +12,9 @@
           @mouseover="highlightThis(i)"
           @mouseout="highlighted = false"
           @mousedown="applySuggestion(i)"
-        >{{ suggestion }}</li>
+        >
+          {{ suggestion }}
+        </li>
       </ul>
     </div>
     <input

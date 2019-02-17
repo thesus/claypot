@@ -8,7 +8,8 @@
     <tbody>
       <tr
         v-for="recipe in $props.recipes"
-        :key="recipe.id">
+        :key="recipe.id"
+      >
         <td><recipe-link :recipe="recipe" /></td>
       </tr>
     </tbody>

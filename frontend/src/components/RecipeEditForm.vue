@@ -1,11 +1,14 @@
 <template>
   <article>
     <header>
-      <div><input
-        :placeholder="$t('recipes.title')"
-        v-model="recipe_dirty.title"
-        :disabled="saving"
-        :class="{'form-error': !!errors.title.length}"></div>
+      <div>
+        <input
+          v-model="recipe_dirty.title"
+          :placeholder="$t('recipes.title')"
+          :disabled="saving"
+          :class="{'form-error': !!errors.title.length}"
+        >
+      </div>
       <FormFieldValidationError :errors="errors.title" />
     </header>
 
@@ -13,64 +16,95 @@
       <div class="table">
         <RecipeEditIngredientTable
           v-for="(ingredientBatch,i) in recipe_dirty.ingredients"
+          :key="i"
           v-model="recipe_dirty.ingredients[i]"
           :recipe-ingredient-error="recipeIngredientError(i)"
           :saving="saving"
-          :key="i"
           @remove="recipe_dirty.ingredients.splice(i, 1)"
         />
       </div>
       <button
         :disabled="saving"
         class="btn btn-right submit"
-        @click.prevent="addIngredientGroup">{{ $t('recipe_edit.add_group') }}</button>
+        @click.prevent="addIngredientGroup"
+      >
+        {{ $t('recipe_edit.add_group') }}
+      </button>
     </div>
 
     <ol>
       <li
         v-for="(instruction, i) in recipe_dirty.instructions"
         ref="instructions"
-        :key="i">
-        <div><textarea
-          :placeholder="$t('recipes.instructions')"
-          v-model="instruction.text"
-          :disabled="saving"
-          class="small"/></div>
+        :key="i"
+      >
+        <div>
+          <textarea
+            v-model="instruction.text"
+            :placeholder="$t('recipes.instructions')"
+            :disabled="saving"
+            class="small"
+          />
+        </div>
         <FormFieldValidationError
           :errors="recipeInstructionError(i).text"
-          :saving="saving" />
+          :saving="saving"
+        />
         <button
           :disabled="saving"
           tabindex="-1"
           class="btn btn-right remove"
-          @click="recipe_dirty.instructions.splice(i, 1)">{{ $t('recipe_edit.remove') }}</button>
+          @click="recipe_dirty.instructions.splice(i, 1)"
+        >
+          {{ $t('recipe_edit.remove') }}
+        </button>
       </li>
     </ol>
     <div>
       <button
         :disabled="saving"
         class="btn btn-right submit"
-        @click.prevent="addInstruction">{{ $t('recipe_edit.add_instruction') }}</button>
+        @click.prevent="addInstruction"
+      >
+        {{ $t('recipe_edit.add_instruction') }}
+      </button>
     </div>
 
-    <div><button
-      :disabled="saving"
-      class="btn btn-right btn-primary"
-      @click.prevent="save">{{ $t('recipe_edit.save') }}</button></div>
+    <div>
+      <button
+        :disabled="saving"
+        class="btn btn-right btn-primary"
+        @click.prevent="save"
+      >
+        {{ $t('recipe_edit.save') }}
+      </button>
+    </div>
     <div v-if="newIngredientsDecision">
       <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
       <button
         class="btn new-ingredient"
-        @click="newIngredientsDecision(true)">{{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}</button>
+        @click="newIngredientsDecision(true)"
+      >
+        {{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}
+      </button>
       <button
         class="btn"
-        @click="newIngredientsDecision(false)">{{ $tc('recipes.confirm_new_ingredients.decline', newIngredientsCount, {count: newIngredientsCount}) }}</button>
+        @click="newIngredientsDecision(false)"
+      >
+        {{ $tc('recipes.confirm_new_ingredients.decline', newIngredientsCount, {count: newIngredientsCount}) }}
+      </button>
     </div>
-    <div v-if="errors.client_side">{{ errors.client_side }}</div>
-    <div v-if="errors.detail">{{ errors.detail }}</div>
+    <div v-if="errors.client_side">
+      {{ errors.client_side }}
+    </div>
+    <div v-if="errors.detail">
+      {{ errors.detail }}
+    </div>
 
     <footer>
-      <p v-if="recipe.id">{{ $t('recipe_edit.posted_by', {user: author}) }}</p>
+      <p v-if="recipe.id">
+        {{ $t('recipe_edit.posted_by', {user: author}) }}
+      </p>
     </footer>
   </article>
 </template>
@@ -80,7 +114,6 @@ import {api, endpoints} from '@/api'
 import {sortedUnifiedIngredients} from '@/utils'
 import FormFieldValidationError from '@/components/FormFieldValidationError'
 import RecipeEditIngredientTable from '@/components/RecipeEditIngredientTable'
-import IngredientInput from '@/components/IngredientInput'
 
 const amount_types = {
   none: 1,
@@ -92,7 +125,6 @@ export default {
   name: 'RecipeEditForm',
   components: {
     FormFieldValidationError,
-    IngredientInput,
     RecipeEditIngredientTable,
   },
   props: {

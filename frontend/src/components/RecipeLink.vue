@@ -1,5 +1,7 @@
 <template>
-  <router-link :to="to">{{ title }}</router-link>
+  <router-link :to="to">
+    {{ title }}
+  </router-link>
 </template>
 
 <script>

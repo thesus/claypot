@@ -1,11 +1,18 @@
 <template>
-  <div v-if="loading">{{ $t('recipe_edit.loading') }}</div>
-  <div v-else-if="error">{{ $t('recipe_edit.loading_error') }}</div>
+  <div v-if="loading">
+    {{ $t('recipe_edit.loading') }}
+  </div>
+  <div v-else-if="error">
+    {{ $t('recipe_edit.loading_error') }}
+  </div>
   <RecipeEditForm
     v-else-if="recipe"
     :recipe="recipe"
-    @input="onUpdate" />
-  <div v-else>{{ $t('recipe_edit.no_data') }}</div>
+    @input="onUpdate"
+  />
+  <div v-else>
+    {{ $t('recipe_edit.no_data') }}
+  </div>
 </template>
 
 <script>
