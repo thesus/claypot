@@ -147,7 +147,7 @@ if SENTRY_DSN:
         'disable_existing_loggers': True,
         'root': {
             'level': 'WARNING',
-            'handlers': ['sentry'],
+            'handlers': ['console', 'sentry'],
         },
         'formatters': {
             'verbose': {
@@ -168,6 +168,11 @@ if SENTRY_DSN:
             }
         },
         'loggers': {
+            '': {
+                'level': 'ERROR',
+                'handlers': ['console', 'sentry'],
+                'propagate': False,
+            },
             'django.db.backends': {
                 'level': 'ERROR',
                 'handlers': ['console'],
