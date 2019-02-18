@@ -151,7 +151,10 @@ class RecipeSerializer(serializers.ModelSerializer):
     stars = serializers.SerializerMethodField()
 
     def get_is_starred(self, obj):
-        return obj.starred_by.filter(pk=self.context['request'].user.id).exists()
+        if 'request' in self.context:
+            return obj.starred_by.filter(pk=self.context['request'].user.id).exists()
+        else:
+            return None
 
     def get_stars(self, obj):
         return obj.starred_by.all().count()
@@ -206,6 +209,45 @@ class RecipeSerializer(serializers.ModelSerializer):
             obj.amount_approx = ri['amount_approx']
             obj.unit = ri['unit']
             obj.save()
+
+        # save ingredient groups
+        existing = set(ri.order for ri in instance.ingredient_groups.all())
+        new = set(ri['order'] for ri in validated_data['ingredient_groups'])
+        remove = existing - new
+        instance.ingredient_groups.filter(order__in=remove).delete()
+        for rig in validated_data['ingredient_groups']:
+            obj = instance.ingredient_groups.filter(
+                order=rig['order'],
+            ).first()
+            if obj is None:
+                obj = RecipeIngredientGroup(
+                    recipe=instance,
+                    order=rig['order'],
+                )
+            obj.title = rig['title']
+            obj.save()
+            existing = set(ri.order for ri in obj.ingredients.all())
+            new = set(ri['order'] for ri in rig['ingredients'])
+            remove = existing - new
+            obj.ingredients.filter(order__in=remove).delete()
+            for ri in rig['ingredients']:
+                obj2 = obj.ingredients.filter(
+                    order=ri['order'],
+                ).first()
+                if obj2 is None:
+                    obj2 = RecipeIngredientGroupIngredient(
+                        group=obj,
+                        order=ri['order'],
+                    )
+                obj2.ingredient = ri['ingredient']
+                obj2.ingredient_extra = ri['ingredient_extra']
+                obj2.optional = ri['optional']
+                obj2.amount_type = ri['amount_type']
+                obj2.amount_numeric = ri['amount_numeric']
+                obj2.amount_approx = ri['amount_approx']
+                obj2.unit = ri['unit']
+                obj2.save()
+
         return instance
 
     class Meta:
