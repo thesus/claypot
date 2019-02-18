@@ -138,7 +138,7 @@ export default {
   data () {
     return {
       recipe_dirty: {
-        ingredients: [{isGroup: false, title: '', ingredients: [{}]}],
+        ingredients: [{isGroup: false, title: '', ingredients: []}],
         instructions: [this.createEmptyInstruction()],
       },
       saving: false,
