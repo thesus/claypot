@@ -1,5 +1,8 @@
 from django.urls import reverse
+from rest_framework import status
 import pytest
+
+from claypot.api import serializers
 
 
 @pytest.mark.django_db
@@ -27,3 +30,25 @@ def test_recipe_list(api_client, recipe_factory, user):
     assert recipe_unstar.data is False
     recipe_details = api_client.get(reverse('api:recipe-detail', kwargs={'pk': recipe.pk}))
     assert recipe_details.data['is_starred'] is False
+
+
+@pytest.mark.django_db
+def test_post_new_recipe(
+        api_client, recipe, recipe_ingredient_factory,
+        recipe_ingredient_group_factory,
+        recipe_ingredient_group_ingredient_factory, user):
+    recipe_ingredient_factory(recipe=recipe, order=1)
+    group = recipe_ingredient_group_factory(recipe=recipe, order=2)
+    recipe_ingredient_group_ingredient_factory(group=group, order=1)
+    api_client.force_login(user)
+    url = reverse('api:recipe-detail', kwargs={'pk': recipe.pk})
+    src = serializers.RecipeSerializer(instance=recipe).data
+    data = {
+      "title": src['title'],
+      "instructions": src['instructions'],
+      "ingredients": src['ingredients'],
+      "ingredient_groups": [],
+    }
+    response = api_client.put(url, data, format='json')
+    assert response.status_code == status.HTTP_200_OK
+    assert response.data['ingredient_groups'] == []
