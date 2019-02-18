@@ -63,7 +63,33 @@ class RecipeIngredientFactory(factory.DjangoModelFactory):
 
     class Meta:
         model = 'claypot.RecipeIngredient'
-        django_get_or_create = ('recipe', 'ingredient')
+        django_get_or_create = ('recipe', 'order')
+
+
+@pytest_factoryboy.register
+class RecipeIngredientGroupFactory(factory.DjangoModelFactory):
+    recipe = factory.SubFactory(RecipeFactory)
+    order = factory.Faker('random_int')
+    title = factory.Faker('sentence')
+
+    class Meta:
+        model = 'claypot.RecipeIngredientGroup'
+        django_get_or_create = ('recipe', 'order')
+
+
+@pytest_factoryboy.register
+class RecipeIngredientGroupIngredientFactory(factory.DjangoModelFactory):
+    group = factory.SubFactory(RecipeIngredientGroupFactory)
+    order = factory.Faker('random_int')
+    ingredient = factory.SubFactory(IngredientFactory)
+    ingredient_extra = factory.Faker('word')
+    optional = factory.Faker('boolean')
+    amount_numeric = factory.Faker('random_number')
+    unit = factory.SubFactory(UnitFactory)
+
+    class Meta:
+        model = 'claypot.RecipeIngredientGroupIngredient'
+        django_get_or_create = ('group', 'order')
 
 
 @pytest_factoryboy.register

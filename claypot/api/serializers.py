@@ -151,7 +151,10 @@ class RecipeSerializer(serializers.ModelSerializer):
     stars = serializers.SerializerMethodField()
 
     def get_is_starred(self, obj):
-        return obj.starred_by.filter(pk=self.context['request'].user.id).exists()
+        if 'request' in self.context:
+            return obj.starred_by.filter(pk=self.context['request'].user.id).exists()
+        else:
+            return None
 
     def get_stars(self, obj):
         return obj.starred_by.all().count()
