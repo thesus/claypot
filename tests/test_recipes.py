@@ -52,6 +52,3 @@ def test_post_new_recipe(
     response = api_client.put(url, data, format='json')
     assert response.status_code == status.HTTP_200_OK
     assert response.data['ingredient_groups'] == []
-    new_data = api_client.get(url)
-    assert new_data.status_code == status.HTTP_200_OK
-    assert new_data.data == src
