@@ -4,7 +4,10 @@ from django.urls import (
 )
 from rest_framework.routers import DefaultRouter
 
-from .views import csrf_token_view
+from .views import (
+    SentryConfigView,
+    csrf_token_view,
+)
 from .viewsets import (
     IngredientViewSet,
     RecipeViewSet,
@@ -18,5 +21,9 @@ router.register('recipes', RecipeViewSet)
 app_name = 'api'
 urlpatterns = [
     path('csrf', csrf_token_view),
+
+    # Sentry configuration
+    path('sentry', SentryConfigView.as_view(), name='sentry-config'),
+
     path('', include(router.urls)),
 ]

@@ -10,6 +10,9 @@ const endpoints = {
   fetch_csrf_token () {
     return '/api/csrf'
   },
+  fetch_sentry_config () {
+    return '/api/sentry'
+  },
   fetch_recipes () {
     return '/api/recipes/'
   },
