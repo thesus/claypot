@@ -5,6 +5,8 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import generics
 from rest_framework.response import Response
 
+from claypot import __version__
+
 
 class CsrfTokenView(View):
     def get(self, request):
@@ -17,4 +19,5 @@ class SentryConfigView(generics.GenericAPIView):
     def get(self, request):
         return Response({
             'sentry_dsn': getattr(settings, 'SENTRY_PUBLIC_DSN', ''),
+            'version': __version__,
         })
