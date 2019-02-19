@@ -30,13 +30,13 @@
       </router-link>
     </div>
 
-    <div class="images">
-    </div>
-
     <div
       v-if="recipe"
-      class="ingredients"
+      class="header"
+      :class="{'ingredients-single': (allIngredients.length == 1)}"
     >
+      <div class="images">photos</div>
+
       <RecipeIngredientTable
         v-for="(i, c) in allIngredients"
         :key="c + 1"
@@ -166,18 +166,7 @@ export default {
   justify-content: space-between;
 }
 
-.images {
-  border: solid 1px #ccc;
-  margin: 5px;
-  height: 400px;
-  overflow: hidden;
-  img {
-    width: 100%;
-    object-fit: contain;
-  }
-}
-
-.ingredients {
+.header {
   display: flex;
   flex-wrap: wrap;
   margin: 15px -10px;
@@ -189,11 +178,46 @@ export default {
     margin: 5px;
     width: 220px;
   }
+
+  .images {
+    border: solid 1px #ccc;
+    margin: 5px;
+    height: 40vh;
+    width: 100%;
+    overflow: hidden;
+    img {
+      width: 100%;
+      object-fit: contain;
+    }
+  }
+
+  @media screen and (min-width: 780px) {
+    .images {
+      height: 500px;
+    }
+  }
+
+  @media screen and (min-width: 900px) {
+    &.ingredients-single {
+
+      flex-direction: row-reverse;
+      .images {
+        flex: 1;
+        width: initial;
+        flex-basis: auto;
+      }
+    }
+  }
 }
 
 .instructions {
   margin: 5px;
   text-align: justify;
   padding-left: 20px;
+}
+
+article {
+  max-width: 1000px;
+  margin: auto;
 }
 </style>

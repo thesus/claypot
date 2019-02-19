@@ -15,9 +15,7 @@
             {{ ingredient.amount_numeric }}&nbsp;{{ ingredient.unit }}
           </td>
           <td class="ingredient">
-            {{ ingredient.ingredient }}<span v-if="ingredient.ingredient_extra">
-              , {{ ingredient.ingredient_extra }}
-            </span>
+            {{ ingredient.ingredient }}<span v-if="ingredient.ingredient_extra">, {{ ingredient.ingredient_extra }}</span>
           </td>
         </tr>
       </tbody>
