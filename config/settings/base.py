@@ -146,6 +146,18 @@ REST_FRAMEWORK = {
     )
 }
 
+
+# Django RQ
+RQ_QUEUES = {
+    'default': {
+        'HOST': env('REDIS_HOST', default='localhost'),
+        'PORT': 6379,
+        'DB': env('REDIS_DB', default=0),
+        'PASSWORD': env('REDIS_PASSWORD', default=None),
+        'DEFAULT_TIMEOUT': 360
+    }
+}
+
 SENTRY_DSN = env('SENTRY_DSN', default='')
 if SENTRY_DSN:
     import raven
