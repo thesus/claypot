@@ -143,7 +143,7 @@ if SENTRY_DSN:
         'dsn': SENTRY_DSN,
         'release': __version__,
     }
-    from urllib.pars import urlparse
+    from urllib.parse import urlparse
     _parts = urlparse(SENTRY_DSN)
     SENTRY_PUBLIC_DSN = env(
         'SENTRY_PUBLIC_DSN',
