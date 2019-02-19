@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "node-sass": "^4.9.3",
+    "raven-js": "^3.27.0",
     "sass-loader": "^7.1.0",
     "vue": "^2.5.17",
     "vue-i18n": "^8.7.0",
