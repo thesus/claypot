@@ -7,10 +7,10 @@ from rest_framework.routers import DefaultRouter
 from claypot.accounts.views import (
     LoginView,
     LogoutView,
-    PasswordResetView,
     PasswordResetConfirmView,
-    SignupView,
+    PasswordResetView,
     SignupConfirmView,
+    SignupView,
     UserViewSet,
 )
 
