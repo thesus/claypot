@@ -145,10 +145,13 @@ if SENTRY_DSN:
     }
     from urllib.parse import urlparse
     _parts = urlparse(SENTRY_DSN)
+    _sentry_host = f'{_parts.hostname}'
+    if _parts.port is not None:
+        _sentry_host += f':{_parts.port}'
     SENTRY_PUBLIC_DSN = env(
         'SENTRY_PUBLIC_DSN',
         default=(
-            f'{_parts.scheme}://{_parts.netloc}{_parts.path}?{_parts.query}'),
+            f'{_parts.scheme}://{_parts.username}@{_sentry_host}{_parts.path}'),
     )
     INSTALLED_APPS += (
         'raven.contrib.django.raven_compat',
