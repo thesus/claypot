@@ -138,7 +138,11 @@ REST_FRAMEWORK = {
 SENTRY_DSN = env('SENTRY_DSN', default='')
 if SENTRY_DSN:
     import raven
-    RAVEN_CONFIG = {'dsn': SENTRY_DSN}
+    from claypot import __version__
+    RAVEN_CONFIG = {
+        'dsn': SENTRY_DSN,
+        'release': __version__,
+    }
     INSTALLED_APPS += (
         'raven.contrib.django.raven_compat',
     )
