@@ -1,3 +1,8 @@
+# Upcoming release
+
+- Improve Sentry error logging
+
+
 # Version 0.1.4
 
 - Fix error in saving new recipes
