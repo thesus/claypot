@@ -30,9 +30,12 @@
       </router-link>
     </div>
 
+    <div class="images">
+    </div>
+
     <div
       v-if="recipe"
-      class="header"
+      class="ingredients"
     >
       <RecipeIngredientTable
         v-for="(i, c) in allIngredients"
@@ -40,9 +43,6 @@
         :ingredients="i.isGroup ? i.ingredients : i.ingredients"
         :caption="i.isGroup ? i.title : ''"
       />
-      <div class="images">
-        image
-      </div>
     </div>
 
     <ol
@@ -166,40 +166,34 @@ export default {
   justify-content: space-between;
 }
 
-.header {
+.images {
+  border: solid 1px #ccc;
+  margin: 5px;
+  height: 400px;
+  overflow: hidden;
+  img {
+    width: 100%;
+    object-fit: contain;
+  }
+}
+
+.ingredients {
   display: flex;
   flex-wrap: wrap;
   margin: 15px -10px;
+  justify-content: space-between;
+  border: none;
 
-  @media screen and (max-width: 850px) {
-    flex-wrap: wrap-reverse;
-    .images, .ingredients {
-      flex-basis: 100% !important;
-    }
-  }
-
-  .ingredients {
+  .ingredients-group {
     padding: 0 5px 0 5px;
-    width: 25%;
-
-    .amount {
-      text-align: right;
-    }
-
-    .ingredient {
-      text-align: left;
-      padding-left: 10px;
-    }
-  }
-  .images {
-    margin: 0 10px;
-    border: solid 1px #ccc;
-    flex: 1;
-    height: 400px;
+    margin: 5px;
+    width: 220px;
   }
 }
 
 .instructions {
+  margin: 5px;
   text-align: justify;
+  padding-left: 20px;
 }
 </style>
