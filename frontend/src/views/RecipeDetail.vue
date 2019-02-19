@@ -22,12 +22,13 @@
           class="button"
         />
       </div>
-      <router-link
-        v-if="canEdit"
-        :to="{name: 'recipe-edit', param: {id: recipeId}}"
-      >
-        {{ $t('recipe_detail.edit') }}
-      </router-link>
+      <div class="right">
+        <router-link
+          v-if="canEdit"
+          :to="{name: 'recipe-edit', param: {id: recipeId}}"
+          >{{ $t('recipe_detail.edit') }}</router-link>
+        <span>{{ $t('recipe_detail.posted_by', {user: author}) }}</span>
+      </div>
     </div>
 
     <div
@@ -56,10 +57,6 @@
         <p>{{ instruction.text }}</p>
       </li>
     </ol>
-
-    <footer>
-      <p>{{ $t('recipe_detail.posted_by', {user: author}) }}</p>
-    </footer>
   </article>
   <div v-else>
     {{ $t('recipe_detail.no_data') }}
@@ -144,26 +141,32 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.stars {
-  border: solid 1px #ccc;
-  display: inline;
-  white-space: nowrap;
-  margin-right: 5px;
-
-  .countainer, .button {
-    padding: 0 5px 0 5px;
-    display: inline-block;
-    border: none;
-  }
-
-  .button {
-    border-left: solid 1px #ccc;
-  }
-}
-
 .functions {
   display: flex;
   justify-content: space-between;
+
+  .stars {
+    border: solid 1px #ccc;
+    display: inline;
+    white-space: nowrap;
+    margin-right: 5px;
+
+    .countainer, .button {
+      padding: 0 5px 0 5px;
+      display: inline-block;
+      border: none;
+    }
+
+    .button {
+      border-left: solid 1px #ccc;
+    }
+  }
+
+  .right {
+    span {
+      margin-left: 10px;
+    }
+  }
 }
 
 .header {
