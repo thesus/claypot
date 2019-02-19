@@ -143,6 +143,13 @@ if SENTRY_DSN:
         'dsn': SENTRY_DSN,
         'release': __version__,
     }
+    from urllib.pars import urlparse
+    _parts = urlparse(SENTRY_DSN)
+    SENTRY_PUBLIC_DSN = env(
+        'SENTRY_PUBLIC_DSN',
+        default=(
+            f'{_parts.scheme}://{_parts.netloc}{_parts.path}?{_parts.query}'),
+    )
     INSTALLED_APPS += (
         'raven.contrib.django.raven_compat',
     )
