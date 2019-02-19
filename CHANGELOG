@@ -1,3 +1,8 @@
+# Version 0.1.6
+
+- Fix typo in settings
+
+
 # Version 0.1.5
 
 - Improve Sentry error logging
