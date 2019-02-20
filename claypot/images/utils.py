@@ -9,6 +9,7 @@ from django.core.files.base import ContentFile
 
 from io import BytesIO
 
+
 def resize(pk, filename, name, dimensions, image_class, file_class):
     container = image_class.objects.get(pk=pk)
 
@@ -64,7 +65,6 @@ def resize(pk, filename, name, dimensions, image_class, file_class):
         )
 
         instance.save()
-        print(name + " created instance")
         container.files.add(instance)
 
 

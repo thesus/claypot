@@ -33,5 +33,20 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
 
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis-data:/data
+    restart: always
+
+  worker:
+    image: dev.cryptec.at:5000/root/claypot:${CLAYPOT_VERSION:-master}
+    environment: &env
+      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY}"
+      REDIS_HOST: "redis"
+      SENTRY_DSN: ${SENTRY_DSN}
+    command: "python manage.py rqworker"
+
 volumes:
   db: {}
+  redis-data: {}
