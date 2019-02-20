@@ -36,6 +36,7 @@ INSTALLED_APPS = [
 INSTALLED_APPS += [
     'claypot',
     'claypot.api',
+    'claypot.images'
 ]
 
 MIDDLEWARE = [
@@ -134,6 +135,23 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = str(APPS_DIR('media'))
 MEDIA_URL = '/media/'
 
+# Image sizes for resizing/thumbnails
+# If both dimensions are given, the image will be cropped. (center)
+IMAGE_SIZES = {
+    'thumbnail': {
+        'w': 200,
+        'h': 200
+    },
+    'small': {
+        'w': 400
+    },
+    'medium': {
+        'w': 700
+    },
+    'large': {
+        'w': 1000
+    }
+}
 
 # Email
 EMAIL_CONFIG = env.email_url('EMAIL_URL', default='consolemail://')

@@ -18,6 +18,9 @@ from claypot.models import (
     Unit,
 )
 
+from claypot.images.models import (
+    Image
+)
 
 class OrderedListSerializer(serializers.ListSerializer):
     def to_representation(self, data):
@@ -303,3 +306,45 @@ class RecipeSerializer(serializers.Serializer):
             i.delete()
 
         return instance
+
+    class Meta:
+        model = Recipe
+        fields = [
+            'id',
+            'title',
+            'slug',
+            'instructions',
+            'ingredients',
+            'ingredient_groups',
+            'author',
+            'author_id',
+            'published_on',
+            'is_starred',
+            'stars',
+        ]
+        read_only_fields = [
+            'id',
+            'slug',
+            'author',
+            'author_id',
+            'published_on',
+            'starred_by',
+            'is_starred',
+            'stars',
+        ]
+
+
+class ImageCreateSerializer(serializers.Serializer):
+    image = serializers.ImageField()
+
+class ImageRetrieveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
+        fields = [
+            'id',
+            'files',
+        ]
+        read_only_fields = [
+            'id',
+            'files'
+        ]

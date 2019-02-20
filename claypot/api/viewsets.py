@@ -20,11 +20,17 @@ from claypot.models import (
     Recipe,
 )
 
+from claypot.images.models import (
+    Image
+)
+
 from .serializers import (
     IngredientSerializer,
     ManyIngredientSerializer,
     RecipeListSerializer,
     RecipeSerializer,
+    ImageCreateSerializer,
+    ImageRetrieveSerializer
 )
 
 class ReadAllEditOwn(permissions.BasePermission):
@@ -171,3 +177,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def destroy(self, request, pk=None):
         obj = self.get_object()
         return super().destroy(request, pk=pk)
+
+
+class ImageViewSet(viewsets.ModelViewSet):
+    queryset = Image.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return ImageCreateSerializer
+        else:
+            return ImageRetrieveSerializer
+
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            instance = Image()
+            instance.save(**serializer.validated_data)
+            return Response({'status': 'submitted image'})
+        else:
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )

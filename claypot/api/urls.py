@@ -11,12 +11,14 @@ from .views import (
 from .viewsets import (
     IngredientViewSet,
     RecipeViewSet,
+    ImageViewSet
 )
 
 
 router = DefaultRouter()
 router.register('ingredients', IngredientViewSet)
 router.register('recipes', RecipeViewSet)
+router.register('images', ImageViewSet)
 
 app_name = 'api'
 urlpatterns = [
