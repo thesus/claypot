@@ -31,6 +31,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'django_filters',
+    'django_rq'
 ]
 
 INSTALLED_APPS += [
@@ -135,6 +136,8 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = str(APPS_DIR('media'))
 MEDIA_URL = '/media/'
 
+IMAGE_ROOT = str(ROOT_DIR('images'))
+
 # Image sizes for resizing/thumbnails
 # If both dimensions are given, the image will be cropped. (center)
 IMAGE_SIZES = {
@@ -170,9 +173,7 @@ RQ_QUEUES = {
     'default': {
         'HOST': env('REDIS_HOST', default='localhost'),
         'PORT': 6379,
-        'DB': env('REDIS_DB', default=0),
-        'PASSWORD': env('REDIS_PASSWORD', default=None),
-        'DEFAULT_TIMEOUT': 360
+        'DB': 0
     }
 }
 
