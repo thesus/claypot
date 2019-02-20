@@ -19,7 +19,8 @@ from claypot.models import (
 )
 
 from claypot.images.models import (
-    Image
+    Image,
+    ImageFile
 )
 
 class OrderedListSerializer(serializers.ListSerializer):
@@ -337,7 +338,20 @@ class RecipeSerializer(serializers.Serializer):
 class ImageCreateSerializer(serializers.Serializer):
     image = serializers.ImageField()
 
+
+class ImageFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImageFile
+        fields = [
+            'image_file',
+            'height',
+            'width'
+        ]
+
+
 class ImageRetrieveSerializer(serializers.ModelSerializer):
+    files = ImageFileSerializer(many=True)
+
     class Meta:
         model = Image
         fields = [
