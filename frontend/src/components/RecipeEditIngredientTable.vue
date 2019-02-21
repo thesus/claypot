@@ -28,6 +28,7 @@
             <div class="input">
               <input
                 v-model="ingredient.amount_numeric"
+                :disabled="saving"
                 :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length}"
               >
             </div>
