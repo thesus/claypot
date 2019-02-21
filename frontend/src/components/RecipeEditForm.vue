@@ -131,7 +131,11 @@ export default {
     recipe: {
       type: Object,
       default: function () {
-        return {}
+        return {
+          ingredient_groups: [],
+          ingredients: [],
+          title: '',
+        }
       },
     },
   },
