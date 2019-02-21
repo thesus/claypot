@@ -199,16 +199,17 @@ export default {
 @import '@/modules/inputs.scss';
 
 .table {
-  margin-top: 1em;
+  margin-top: 0.5em;
 }
 .table:first-child {
   margin-top: 0em;
 }
 
 .table.group {
-  padding: 1em;
-  margin-left: 1em;
-  margin-right: 1em;
+  padding: 0.5em;
   border: solid 1px #ccc;
+  width: 100%;
+  display: inline-block;
+  box-sizing: border-box;
 }
 </style>

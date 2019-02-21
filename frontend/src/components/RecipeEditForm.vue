@@ -25,7 +25,7 @@
       </div>
       <button
         :disabled="saving"
-        class="btn btn-right submit"
+        class="btn btn-right submit add-group"
         @click.prevent="addIngredientGroup"
       >
         {{ $t('recipe_edit.add_group') }}
@@ -38,26 +38,26 @@
         ref="instructions"
         :key="i"
       >
-        <div>
+        <div class="instruction">
           <textarea
             v-model="instruction.text"
             :placeholder="$t('recipes.instructions')"
             :disabled="saving"
             class="small"
           />
+          <FormFieldValidationError
+            :errors="recipeInstructionError(i).text"
+            :saving="saving"
+          />
+          <button
+            :disabled="saving"
+            tabindex="-1"
+            class="btn btn-right remove"
+            @click="recipe_dirty.instructions.splice(i, 1)"
+          >
+            {{ $t('recipe_edit.remove') }}
+          </button>
         </div>
-        <FormFieldValidationError
-          :errors="recipeInstructionError(i).text"
-          :saving="saving"
-        />
-        <button
-          :disabled="saving"
-          tabindex="-1"
-          class="btn btn-right remove"
-          @click="recipe_dirty.instructions.splice(i, 1)"
-        >
-          {{ $t('recipe_edit.remove') }}
-        </button>
       </li>
     </ol>
     <div>
@@ -389,6 +389,10 @@ export default {
     margin: 2px 2px 3px 0;
   }
 
+  .add-group {
+    margin-right: 0;
+  }
+
   table {
     width: 100%;
     border-collapse: collapse;
@@ -417,13 +421,14 @@ export default {
   }
 }
 
-article {
-  margin: 5px;
-  /* smaller after threshold?
-  @media screen and (min-width: 1000px) {
-    width: 60%;
-    margin: auto;
+.instruction {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  textarea {
+    margin: 0;
+    float: left;
+    width: calc(100% - 65px);
   }
-  */
 }
 </style>
