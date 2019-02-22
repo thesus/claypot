@@ -1,10 +1,10 @@
 <template>
   <div
-    :class="{group: dirty.isGroup}"
+    :class="{group: dirty.is_group}"
     class="table"
   >
     <input
-      v-if="dirty.isGroup"
+      v-if="dirty.is_group"
       v-model="dirty.title"
       placeholder="Ingredient group title"
     >
@@ -28,6 +28,7 @@
             <div class="input">
               <input
                 v-model="ingredient.amount_numeric"
+                :disabled="saving"
                 :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length}"
               >
             </div>
@@ -124,7 +125,7 @@ export default {
   data () {
     return {
       dirty: {
-        isGroup: false,
+        is_group: false,
         title: '',
         ingredients: [],
       },
@@ -149,13 +150,13 @@ export default {
           return fields.map(name => (i1[name] === i2[name])).every(i => i)
         }
         const changed = (
-          (this.dirty.isGroup !== this.value.isGroup) ||
+          (this.dirty.is_group !== this.value.is_group) ||
           (this.dirty.title !== this.value.title) ||
           (this.dirty.ingredients.some((ingredient, i) => !equalIngredients(this.value.ingredients[i] || {}, ingredient)))
         )
         if (changed) {
           this.$emit('input', {
-            isGroup: this.dirty.isGroup,
+            is_group: this.dirty.is_group,
             title: this.dirty.title,
             ingredients: this.dirty.ingredients.map(i => Object.assign({}, i)),
           })
@@ -177,10 +178,14 @@ export default {
       const pos = this.dirty.ingredients.length - 1
       /* Select the first field in the input after it was created */
       /* And yeah. This is pretty dirty. */
-      this.$nextTick(() => { this.$refs.ingredientsNode[pos].children[0].children[0].children[0].focus() })
+      this.$nextTick(() => {
+        if (this.$refs.ingredientsNode) {
+          this.$refs.ingredientsNode[pos].children[0].children[0].children[0].focus()
+        }
+      })
     },
     updateDirty () {
-      this.dirty.isGroup = this.value.isGroup
+      this.dirty.is_group = this.value.is_group
       this.dirty.title = this.value.title
       this.dirty.ingredients.splice(0)
       this.dirty.ingredients.push(...this.value.ingredients.map(i => Object.assign({}, i)))
@@ -199,16 +204,17 @@ export default {
 @import '@/modules/inputs.scss';
 
 .table {
-  margin-top: 1em;
+  margin-top: 0.5em;
 }
 .table:first-child {
   margin-top: 0em;
 }
 
 .table.group {
-  padding: 1em;
-  margin-left: 1em;
-  margin-right: 1em;
+  padding: 0.5em;
   border: solid 1px #ccc;
+  width: 100%;
+  display: inline-block;
+  box-sizing: border-box;
 }
 </style>

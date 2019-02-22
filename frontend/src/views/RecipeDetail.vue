@@ -22,27 +22,28 @@
           class="button"
         />
       </div>
-      <router-link
-        v-if="canEdit"
-        :to="{name: 'recipe-edit', param: {id: recipeId}}"
-      >
-        {{ $t('recipe_detail.edit') }}
-      </router-link>
+      <div class="right">
+        <router-link
+          v-if="canEdit"
+          :to="{name: 'recipe-edit', param: {id: recipeId}}"
+          >{{ $t('recipe_detail.edit') }}</router-link>
+        <span>{{ $t('recipe_detail.posted_by', {user: author}) }}</span>
+      </div>
     </div>
 
     <div
       v-if="recipe"
       class="header"
+      :class="{'ingredients-single': (allIngredients.length == 1)}"
     >
+      <div class="images">photos</div>
+
       <RecipeIngredientTable
         v-for="(i, c) in allIngredients"
         :key="c + 1"
-        :ingredients="i.isGroup ? i.ingredients : i.ingredients"
-        :caption="i.isGroup ? i.title : ''"
+        :ingredients="i.is_group ? i.ingredients : i.ingredients"
+        :caption="i.is_group ? i.title : ''"
       />
-      <div class="images">
-        image
-      </div>
     </div>
 
     <ol
@@ -56,10 +57,6 @@
         <p>{{ instruction.text }}</p>
       </li>
     </ol>
-
-    <footer>
-      <p>{{ $t('recipe_detail.posted_by', {user: author}) }}</p>
-    </footer>
   </article>
   <div v-else>
     {{ $t('recipe_detail.no_data') }}
@@ -69,7 +66,6 @@
 <script>
 import {mapGetters} from 'vuex'
 import {api, endpoints} from '@/api'
-import {sortedUnifiedIngredients} from '@/utils'
 
 import RecipeStarInput from '@/components/RecipeStarInput'
 import RecipeIngredientTable from '@/components/RecipeIngredientTable'
@@ -104,7 +100,7 @@ export default {
       )
     },
     allIngredients () {
-      return sortedUnifiedIngredients(this.recipe)
+      return this.recipe.ingredients
     },
     ...mapGetters([
       'isSuperUser',
@@ -144,62 +140,86 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.stars {
-  border: solid 1px #ccc;
-  display: inline;
-  white-space: nowrap;
-  margin-right: 5px;
-
-  .countainer, .button {
-    padding: 0 5px 0 5px;
-    display: inline-block;
-    border: none;
-  }
-
-  .button {
-    border-left: solid 1px #ccc;
-  }
-}
-
 .functions {
   display: flex;
   justify-content: space-between;
+
+  .stars {
+    border: solid 1px #ccc;
+    display: inline;
+    white-space: nowrap;
+    margin-right: 5px;
+
+    .countainer, .button {
+      padding: 0 5px 0 5px;
+      display: inline-block;
+      border: none;
+    }
+
+    .button {
+      border-left: solid 1px #ccc;
+    }
+  }
+
+  .right {
+    span {
+      margin-left: 10px;
+    }
+  }
 }
 
 .header {
   display: flex;
   flex-wrap: wrap;
   margin: 15px -10px;
+  justify-content: space-between;
+  border: none;
 
-  @media screen and (max-width: 850px) {
-    flex-wrap: wrap-reverse;
-    .images, .ingredients {
-      flex-basis: 100% !important;
-    }
-  }
-
-  .ingredients {
+  .ingredients-group {
     padding: 0 5px 0 5px;
-    width: 25%;
+    margin: 5px;
+    width: 220px;
+  }
 
-    .amount {
-      text-align: right;
-    }
-
-    .ingredient {
-      text-align: left;
-      padding-left: 10px;
+  .images {
+    border: solid 1px #ccc;
+    margin: 5px;
+    height: 40vh;
+    width: 100%;
+    overflow: hidden;
+    img {
+      width: 100%;
+      object-fit: contain;
     }
   }
-  .images {
-    margin: 0 10px;
-    border: solid 1px #ccc;
-    flex: 1;
-    height: 400px;
+
+  @media screen and (min-width: 780px) {
+    .images {
+      height: 500px;
+    }
+  }
+
+  @media screen and (min-width: 900px) {
+    &.ingredients-single {
+
+      flex-direction: row-reverse;
+      .images {
+        flex: 1;
+        width: initial;
+        flex-basis: auto;
+      }
+    }
   }
 }
 
 .instructions {
+  margin: 5px;
   text-align: justify;
+  padding-left: 20px;
+}
+
+article {
+  max-width: 1000px;
+  margin: auto;
 }
 </style>
