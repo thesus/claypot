@@ -1,7 +1,9 @@
 from django.conf import settings
-from django.views.generic import View
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.generic import View
 from rest_framework import generics
 from rest_framework.response import Response
 
@@ -16,8 +18,12 @@ csrf_token_view = ensure_csrf_cookie(CsrfTokenView.as_view())
 
 
 class SentryConfigView(generics.GenericAPIView):
+    authentication_classes = []
+
+    @method_decorator(cache_control(max_age=3600))
     def get(self, request):
-        return Response({
+        response = Response({
             'sentry_dsn': getattr(settings, 'SENTRY_PUBLIC_DSN', ''),
             'version': __version__,
         })
+        return response
