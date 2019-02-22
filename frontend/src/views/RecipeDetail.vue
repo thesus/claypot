@@ -37,8 +37,8 @@
       <RecipeIngredientTable
         v-for="(i, c) in allIngredients"
         :key="c + 1"
-        :ingredients="i.isGroup ? i.ingredients : i.ingredients"
-        :caption="i.isGroup ? i.title : ''"
+        :ingredients="i.is_group ? i.ingredients : i.ingredients"
+        :caption="i.is_group ? i.title : ''"
       />
       <div class="images">
         image
@@ -69,7 +69,6 @@
 <script>
 import {mapGetters} from 'vuex'
 import {api, endpoints} from '@/api'
-import {sortedUnifiedIngredients} from '@/utils'
 
 import RecipeStarInput from '@/components/RecipeStarInput'
 import RecipeIngredientTable from '@/components/RecipeIngredientTable'
@@ -104,7 +103,7 @@ export default {
       )
     },
     allIngredients () {
-      return sortedUnifiedIngredients(this.recipe)
+      return this.recipe.ingredients
     },
     ...mapGetters([
       'isSuperUser',

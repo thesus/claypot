@@ -4,6 +4,7 @@ from django.utils.decorators import method_decorator
 from rest_framework import serializers
 
 from claypot.models import (
+    AMOUNT_TYPES,
     Ingredient,
     Recipe,
     RecipeIngredient,
@@ -74,56 +75,6 @@ class UnitField(serializers.RelatedField):
             raise serializers.ValidationError('Unknown unit')
 
 
-class RecipeIngredientSerializer(serializers.ModelSerializer):
-    ingredient = IngredientField()
-    unit = UnitField()
-
-    class Meta:
-        model = RecipeIngredient
-        fields = [
-            'order',
-            'ingredient',
-            'ingredient_extra',
-            'optional',
-            'amount_type',
-            'amount_numeric',
-            'amount_approx',
-            'unit',
-        ]
-
-
-class RecipeIngredientGroupIngredientSerializer(serializers.ModelSerializer):
-    ingredient = IngredientField()
-    unit = UnitField()
-
-    class Meta:
-        model = RecipeIngredientGroupIngredient
-        list_serializer_class = OrderedListSerializer
-        fields = [
-            'order',
-            'ingredient',
-            'ingredient_extra',
-            'optional',
-            'amount_type',
-            'amount_numeric',
-            'amount_approx',
-            'unit',
-        ]
-
-
-class RecipeIngredientGroupSerializer(serializers.ModelSerializer):
-    ingredients = RecipeIngredientGroupIngredientSerializer(many=True)
-
-    class Meta:
-        model = RecipeIngredientGroup
-        list_serializer_class = OrderedListSerializer
-        fields = [
-            'order',
-            'title',
-            'ingredients',
-        ]
-
-
 class UsernameField(serializers.RelatedField):
     def get_queryset(self):
         return get_user_model().objects.all()
@@ -142,13 +93,85 @@ class RecipeInstructionSerializer(serializers.ModelSerializer):
         ]
 
 
-class RecipeSerializer(serializers.ModelSerializer):
+class RecipeIngredientSerializer(serializers.Serializer):
+    ingredient = IngredientField()
+    ingredient_extra = serializers.CharField(allow_blank=True)
+    optional = serializers.BooleanField()
+    amount_type = serializers.ChoiceField(choices=AMOUNT_TYPES)
+    amount_numeric = serializers.FloatField()
+    amount_approx = serializers.CharField(allow_null=True, allow_blank=True)
+    unit = UnitField()
+
+
+class RecipeIngredientListSerializer(serializers.Serializer):
+    is_group = serializers.BooleanField()
+    title = serializers.CharField(allow_blank=True)
+    ingredients = RecipeIngredientSerializer(many=True)
+
+
+class RecipeListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
+        fields = ['id', 'title']
+
+
+class RecipeSerializer(serializers.Serializer):
+    id = serializers.ModelField(
+        model_field=Recipe._meta.get_field('id'), read_only=True)
+    title = serializers.ModelField(
+        model_field=Recipe._meta.get_field('title'))
+    slug = serializers.ModelField(
+        model_field=Recipe._meta.get_field('slug'), read_only=True)
+    author_id = serializers.ModelField(
+        model_field=Recipe._meta.get_field('author_id'), read_only=True)
+    published_on = serializers.ModelField(
+        model_field=Recipe._meta.get_field('published_on'), read_only=True)
     author = UsernameField(required=False)
     instructions = RecipeInstructionSerializer(many=True)
-    ingredients = RecipeIngredientSerializer(many=True)
-    ingredient_groups = RecipeIngredientGroupSerializer(many=True)
     is_starred = serializers.SerializerMethodField()
     stars = serializers.SerializerMethodField()
+
+    def to_representation(self, recipe):
+        data = super().to_representation(recipe)
+        ingredients = (
+            set(recipe.ingredients.all()) |
+            set(recipe.ingredient_groups.all()))
+        all_ingredients = sorted(ingredients, key=lambda i: i.order)
+        ingredients = []
+        buf = []
+        def _flush():
+            ingredients.append(
+                RecipeIngredientListSerializer({
+                    'is_group': False,
+                    'title': '',
+                    'ingredients': buf,
+                }).data)
+            buf.clear()
+
+        for i in all_ingredients:
+            if isinstance(i, RecipeIngredient):
+                buf.append(i)
+            else:
+                if len(buf) > 0:
+                    _flush()
+                ingredients.append(
+                    RecipeIngredientListSerializer({
+                        'is_group': True,
+                        'title': i.title,
+                        'ingredients': i.ingredients.all().order_by('order'),
+                    }).data)
+        if len(buf) > 0:
+            _flush()
+        data['ingredients'] = ingredients
+        return data
+
+    def to_internal_value(self, data):
+        value = super().to_internal_value(data)
+        sub_serializer = RecipeIngredientListSerializer(data=data['ingredients'], many=True)
+        if not sub_serializer.is_valid():
+            raise serializers.ValidationError({'ingredients': sub_serializer.errors})
+        value['ingredients'] = sub_serializer.validated_data
+        return value
 
     def get_is_starred(self, obj):
         if 'request' in self.context:
@@ -188,90 +211,71 @@ class RecipeSerializer(serializers.ModelSerializer):
             obj.save()
 
         # save ingredients
-        existing = set(ri.order for ri in instance.ingredients.all())
-        new = set(ri['order'] for ri in validated_data['ingredients'])
-        remove = existing - new
-        instance.ingredients.filter(order__in=remove).delete()
-        for ri in validated_data['ingredients']:
-            obj = instance.ingredients.filter(
-                order=ri['order'],
-            ).first()
-            if obj is None:
-                obj = RecipeIngredient(
-                    recipe=instance,
-                    order=ri['order'],
-                )
-            obj.ingredient = ri['ingredient']
-            obj.ingredient_extra = ri['ingredient_extra']
-            obj.optional = ri['optional']
-            obj.amount_type = ri['amount_type']
-            obj.amount_numeric = ri['amount_numeric']
-            obj.amount_approx = ri['amount_approx']
-            obj.unit = ri['unit']
-            obj.save()
-
-        # save ingredient groups
-        existing = set(ri.order for ri in instance.ingredient_groups.all())
-        new = set(ri['order'] for ri in validated_data['ingredient_groups'])
-        remove = existing - new
-        instance.ingredient_groups.filter(order__in=remove).delete()
-        for rig in validated_data['ingredient_groups']:
-            obj = instance.ingredient_groups.filter(
-                order=rig['order'],
-            ).first()
-            if obj is None:
-                obj = RecipeIngredientGroup(
-                    recipe=instance,
-                    order=rig['order'],
-                )
-            obj.title = rig['title']
-            obj.save()
-            existing = set(ri.order for ri in obj.ingredients.all())
-            new = set(ri['order'] for ri in rig['ingredients'])
-            remove = existing - new
-            obj.ingredients.filter(order__in=remove).delete()
-            for ri in rig['ingredients']:
-                obj2 = obj.ingredients.filter(
-                    order=ri['order'],
-                ).first()
-                if obj2 is None:
-                    obj2 = RecipeIngredientGroupIngredient(
-                        group=obj,
-                        order=ri['order'],
-                    )
-                obj2.ingredient = ri['ingredient']
-                obj2.ingredient_extra = ri['ingredient_extra']
-                obj2.optional = ri['optional']
-                obj2.amount_type = ri['amount_type']
-                obj2.amount_numeric = ri['amount_numeric']
-                obj2.amount_approx = ri['amount_approx']
-                obj2.unit = ri['unit']
-                obj2.save()
+        order = 1
+        existing = {}
+        for i in instance.ingredients.all():
+            existing[i.order,] = i
+        for grp in instance.ingredient_groups.all():
+            existing[grp.order,] = grp
+            for i in grp.ingredients.all():
+                existing[grp.order, i.order] = i
+        for grp in validated_data['ingredients']:
+            relevant_order = order
+            if grp['is_group'] is True:
+                pk = {
+                    "recipe": instance,
+                    "order": order,
+                }
+                values = {
+                    "title": grp['title'],
+                }
+                complete_ref = (order,)
+                if complete_ref in existing:
+                    existing_obj = existing[complete_ref]
+                    if not isinstance(existing_obj, RecipeIngredientGroup):
+                        existing_obj.delete()
+                        rig = RecipeIngredientGroup.objects.create(**pk, **values)
+                    else:
+                        RecipeIngredientGroup.objects.filter(pk=existing_obj.pk).update(**values)
+                    rig = RecipeIngredientGroup.objects.get(**pk)
+                else:
+                    rig = RecipeIngredientGroup.objects.create(**pk, **values)
+                relevant_order = 1
+                ref = (order,)
+                order += 1
+                cls = RecipeIngredientGroupIngredient
+                parent_ref = {'group': rig}
+            else:
+                ref = ()
+                order += len(grp['ingredients'])
+                cls = RecipeIngredient
+                parent_ref = {'recipe': instance}
+            for ingredient in grp['ingredients']:
+                pk = {
+                    "order": relevant_order,
+                }
+                pk.update(parent_ref)
+                values = {
+                    "ingredient": ingredient['ingredient'],
+                    "ingredient_extra": ingredient['ingredient_extra'],
+                    "optional": ingredient['optional'],
+                    "amount_type": ingredient['amount_type'],
+                    "amount_numeric": ingredient['amount_numeric'],
+                    "amount_approx": ingredient['amount_approx'],
+                    "unit": ingredient['unit'],
+                }
+                #import pdb
+                #pdb.set_trace()
+                complete_ref = ref + (relevant_order,)
+                if complete_ref in existing:
+                    existing_obj = existing[complete_ref]
+                    if not isinstance(existing_obj, cls):
+                        existing_obj.delete()
+                        cls.objects.create(**pk, **values)
+                    else:
+                        cls.objects.filter(pk=existing_obj.pk).update(**values)
+                else:
+                    cls.objects.create(**pk, **values)
+                relevant_order += 1
 
         return instance
-
-    class Meta:
-        model = Recipe
-        fields = [
-            'id',
-            'title',
-            'slug',
-            'instructions',
-            'ingredients',
-            'ingredient_groups',
-            'author',
-            'author_id',
-            'published_on',
-            'is_starred',
-            'stars',
-        ]
-        read_only_fields = [
-            'id',
-            'slug',
-            'author',
-            'author_id',
-            'published_on',
-            'starred_by',
-            'is_starred',
-            'stars',
-        ]

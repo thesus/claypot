@@ -7,39 +7,41 @@ function getCookie(name) {
   return null
 }
 
-function sortedUnifiedIngredients (recipe) {
-  if (!recipe || !recipe.ingredients || !recipe.ingredient_groups) {
-    return []
-  }
-  const sorted = [
-    ...recipe.ingredients,
-    ...recipe.ingredient_groups.map(i => {
-      const r = Object.assign({isGroup: true}, i)
-      r.ingredients = r.ingredients.sort(i => -i.order)
-      return r
-    }),
-  ].sort(i => -i.order)
-  // pack ungrouped ingredients into arrays
-  const result = []
-  let tmp = []
-  for (let i of sorted) {
-    if (!i.isGroup) {
-      tmp.push(i)
-    } else {
-      if (tmp.length > 0) {
-        result.push({isGroup: false, ingredients: tmp, title: ''})
-        tmp = []
-      }
-      result.push(i)
+function clone(obj) {
+    var copy;
+
+    // Handle the 3 simple types, and null or undefined
+    if (null == obj || "object" != typeof obj) return obj;
+
+    // Handle Date
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
     }
-  }
-  if (tmp.length > 0) {
-    result.push({isGroup: false, ingredients: tmp, title: ''})
-  }
-  return result
+
+    // Handle Array
+    if (obj instanceof Array) {
+        copy = [];
+        for (var i = 0, len = obj.length; i < len; i++) {
+            copy[i] = clone(obj[i]);
+        }
+        return copy;
+    }
+
+    // Handle Object
+    if (obj instanceof Object) {
+        copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+        }
+        return copy;
+    }
+
+    throw new Error("Unable to copy obj! Its type isn't supported.");
 }
 
 export {
   getCookie,
-  sortedUnifiedIngredients,
+  clone,
 }

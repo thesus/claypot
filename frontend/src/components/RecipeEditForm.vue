@@ -111,7 +111,7 @@
 
 <script>
 import {api, endpoints} from '@/api'
-import {sortedUnifiedIngredients} from '@/utils'
+import {clone} from '@/utils'
 import FormFieldValidationError from '@/components/FormFieldValidationError'
 import RecipeEditIngredientTable from '@/components/RecipeEditIngredientTable'
 
@@ -142,7 +142,7 @@ export default {
   data () {
     return {
       recipe_dirty: {
-        ingredients: [{isGroup: false, title: '', ingredients: []}],
+        ingredients: [{is_group: false, title: '', ingredients: []}],
         instructions: [this.createEmptyInstruction()],
       },
       saving: false,
@@ -164,7 +164,7 @@ export default {
     },
     recipeIngredientError () {
       return i => {
-        const subsetOfErrors = (this.sortedUnifiedErrors.ingredients[i] || {}).ingredients
+        const subsetOfErrors = (this.errors.ingredients[i] || {}).ingredients
         return j => {
           const e = subsetOfErrors || []
           const r = e.length > j ? e[j] : {}
@@ -175,61 +175,9 @@ export default {
         }
       }
     },
-    unifiedErrors () {
-      const addKeys = function (src, setter) {
-        if (typeof src === 'string' || typeof src === 'number' || src === null || typeof src === 'undefined' || typeof src === 'boolean') {
-          setter([])
-        } else if (Array.isArray(src)) {
-          const c = []
-          c.length = src.length
-          src.forEach((item, i) => {
-            addKeys(item, function (v) {c[i]=v})
-          })
-          setter(c)
-        } else if (typeof src === 'object') {
-          const c = {}
-          for (let k of Object.keys(src)) {
-            addKeys(src[k], function (v) {c[k]=v})
-          }
-          setter(c)
-        } else {
-          throw new Error('you missed a spot:' + src)
-        }
-      }
-      let r
-      addKeys(this.recipe, function (v) {r=v})
-      // mixin errors
-      const addErrors = function (src, unifiedErrorPart, setter) {
-        if (typeof src === 'string' || typeof src === 'number' || src === null || typeof src === 'undefined' || typeof src === 'boolean') {
-          setter(src)
-        } else if (Array.isArray(src)) {
-          src.forEach((item, i) => {
-            addErrors(item, unifiedErrorPart[i], function (v) {unifiedErrorPart[i]=v})
-          })
-        } else if (typeof src === 'object') {
-          for (let k of Object.keys(src)) {
-            addErrors(src[k], unifiedErrorPart[k], function (v) {unifiedErrorPart[k]=v})
-          }
-        } else {
-          throw new Error('you missed a spot: ' + src)
-        }
-      }
-      addErrors(this.errors, r, function (v) {r=v})
-      return r
-    },
-    sortedUnifiedErrors () {
-      const unifiedErrors = this.unifiedErrors
-      const {title, instructions} = unifiedErrors
-      const ingredients = sortedUnifiedIngredients(unifiedErrors)
-      return {
-        title,
-        instructions,
-        ingredients,
-      }
-    },
     recipeInstructionError () {
       return i => {
-        const e = this.sortedUnifiedErrors
+        const e = this.errors
         const r = e.length > i ? e[i] : {}
         for (let p of ['text']) {
           r[p] = r[p] || []
@@ -243,8 +191,8 @@ export default {
       const r = this.recipe
       this.recipe_dirty = {
         title: r.title,
-        instructions: r.instructions,
-        ingredients: sortedUnifiedIngredients(r),
+        instructions: clone(r.instructions || []),
+        ingredients: clone(r.ingredients || []),
       }
     }
   },
@@ -253,7 +201,7 @@ export default {
       this.recipe_dirty.ingredients.push(this.createEmptyIngredientGroup())
     },
     createEmptyIngredientGroup () {
-      return {isGroup: true, title: '', ingredients: []}
+      return {is_group: true, title: '', ingredients: []}
     },
     createEmptyInstruction () {
       return {text: ''}
@@ -306,43 +254,10 @@ export default {
           }
         }
 
-        const ri = []
-        let order = 1
-        const rig = []
-        for (let groupLike of this.recipe_dirty.ingredients) {
-          const target = groupLike.isGroup ? [] : ri
-          let innerOrder = 1
-          for (let i of groupLike.ingredients) {
-            target.push({
-              order: groupLike.isGroup ? innerOrder : order,
-              ingredient: i.ingredient,
-              ingredient_extra: i.ingredient_extra,
-              optional: false,
-              amount_type: amount_types.numeric,
-              amount_numeric: Number(i.amount_numeric),
-              amount_approx: '',
-              unit: i.unit,
-            })
-            if (!groupLike.isGroup) {
-              order++
-            } else {
-              innerOrder++
-            }
-          }
-          if (groupLike.isGroup) {
-            rig.push({
-              order: order,
-              title: groupLike.title,
-              ingredients: target,
-            })
-            order++
-          }
-        }
         const d = {
           title: this.recipe_dirty.title,
           instructions: this.recipe_dirty.instructions.map((instruction, i) => { return {order: i, text: instruction.text}}),
-          ingredients: ri,
-          ingredient_groups: rig,
+          ingredients: this.recipe_dirty.ingredients,
         }
         const r = await api(endpoints.post_recipe(this.recipe.id), d, {method: this.recipe.id ? 'put' : 'post'})
         if (r.ok) {
