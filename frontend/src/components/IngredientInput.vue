@@ -19,6 +19,7 @@
     </div>
     <input
       v-model="dirtyValue"
+      :disabled="disabled"
       bubbles="true"
       @focus="onFocus()"
       @blur="onBlur()"
@@ -39,6 +40,10 @@ export default {
     value: {
       type: String,
       default: '',
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
     },
   },
   data () {

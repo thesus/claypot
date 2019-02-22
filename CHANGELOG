@@ -1,3 +1,8 @@
+# Upcoming release
+
+- Fix error in recipe form validation
+
+
 # Version 0.1.7
 
 - Fix settings for Sentry

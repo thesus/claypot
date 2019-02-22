@@ -33,7 +33,7 @@ class IngredientFactory(factory.DjangoModelFactory):
 class UnitFactory(factory.DjangoModelFactory):
     name = factory.Faker('name')
     name_plural = factory.Faker('name')
-    code = factory.Faker('word')
+    code = factory.Faker('lexify', text='???')
 
     class Meta:
         model = 'claypot.Unit'

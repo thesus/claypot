@@ -46,9 +46,9 @@ def test_post_new_recipe(
     data = {
       "title": src['title'],
       "instructions": src['instructions'],
-      "ingredients": src['ingredients'],
-      "ingredient_groups": [],
+      "ingredients": [i for i in src['ingredients'] if i['is_group'] is not True],
     }
     response = api_client.put(url, data, format='json')
     assert response.status_code == status.HTTP_200_OK
-    assert response.data['ingredient_groups'] == []
+    assert [i for i in response.data['ingredients'] if i['is_group'] is True] == []
+    assert len([i for i in response.data['ingredients'] if i['is_group'] is False]) > 0
