@@ -1,15 +1,35 @@
 <template>
-  <form enctype="multipart/form-data" v-on:submit.prevent="submitImages">
+  <form enctype="multipart/form-data" @submit.prevent="submitImages">
     <label class="input">
       <span class="btn btn-default">Select images</span>
       <input
+        ref="input"
         type="file"
         multiple
-        ref="input"
         accept="image/*"
-        @change="selectImages">
+        @change="imageChange"
+      >
     </label>
-    <button class="btn btn-default btn-right" type="submit">Submit</button>
+    <div
+      v-if="images"
+      class="list"
+    >
+      <div
+        v-for="(image, index) in images"
+        :key="index"
+        class="thumbnail"
+      >
+        <img
+          :src="image.url"
+          :class="{
+            'loading': (image.success === null),
+            'success': (image.success),
+            'failure': (image.success === false)
+          }"
+        >
+      </div>
+    </div>
+    <span v-if="isFailed" @click="submitImages" class="btn btn-default">Retry</span>
   </form>
 </template>
 
@@ -22,8 +42,13 @@ export default {
       'images': []
     }
   },
+  computed: {
+    isFailed () {
+      return !!this.images.filter(image => image.success === false).length
+    }
+  },
   methods: {
-    selectImages (event) {
+    imageChange (event) {
       /* Clear existing images */
       this.images = []
       const images = this.$refs.input.files
@@ -31,20 +56,24 @@ export default {
       for (let image of images) {
         this.images.push({
           'file': image,
-          'success': false
+          'url': URL.createObjectURL(image),
+          'success': null
         })
       }
+
+      /* Auto submit and send ids to parent component. */
+      this.submitImages()
     },
     submitImages () {
       for (let image of this.images) {
         if (image.succes !== true) {
+          image.success = null
           this.uploadImage(image)
         }
       }
     },
     async uploadImage (image) {
       let data = new FormData()
-      console.log(image)
       data.append('image', image.file)
 
       const options = {
@@ -52,16 +81,21 @@ export default {
         'method': 'post'
       }
 
-      const response = await api(
-        endpoints.upload_image(),
-        null,
-        options
-      )
+      try {
+        const response = await api(
+          endpoints.upload_image(),
+          null,
+          options
+        )
 
       if (response.ok) {
-        console.log('yay')
+        image.success = true
       } else {
-        console.log(await response.json())
+        throw Exception(await response.json())
+      }
+
+      } catch (e) {
+        image.success = false
       }
     }
   }
@@ -69,9 +103,42 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+$thumbnail-size: 150px;
+
 input[type=file] {
   display: none;
   overflow: hidden;
   position: relative;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, $thumbnail-size);
+  grid-gap: 8px;
+  justify-content: center;
+  width: 100%;
+}
+
+.thumbnail {
+  width: $thumbnail-size;
+  height: $thumbnail-size;
+}
+
+img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+
+  &.loading {
+    filter: blur(1px);
+  }
+
+  &.success {
+    border: 5px solid green;
+  }
+
+  &.failure {
+    border: 5px solid red;
+  }
 }
 </style>
