@@ -19,6 +19,7 @@ from claypot.models import (
 from .serializers import (
     IngredientSerializer,
     ManyIngredientSerializer,
+    RecipeListSerializer,
     RecipeSerializer,
 )
 
@@ -139,6 +140,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [ReadAllEditOwn]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+
+    def get_serializer_class(self):
+        if self.action == 'list' and self.request.method.lower() == 'get':
+            return RecipeListSerializer
+        return self.serializer_class
+
 
     @action(detail=True, methods=['post'])
     def star(self, request, pk=None):
