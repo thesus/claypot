@@ -232,6 +232,7 @@ class RecipeSerializer(serializers.Serializer):
                 complete_ref = (order,)
                 if complete_ref in existing:
                     existing_obj = existing[complete_ref]
+                    del existing[complete_ref]
                     if not isinstance(existing_obj, RecipeIngredientGroup):
                         existing_obj.delete()
                         rig = RecipeIngredientGroup.objects.create(**pk, **values)
@@ -269,6 +270,7 @@ class RecipeSerializer(serializers.Serializer):
                 complete_ref = ref + (relevant_order,)
                 if complete_ref in existing:
                     existing_obj = existing[complete_ref]
+                    del existing[complete_ref]
                     if not isinstance(existing_obj, cls):
                         existing_obj.delete()
                         cls.objects.create(**pk, **values)
@@ -277,5 +279,7 @@ class RecipeSerializer(serializers.Serializer):
                 else:
                     cls.objects.create(**pk, **values)
                 relevant_order += 1
+        for i in existing.values():
+            i.delete()
 
         return instance
