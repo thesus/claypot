@@ -1,3 +1,10 @@
+# Version 0.1.11
+
+- Fix error in recipe creation
+- Add approximated amounts to recipes
+- Add optional ingredients to recipes
+
+
 # Version 0.1.10
 
 - Actually fix error in unit test setup
