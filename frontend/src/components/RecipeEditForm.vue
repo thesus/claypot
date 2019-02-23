@@ -168,7 +168,7 @@ export default {
         return j => {
           const e = subsetOfErrors || []
           const r = e.length > j ? e[j] : {}
-          for (let p of ['ingredient', 'ingredient_extra', 'amount_numeric', 'unit']) {
+          for (let p of ['ingredient', 'ingredient_extra', 'amount_numeric', 'amount_approx', 'unit', 'optional']) {
             r[p] = r[p] || []
           }
           return r

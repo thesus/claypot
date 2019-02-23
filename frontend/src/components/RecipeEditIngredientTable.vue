@@ -15,6 +15,7 @@
           <th>{{ $t('recipe_edit.unit') }}</th>
           <th>{{ $t('recipe_edit.ingredient') }}</th>
           <th>{{ $t('recipe_edit.ingredient_extra') }}</th>
+          <th>{{ $t('recipe_edit.optional') }}</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -27,18 +28,20 @@
           <td>
             <div class="input">
               <input
-                v-model="ingredient.amount_numeric"
+                :value="displayAmount(ingredient)"
                 :disabled="saving"
-                :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length}"
+                :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length || !!recipeIngredientError(i).amount_numeric.length}"
+                @input="updateAmount(ingredient, $event)"
               >
             </div>
             <FormFieldValidationError :errors="recipeIngredientError(i).amount_numeric" />
+            <FormFieldValidationError :errors="recipeIngredientError(i).amount_approx" />
           </td>
           <td>
             <div class="input">
               <input
                 v-model="ingredient.unit"
-                :disabled="saving"
+                :disabled="saving || ingredient.amount_type !== AMOUNT_TYPE_NUMERIC"
                 :class="{'form-error': !!recipeIngredientError(i).unit.length}"
               >
             </div>
@@ -63,6 +66,17 @@
               >
             </div>
             <FormFieldValidationError :errors="recipeIngredientError(i).ingredient_extra" />
+          </td>
+          <td>
+            <div class="input">
+              <input
+                v-model="ingredient.optional"
+                type="checkbox"
+                :disabled="saving"
+                :class="{'form-error': !!recipeIngredientError(i).optional.length}"
+              >
+            </div>
+            <FormFieldValidationError :errors="recipeIngredientError(i).optional" />
           </td>
           <td>
             <button
@@ -129,6 +143,27 @@ export default {
         title: '',
         ingredients: [],
       },
+      AMOUNT_TYPE_NONE: 1,
+      AMOUNT_TYPE_NUMERIC: 2,
+      AMOUNT_TYPE_APPROX: 3,
+    }
+  },
+  computed: {
+    displayAmount () {
+      return ingredient => {
+        switch (ingredient.amount_type) {
+          case this.AMOUNT_TYPE_NUMERIC:
+            if (ingredient.amount_numeric !== null) {
+              return ingredient.amount_numeric
+            } else {
+              return ingredient.amount_approx
+            }
+          case this.AMOUNT_TYPE_APPROX:
+            return ingredient.amount_approx
+          default:
+            return 'broken'
+        }
+      }
     }
   },
   watch: {
@@ -170,7 +205,15 @@ export default {
   },
   methods: {
     createEmptyIngredient () {
-      return {ingredient: '', ingredient_extra: '', amount_numeric: 0, unit: ''}
+      return {
+        ingredient: '',
+        ingredient_extra: '',
+        optional: false,
+        amount_type: this.AMOUNT_TYPE_NUMERIC,
+        amount_approx: '',
+        amount_numeric: 0,
+        unit: '',
+      }
     },
     addIngredient () {
       this.dirty.ingredients.push(this.createEmptyIngredient())
@@ -196,6 +239,23 @@ export default {
     removeGroup () {
       this.$emit('remove', {})
     },
+    updateAmount (ingredient, event) {
+      const value = event.target.value
+      const num = Number(value)
+      if ((value === '') || !Number.isNaN(num)) {
+        ingredient.amount_type = this.AMOUNT_TYPE_NUMERIC
+        if (value !== '') {
+          ingredient.amount_numeric = num
+        } else {
+          ingredient.amount_numeric = null
+        }
+        ingredient.amount_approx = value
+      } else {
+        ingredient.amount_type = this.AMOUNT_TYPE_APPROX
+        ingredient.amount_numeric = null
+        ingredient.amount_approx = value
+      }
+    }
   },
 }
 </script>
