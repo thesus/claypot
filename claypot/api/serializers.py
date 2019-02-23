@@ -98,7 +98,7 @@ class RecipeIngredientSerializer(serializers.Serializer):
     ingredient_extra = serializers.CharField(allow_blank=True)
     optional = serializers.BooleanField()
     amount_type = serializers.ChoiceField(choices=AMOUNT_TYPES)
-    amount_numeric = serializers.FloatField()
+    amount_numeric = serializers.FloatField(allow_null=True)
     amount_approx = serializers.CharField(allow_null=True, allow_blank=True)
     unit = UnitField()
 
