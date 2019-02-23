@@ -79,6 +79,7 @@
         "amount": "@:recipes.amount",
         "ingredient": "@:recipes.ingredient",
         "ingredient_extra": "@:recipes.ingredient_extra",
+        "optional": "Optional",
         "posted_by": "@:recipes.posted_by",
         "unknown_user": "@:recipes.unknown_user",
         "edit": "Bearbeiten"
@@ -91,6 +92,7 @@
         "unit": "@:recipes.unit",
         "ingredient": "@:recipes.ingredient",
         "ingredient_extra": "@:recipes.ingredient_extra",
+        "optional": "@:recipe_detail.optional",
         "posted_by": "@:recipes.posted_by",
         "unknown_user": "@:recipes.unknown_user",
         "remove": "Entfernen",

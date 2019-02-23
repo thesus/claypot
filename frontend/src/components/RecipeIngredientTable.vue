@@ -12,7 +12,12 @@
           :key="ingredient.ingredient"
         >
           <td class="amount">
-            {{ ingredient.amount_numeric }}&nbsp;{{ ingredient.unit }}
+            <span v-if="ingredient.amount_type === AMOUNT_TYPE_NUMERIC">
+              {{ ingredient.amount_numeric }}&nbsp;{{ ingredient.unit }}
+            </span>
+            <span v-else-if="ingredient.amount_type === AMOUNT_TYPE_APPROX">
+              {{ ingredient.amount_approx }}
+            </span>
           </td>
           <td class="ingredient">
             {{ ingredient.ingredient }}<span v-if="ingredient.ingredient_extra">, {{ ingredient.ingredient_extra }}</span>
@@ -35,6 +40,13 @@ export default {
       type: Array,
       default: () => [],
     },
+  },
+  data () {
+    return {
+      AMOUNT_TYPE_NONE: 1,
+      AMOUNT_TYPE_NUMERIC: 2,
+      AMOUNT_TYPE_APPROX: 3,
+    }
   },
 }
 </script>
