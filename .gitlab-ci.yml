@@ -89,7 +89,7 @@ build:caddy:
 deploy:cooking.cryptec.at:
   stage: deploy
   environment:
-    name: cooking.cryptec.at
+    name: production/cooking.cryptec.at
     url: https://cooking.cryptec.at
   only:
     - tags
