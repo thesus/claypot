@@ -134,10 +134,8 @@ MEDIA_URL = '/media/'
 
 
 # Email
-EMAIL_BACKEND = env(
-    'DJANGO_EMAIL_BACKEND',
-    default='django.core.mail.backends.console.EmailBackend'
-)
+EMAIL_CONFIG = env.email_url('EMAIL_URL', default='consolemail://')
+vars().update(EMAIL_CONFIG)
 
 # Rest Framework
 REST_FRAMEWORK = {
