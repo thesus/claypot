@@ -12,6 +12,10 @@
       <FormFieldValidationError :errors="errors.title" />
     </header>
 
+    <div class="images">
+      <ImageUpload @change="setImages"/>
+    </div>
+
     <div class="ingredients">
       <div class="table">
         <RecipeEditIngredientTable
@@ -146,6 +150,7 @@ import {api, endpoints} from '@/api'
 import {clone} from '@/utils'
 import FormFieldValidationError from '@/components/FormFieldValidationError'
 import RecipeEditIngredientTable from '@/components/RecipeEditIngredientTable'
+import ImageUpload from '@/components/ImageUpload'
 
 const amount_types = {
   none: 1,
@@ -158,12 +163,14 @@ export default {
   components: {
     FormFieldValidationError,
     RecipeEditIngredientTable,
+    ImageUpload
   },
   props: {
     recipe: {
       type: Object,
       default: function () {
         return {
+          images: [],
           ingredient_groups: [],
           ingredients: [],
           title: '',
@@ -176,6 +183,7 @@ export default {
       recipe_dirty: {
         ingredients: [{is_group: false, title: '', ingredients: []}],
         instructions: [this.createEmptyInstruction()],
+        images: []
       },
       saving: false,
       errors: {
@@ -248,6 +256,9 @@ export default {
     },
     addInstruction () {
       this.recipe_dirty.instructions.push(this.createEmptyInstruction())
+    },
+    setImages (images) {
+      this.recipe_dirty.images = images
     },
     async save () {
       this.saving = true
@@ -428,5 +439,9 @@ export default {
     float: left;
     width: calc(100% - 65px);
   }
+}
+
+.images {
+  padding: 10px;
 }
 </style>

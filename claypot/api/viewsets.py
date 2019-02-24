@@ -194,4 +194,5 @@ class ImageViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         instance = Image()
         instance.save(**serializer.validated_data)
-        return Response({'detail': 'ok'})
+
+        return Response({'id': instance.pk})

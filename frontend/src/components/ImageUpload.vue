@@ -57,6 +57,7 @@ export default {
         this.images.push({
           'file': image,
           'url': URL.createObjectURL(image),
+          'id': null,
           'success': null
         })
       }
@@ -64,13 +65,17 @@ export default {
       /* Auto submit and send ids to parent component. */
       this.submitImages()
     },
-    submitImages () {
+    async submitImages () {
+      const promises = []
       for (let image of this.images) {
         if (image.succes !== true) {
           image.success = null
-          this.uploadImage(image)
+          promises.push(this.uploadImage(image))
         }
       }
+
+      await Promise.all(promises)
+      this.$emit('change', this.images.filter(image => image.success === true).map(image => image.id))
     },
     async uploadImage (image) {
       let data = new FormData()
@@ -90,6 +95,7 @@ export default {
 
       if (response.ok) {
         image.success = true
+        image.id = (await response.json()).id
       } else {
         throw Exception(await response.json())
       }
@@ -103,7 +109,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$thumbnail-size: 150px;
+$thumbnail-size: 100px;
 
 input[type=file] {
   display: none;
@@ -134,11 +140,11 @@ img {
   }
 
   &.success {
-    border: 5px solid green;
+    border: 2px solid green;
   }
 
   &.failure {
-    border: 5px solid red;
+    border: 2px solid red;
   }
 }
 </style>
