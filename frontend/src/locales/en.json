@@ -99,6 +99,7 @@
         "add_ingredient": "Add new Ingredient",
         "add_instruction": "Add new instruction",
         "add_group": "Add new Ingredient Group",
-        "save": "Save"
+        "save": "Save",
+        "delete": "Delete recipe"
     }
 }

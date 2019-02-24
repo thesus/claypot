@@ -78,6 +78,14 @@
       >
         {{ $t('recipe_edit.save') }}
       </button>
+      <button
+        v-if="canDeleteRecipe"
+        :disabled="saving"
+        class="btn btn-right"
+        @click.prevent="deleteRecipe"
+      >
+        {{ $t('recipe_edit.delete') }}
+      </button>
     </div>
     <div v-if="newIngredientsDecision">
       <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
@@ -211,6 +219,12 @@ export default {
         return r
       }
     },
+    isExistingRecipe () {
+      return !!this.recipe.id
+    },
+    canDeleteRecipe () {
+      return this.isExistingRecipe && this.recipe.deletable
+    },
   },
   watch: {
     recipe () {
@@ -328,6 +342,18 @@ export default {
         }
       } catch (err) {
         this.errors.client_side = err.message
+      } finally {
+        this.saving = false
+      }
+    },
+    async deleteRecipe () {
+      this.saving = true
+      try {
+        const r = await api(endpoints.post_recipe(this.recipe.id), null, {method: 'delete'})
+        if (r.ok) {
+        } else {
+            this.errors.detail = errors.detail || ''
+        }
       } finally {
         this.saving = false
       }

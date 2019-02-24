@@ -1,7 +1,11 @@
+from datetime import datetime
+
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils.decorators import method_decorator
 from rest_framework import serializers
+from pytz import utc
 
 from claypot.models import (
     AMOUNT_TYPES,
@@ -130,6 +134,7 @@ class RecipeSerializer(serializers.Serializer):
     instructions = RecipeInstructionSerializer(many=True)
     is_starred = serializers.SerializerMethodField()
     stars = serializers.SerializerMethodField()
+    deletable = serializers.SerializerMethodField()
 
     def to_representation(self, recipe):
         data = super().to_representation(recipe)
@@ -181,6 +186,20 @@ class RecipeSerializer(serializers.Serializer):
 
     def get_stars(self, obj):
         return obj.starred_by.all().count()
+
+    def get_deletable(self, obj):
+        if 'request' in self.context:
+            user = self.context['request'].user
+            if user.is_superuser or user.is_staff:
+                return True
+            elif obj.author == request.user:
+                now = datetime.utcnow().replace(tzinfo=utc)
+                cut_off = now - settings.RECIPE_DELETE_GRACE_PERIOD
+                return obj.published_on > cut_off
+            else:
+                return False
+        else:
+            return False
 
     def create(self, validated_data):
         instance = Recipe(author=self.context['request'].user)

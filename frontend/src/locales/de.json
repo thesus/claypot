@@ -100,6 +100,7 @@
         "add_ingredient": "Hinzufügen",
         "add_instruction": "Hinzufügen",
         "add_group": "Gruppe hinzufügen",
-        "save": "Speichern"
+        "save": "Speichern",
+        "delete": "Rezept löschen"
     }
 }

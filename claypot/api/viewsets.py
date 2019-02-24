@@ -1,6 +1,11 @@
+from datetime import datetime
+
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
+from django_filters.rest_framework import DjangoFilterBackend
+from pytz import utc
 from rest_framework import (
     permissions,
     status,
@@ -9,7 +14,6 @@ from rest_framework import (
 from rest_framework.decorators import action
 from rest_framework.response import Response
 import django_filters
-from django_filters.rest_framework import DjangoFilterBackend
 
 from claypot.models import (
     Ingredient,
@@ -34,12 +38,18 @@ class ReadAllEditOwn(permissions.BasePermission):
         )
 
     def has_object_permission(self, request, view, obj):
-        if request.user.is_superuser:
+        if request.user.is_superuser or request.user.is_staff:
             return True
         if request.method in permissions.SAFE_METHODS:
             return True
         if isinstance(obj, Recipe):
-            return obj.author == request.user
+            if obj.author == request.user:
+                if view.action != 'delete':
+                    return True
+                else:
+                    now = datetime.utcnow().replace(tzinfo=utc)
+                    cut_off = now - settings.RECIPE_DELETE_GRACE_PERIOD
+                    return obj.published_on > cut_off
         else:
             return False
 
@@ -146,7 +156,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeListSerializer
         return self.serializer_class
 
-
     @action(detail=True, methods=['post'])
     def star(self, request, pk=None):
         recipe = get_object_or_404(Recipe, pk=pk)
@@ -158,3 +167,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         recipe.starred_by.remove(request.user)
         return Response(False)
+
+    def destroy(self, request, pk=None):
+        obj = self.get_object()
+        for i in obj.images.all():
+            delete_image = False
+            if not i.recipe_set.exclude(pk=obj.pk).exists():
+                delete_image = True
+            obj.images.remove(i)
+            if delete_image:
+                i.delete()
+        return super().destroy()
