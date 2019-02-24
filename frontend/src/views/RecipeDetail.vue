@@ -100,7 +100,7 @@ export default {
       )
     },
     allIngredients () {
-      return this.recipe.ingredients
+      return this.recipe.ingredients || []
     },
     ...mapGetters([
       'isSuperUser',
