@@ -1,3 +1,8 @@
+# Version 0.1.14
+
+- Fix frontend not properly showing errors in ingredient creation process.
+
+
 # Version 0.1.13
 
 - Update environment name to match Gitlab Flow and help better track production environments
