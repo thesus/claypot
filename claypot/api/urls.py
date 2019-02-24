@@ -9,16 +9,16 @@ from .views import (
     csrf_token_view,
 )
 from .viewsets import (
+    ImageViewSet,
     IngredientViewSet,
     RecipeViewSet,
-    ImageViewSet
 )
 
 
 router = DefaultRouter()
+router.register('images', ImageViewSet)
 router.register('ingredients', IngredientViewSet)
 router.register('recipes', RecipeViewSet)
-router.register('images', ImageViewSet)
 
 app_name = 'api'
 urlpatterns = [

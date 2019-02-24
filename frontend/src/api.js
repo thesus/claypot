@@ -56,7 +56,7 @@ const endpoints = {
   },
   upload_image () {
     return '/api/images/'
-  }
+  },
 }
 
 for (let [e, f] of Object.entries(endpoints)) {

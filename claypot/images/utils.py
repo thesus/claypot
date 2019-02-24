@@ -1,13 +1,12 @@
-import django_rq
-import PIL.Image
-import PIL.ImageOps
+from io import BytesIO
 import os.path
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.base import ContentFile
-
-from io import BytesIO
+import PIL.Image
+import PIL.ImageOps
+import django_rq
 
 
 def resize(pk, filename, name, dimensions, image_class, file_class):
@@ -31,7 +30,7 @@ def resize(pk, filename, name, dimensions, image_class, file_class):
         h = dimensions['h']
         w = (float(h) / orig_height) * orig_width
     else:
-        raise ImproperlyConfigured("IMAGE_SIZES contain wrong keys")
+        raise ImproperlyConfigured("IMAGE_SIZES contains wrong keys")
 
     h = int(h)
     w = int(w)
@@ -46,12 +45,12 @@ def resize(pk, filename, name, dimensions, image_class, file_class):
                 image=image,
                 method=PIL.Image.LANCZOS,
                 size=(w, h),
-                centering=(0.5, 0.5)
+                centering=(0.5, 0.5),
             )
         else:
             image = image.resize(
                 (w, h),
-                PIL.Image.LANCZOS
+                PIL.Image.LANCZOS,
             )
 
         # Convert to remove possible alpha channel
@@ -61,7 +60,7 @@ def resize(pk, filename, name, dimensions, image_class, file_class):
         instance.image_file.save(
             '{0}_{1}.jpg'.format(container.pk, name),
             ContentFile(f.getvalue()),
-            save=False
+            save=False,
         )
 
         instance.save()

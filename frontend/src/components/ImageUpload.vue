@@ -39,13 +39,13 @@ import { api, endpoints, InvalidRequestError } from '@/api'
 export default {
   data () {
     return {
-      'images': []
+      'images': [],
     }
   },
   computed: {
     isFailed () {
       return !!this.images.filter(image => image.success === false).length
-    }
+    },
   },
   methods: {
     imageChange (event) {
@@ -53,12 +53,12 @@ export default {
       this.images = []
       const images = this.$refs.input.files
 
-      for (let image of images) {
+      for (const image of images) {
         this.images.push({
           'file': image,
           'url': URL.createObjectURL(image),
           'id': null,
-          'success': null
+          'success': null,
         })
       }
 
@@ -67,7 +67,7 @@ export default {
     },
     async submitImages () {
       const promises = []
-      for (let image of this.images) {
+      for (const image of this.images) {
         if (image.succes !== true) {
           image.success = null
           promises.push(this.uploadImage(image))
@@ -90,21 +90,21 @@ export default {
         const response = await api(
           endpoints.upload_image(),
           null,
-          options
+          options,
         )
 
-      if (response.ok) {
-        image.success = true
-        image.id = (await response.json()).id
-      } else {
-        throw Exception(await response.json())
-      }
-
+        if (response.ok) {
+          image.success = true
+          image.id = (await response.json()).id
+        } else {
+          // TODO: Add proper error handling
+          throw Exception(await response.json())
+        }
       } catch (e) {
         image.success = false
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

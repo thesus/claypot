@@ -1,11 +1,13 @@
+import errno
+import os
+import uuid
+
 from django.conf import settings
 from django.db import models
+import django_rq
 
 from claypot.images.utils import delegate
 
-import django_rq
-import os, errno
-import uuid
 
 class ImageFile(models.Model):
     """Stores an image on a specific location and the dimensions."""
@@ -46,5 +48,5 @@ class Image(models.Model):
             delegate,
             classes=(Image, ImageFile),
             pk=self.pk,
-            filename=name
+            filename=name,
         )

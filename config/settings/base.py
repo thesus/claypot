@@ -31,13 +31,13 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'django_filters',
-    'django_rq'
+    'django_rq',
 ]
 
 INSTALLED_APPS += [
     'claypot',
     'claypot.api',
-    'claypot.images'
+    'claypot.images',
 ]
 
 MIDDLEWARE = [
@@ -143,17 +143,17 @@ IMAGE_ROOT = str(ROOT_DIR('images'))
 IMAGE_SIZES = {
     'thumbnail': {
         'w': 200,
-        'h': 200
+        'h': 200,
     },
     'small': {
-        'w': 400
+        'w': 400,
     },
     'medium': {
-        'w': 700
+        'w': 700,
     },
     'large': {
-        'w': 1000
-    }
+        'w': 1000,
+    },
 }
 
 # Email
@@ -173,8 +173,8 @@ RQ_QUEUES = {
     'default': {
         'HOST': env('REDIS_HOST', default='localhost'),
         'PORT': 6379,
-        'DB': 0
-    }
+        'DB': 0,
+    },
 }
 
 SENTRY_DSN = env('SENTRY_DSN', default='')

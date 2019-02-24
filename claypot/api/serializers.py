@@ -20,7 +20,7 @@ from claypot.models import (
 
 from claypot.images.models import (
     Image,
-    ImageFile
+    ImageFile,
 )
 
 class OrderedListSerializer(serializers.ListSerializer):
@@ -345,7 +345,7 @@ class ImageFileSerializer(serializers.ModelSerializer):
         fields = [
             'image_file',
             'height',
-            'width'
+            'width',
         ]
 
 
@@ -360,5 +360,5 @@ class ImageRetrieveSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             'id',
-            'files'
+            'files',
         ]

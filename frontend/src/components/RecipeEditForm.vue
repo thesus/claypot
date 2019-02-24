@@ -163,7 +163,7 @@ export default {
   components: {
     FormFieldValidationError,
     RecipeEditIngredientTable,
-    ImageUpload
+    ImageUpload,
   },
   props: {
     recipe: {
@@ -183,7 +183,7 @@ export default {
       recipe_dirty: {
         ingredients: [{is_group: false, title: '', ingredients: []}],
         instructions: [this.createEmptyInstruction()],
-        images: []
+        images: [],
       },
       saving: false,
       errors: {

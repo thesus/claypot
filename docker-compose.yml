@@ -13,7 +13,7 @@ services:
 
   claypot:
     image: dev.cryptec.at:5000/root/claypot:${CLAYPOT_VERSION:-master}
-    build:
+    build: &build
       context: .
       dockerfile: compose/claypot/Dockerfile
     environment: &env
@@ -25,6 +25,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-claypot}
       SENTRY_DSN: ${SENTRY_DSN}
       EMAIL_URL: ${EMAIL_URL:-consolemail://}
+      REDIS_HOST: "redis"
 
   db:
     image: postgres:alpine
@@ -41,11 +42,11 @@ services:
 
   worker:
     image: dev.cryptec.at:5000/root/claypot:${CLAYPOT_VERSION:-master}
-    environment: &env
-      DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY}"
-      REDIS_HOST: "redis"
-      SENTRY_DSN: ${SENTRY_DSN}
-    command: "python manage.py rqworker"
+    build:
+      <<: *build
+    environment:
+      <<: *env
+    command: ["python", "manage.py", "rqworker"]
 
 volumes:
   db: {}
