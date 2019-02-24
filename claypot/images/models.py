@@ -4,7 +4,7 @@ from django.db import models
 from claypot.images.utils import delegate
 
 import django_rq
-import os.path
+import os, errno
 import uuid
 
 class ImageFile(models.Model):
@@ -29,6 +29,13 @@ class Image(models.Model):
             uuid.uuid4(),
             image.name.split(".")[-1]
         )
+
+        try:
+            os.makedirs(settings.IMAGE_ROOT)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+
         fullpath = os.path.join(settings.IMAGE_ROOT, name)
         with open(fullpath, 'wb') as f:
             for c in image.chunks():

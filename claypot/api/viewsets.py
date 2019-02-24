@@ -191,12 +191,7 @@ class ImageViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            instance = Image()
-            instance.save(**serializer.validated_data)
-            return Response({'status': 'submitted image'})
-        else:
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        serializer.is_valid(raise_exception=True)
+        instance = Image()
+        instance.save(**serializer.validated_data)
+        return Response({'detail': 'ok'})
