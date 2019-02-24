@@ -89,6 +89,10 @@ def test_remove_recipe(
     api_client.force_login(user)
 
     url = reverse('api:recipe-detail', kwargs={'pk': recipe.pk})
+    response = api_client.get(url)
+    assert response.status_code == status.HTTP_200_OK
+    assert response.data['deletable'] == should_work
+
     response = api_client.delete(url)
     if should_work:
         assert response.status_code == status.HTTP_204_NO_CONTENT
