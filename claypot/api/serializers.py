@@ -189,7 +189,8 @@ class RecipeSerializer(serializers.Serializer):
 
     def get_deletable(self, obj):
         if 'request' in self.context:
-            user = self.context['request'].user
+            request = self.context['request']
+            user = request.user
             if user.is_superuser or user.is_staff:
                 return True
             elif obj.author == request.user:

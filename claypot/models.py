@@ -3,6 +3,7 @@ import operator
 
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import (
     ugettext,
     ugettext_lazy
@@ -68,7 +69,7 @@ class Recipe(models.Model):
         verbose_name=ugettext_lazy('Author'),
         related_name='authored_recipes',
     )
-    published_on = models.DateTimeField(auto_now=True)
+    published_on = models.DateTimeField(default=timezone.now)
     starred_by = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name='starred_recipes',

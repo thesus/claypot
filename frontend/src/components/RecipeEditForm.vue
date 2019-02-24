@@ -351,6 +351,7 @@ export default {
       try {
         const r = await api(endpoints.post_recipe(this.recipe.id), null, {method: 'delete'})
         if (r.ok) {
+          this.$emit('remove', {})
         } else {
             this.errors.detail = errors.detail || ''
         }

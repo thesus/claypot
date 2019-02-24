@@ -44,7 +44,7 @@ class ReadAllEditOwn(permissions.BasePermission):
             return True
         if isinstance(obj, Recipe):
             if obj.author == request.user:
-                if view.action != 'delete':
+                if view.action != 'destroy':
                     return True
                 else:
                     now = datetime.utcnow().replace(tzinfo=utc)
@@ -177,4 +177,4 @@ class RecipeViewSet(viewsets.ModelViewSet):
             obj.images.remove(i)
             if delete_image:
                 i.delete()
-        return super().destroy()
+        return super().destroy(request, pk=pk)
