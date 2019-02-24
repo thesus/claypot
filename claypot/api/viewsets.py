@@ -176,6 +176,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, pk=None):
         obj = self.get_object()
+        for i in obj.images.all():
+            delete_image = False
+            if not i.recipe_set.exclude(pk=obj.pk).exists():
+                delete_image = True
+            obj.images.remove(i)
+            if delete_image:
+                i.delete()
         return super().destroy(request, pk=pk)
 
 
