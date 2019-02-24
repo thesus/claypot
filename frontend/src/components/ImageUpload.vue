@@ -37,6 +37,12 @@
 import { api, endpoints, InvalidRequestError } from '@/api'
 
 export default {
+  props: {
+    value: {
+      type: Array,
+      default: () => [],
+    }
+  },
   data () {
     return {
       'images': [],
@@ -45,6 +51,11 @@ export default {
   computed: {
     isFailed () {
       return !!this.images.filter(image => image.success === false).length
+    },
+  },
+  watch: {
+    value () {
+      // TODO: Fill this.images to properly show images to user
     },
   },
   methods: {
@@ -75,7 +86,7 @@ export default {
       }
 
       await Promise.all(promises)
-      this.$emit('change', this.images.filter(image => image.success === true).map(image => image.id))
+      this.$emit('input', this.images.filter(image => image.success === true).map(image => image.id))
     },
     async uploadImage (image) {
       let data = new FormData()

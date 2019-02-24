@@ -13,7 +13,7 @@
     </header>
 
     <div class="images">
-      <ImageUpload @change="setImages"/>
+      <ImageUpload v-model="recipe_dirty.images" />
     </div>
 
     <div class="ingredients">
@@ -257,9 +257,6 @@ export default {
     addInstruction () {
       this.recipe_dirty.instructions.push(this.createEmptyInstruction())
     },
-    setImages (images) {
-      this.recipe_dirty.images = images
-    },
     async save () {
       this.saving = true
       try {
@@ -333,6 +330,7 @@ export default {
 
         const d = {
           title: this.recipe_dirty.title,
+          images: this.recipe_dirty.images,
           instructions: this.recipe_dirty.instructions.map((instruction, i) => { return {order: i, text: instruction.text}}),
           ingredients: this.recipe_dirty.ingredients,
         }
