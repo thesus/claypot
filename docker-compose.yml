@@ -26,6 +26,11 @@ services:
       SENTRY_DSN: ${SENTRY_DSN}
       EMAIL_URL: ${EMAIL_URL:-consolemail://}
       REDIS_HOST: "redis"
+      MEDIA_ROOT: ${MEDIA_ROOT:-/media}
+      IMAGE_ROOT: ${IMAGE_ROOT:-/images}
+    volumes: &volumes
+      - media:${MEDIA_ROOT:-/media}
+      - images:${IMAGE_ROOT:-/images}
 
   db:
     image: postgres:alpine
@@ -42,11 +47,13 @@ services:
 
   worker:
     image: dev.cryptec.at:5000/root/claypot:${CLAYPOT_VERSION:-master}
+    command: ["python", "manage.py", "rqworker"]
     build:
       <<: *build
     environment:
       <<: *env
-    command: ["python", "manage.py", "rqworker"]
+    volumes:
+      <<: *volumes
 
 volumes:
   db: {}

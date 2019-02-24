@@ -133,10 +133,10 @@ USE_TZ = True
 STATIC_ROOT = str(ROOT_DIR('static'))
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = str(APPS_DIR('media'))
+MEDIA_ROOT = env('MEDIA_ROOT', default=str(APPS_DIR('media')))
 MEDIA_URL = '/media/'
 
-IMAGE_ROOT = str(ROOT_DIR('images'))
+IMAGE_ROOT = env('IMAGE_ROOT', default=str(ROOT_DIR('images')))
 
 # Image sizes for resizing/thumbnails
 # If both dimensions are given, the image will be cropped. (center)
