@@ -81,6 +81,16 @@
     </div>
     <div v-if="newIngredientsDecision">
       <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
+      <ul>
+        <li
+          v-for="ingredient, i in newIngredients"
+          :key="i">
+          <div>{{ ingredient }}</div>
+          <FormFieldValidationError
+            :errors="(((newIngredientsError || [])[i] || {}).text) || []"
+            />
+        </li>
+      </ul>
       <button
         class="btn new-ingredient"
         @click="newIngredientsDecision(true)"
@@ -93,6 +103,18 @@
       >
         {{ $tc('recipes.confirm_new_ingredients.decline', newIngredientsCount, {count: newIngredientsCount}) }}
       </button>
+    </div>
+    <div v-if="!newIngredientsDecision && newIngredientsError">
+      <ul>
+        <li
+          v-for="ingredient, i in newIngredients"
+          :key="i">
+          <div>{{ ingredient }}</div>
+          <FormFieldValidationError
+            :errors="(((newIngredientsError || [])[i] || {}).text) || []"
+            />
+        </li>
+      </ul>
     </div>
     <div v-if="errors.client_side">
       {{ errors.client_side }}
@@ -110,6 +132,8 @@
 </template>
 
 <script>
+import Vue from 'vue'
+
 import {api, endpoints} from '@/api'
 import {clone} from '@/utils'
 import FormFieldValidationError from '@/components/FormFieldValidationError'
@@ -155,7 +179,9 @@ export default {
         detail: '',
       },
       newIngredientsDecision: null,
+      newIngredients: [],
       newIngredientsCount: 0,
+      newIngredientsError: [],
     }
   },
   computed: {
@@ -214,35 +240,37 @@ export default {
       try {
         // Step 1: Check for new ingredients
         {
+          const inquiredIngredients = [].concat(...this.recipe_dirty.ingredients.map(group => group.ingredients.map(i => i.ingredient)))
           const r = await api(endpoints.check_new_ingredients(), {
-            ingredients: [].concat(...this.recipe_dirty.ingredients.map(group => group.ingredients.map(i => i.ingredient))),
+            ingredients: inquiredIngredients,
           })
           if (r.ok) {
             const newIngredients = (await r.json()).ingredients
             if (newIngredients.length > 0) {
+              this.newIngredients.push(...newIngredients)
               this.newIngredientsCount = newIngredients.length
               try {
-              const userDecision = await new Promise((resolve) => {
-                // this will give the user a choice to cancel or continue the process.
-                this.newIngredientsDecision = resolve
-              })
-              if (userDecision) {
-                const newIngredientData = newIngredients.map(i => {
-                  return {
-                    name: i,
-                  }
+                const userDecision = await new Promise((resolve) => {
+                  // this will give the user a choice to cancel or continue the process.
+                  this.newIngredientsDecision = resolve
                 })
-                const r2 = await api(endpoints.create_many_ingredients(), newIngredientData)
-                if (r2.ok) {
-
+                if (userDecision) {
+                  const newIngredientData = newIngredients.map(i => {
+                    return {
+                      name: i,
+                    }
+                  })
+                  this.newIngredientsError.splice(0)
+                  const r2 = await api(endpoints.create_many_ingredients(), newIngredientData)
+                  if (r2.ok) {
+                  } else {
+                    this.newIngredientsError.push(...(await r2.json()))
+                    return
+                  }
                 } else {
-                  // TODO: Proper error propagation
-                  throw new Error('it broke. pls fix.')
+                  // cancel process
+                  return
                 }
-              } else {
-                // cancel process
-                return
-              }
               } finally {
                 this.newIngredientsDecision = null
               }
@@ -250,7 +278,31 @@ export default {
           } else {
             // TODO: Proper error propagation
             const errors = await r.json()
-            throw new Error(errors.error.join('; '))
+            const errorsByIngredient = {}
+            inquiredIngredients.forEach((k, i) => {
+              errorsByIngredient[k] = errors.ingredients[String(i)]
+            })
+            this.recipe_dirty.ingredients.forEach((group, groupI) => {
+              group.ingredients.forEach((ingredient, ingredientI) => {
+                if (typeof errorsByIngredient[ingredient.ingredient] !== 'undefined') {
+                  const thisError = errorsByIngredient[ingredient.ingredient]
+                  if (typeof this.errors.ingredients[groupI] === 'undefined') {
+                    Vue.set(this.errors.ingredients, groupI, {})
+                  }
+                  if (typeof this.errors.ingredients[groupI].ingredients === 'undefined') {
+                    Vue.set(this.errors.ingredients[groupI], 'ingredients', [])
+                  }
+                  if (typeof this.errors.ingredients[groupI].ingredients[ingredientI] === 'undefined') {
+                    Vue.set(this.errors.ingredients[groupI].ingredients, ingredientI, [])
+                  }
+                  if (typeof this.errors.ingredients[groupI].ingredients[ingredientI].ingredient === 'undefined') {
+                    Vue.set(this.errors.ingredients[groupI].ingredients[ingredientI], 'ingredient', [])
+                  }
+                  this.errors.ingredients[groupI].ingredients[ingredientI].ingredient = thisError
+                }
+              })
+            })
+            return
           }
         }
 
