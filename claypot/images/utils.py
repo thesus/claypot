@@ -37,8 +37,8 @@ def resize(pk, filename, name, dimensions, image_class, file_class):
 
     with BytesIO() as f:
         instance = file_class()
-        instance.height = w
-        instance.width = h
+        instance.height = h
+        instance.width = w
 
         if fit:
             image = PIL.ImageOps.fit(
