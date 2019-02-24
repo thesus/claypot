@@ -188,6 +188,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 class ImageViewSet(viewsets.ModelViewSet):
     queryset = Image.objects.all()
+    permission_classes = [ReadAllEditOwn]
 
     def get_serializer_class(self):
         if self.action == 'create':
