@@ -29,6 +29,40 @@ class OrderedListSerializer(serializers.ListSerializer):
         return super().to_representation(data)
 
 
+class ImageCreateSerializer(serializers.Serializer):
+    image = serializers.ImageField()
+
+
+class ImageFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImageFile
+        fields = [
+            'image_file',
+            'height',
+            'width',
+        ]
+        read_only_fields = [
+            'image_file',
+            'height',
+            'width'
+        ]
+
+
+class ImageRetrieveSerializer(serializers.ModelSerializer):
+    files = ImageFileSerializer(many=True)
+
+    class Meta:
+        model = Image
+        fields = [
+            'id',
+            'files',
+        ]
+        read_only_fields = [
+            'id',
+            'files',
+        ]
+
+
 class ManyIngredientSerializer(serializers.Serializer):
     ingredients = serializers.ListField(
         child=serializers.CharField(),
@@ -135,11 +169,14 @@ class RecipeSerializer(serializers.Serializer):
     published_on = serializers.ModelField(
         model_field=Recipe._meta.get_field('published_on'), read_only=True)
     author = UsernameField(required=False)
-    images = serializers.PrimaryKeyRelatedField(
-        queryset=Image.objects.all(),
-        many=True,
-        read_only=False,
-    )
+
+    # images = serializers.PrimaryKeyRelatedField(
+    #     queryset=Image.objects.all(),
+    #     many=True,
+    #     read_only=False,
+    # )
+    images = ImageRetrieveSerializer(many=True)
+
     instructions = RecipeInstructionSerializer(many=True)
     is_starred = serializers.SerializerMethodField()
     stars = serializers.SerializerMethodField()
@@ -353,33 +390,4 @@ class RecipeSerializer(serializers.Serializer):
             'starred_by',
             'is_starred',
             'stars',
-        ]
-
-
-class ImageCreateSerializer(serializers.Serializer):
-    image = serializers.ImageField()
-
-
-class ImageFileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ImageFile
-        fields = [
-            'image_file',
-            'height',
-            'width',
-        ]
-
-
-class ImageRetrieveSerializer(serializers.ModelSerializer):
-    files = ImageFileSerializer(many=True)
-
-    class Meta:
-        model = Image
-        fields = [
-            'id',
-            'files',
-        ]
-        read_only_fields = [
-            'id',
-            'files',
         ]
