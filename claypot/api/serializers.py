@@ -47,7 +47,6 @@ class ImageFileSerializer(serializers.ModelSerializer):
             'width'
         ]
 
-
 class ImageRetrieveSerializer(serializers.ModelSerializer):
     files = ImageFileSerializer(many=True)
 
@@ -117,6 +116,20 @@ class UnitField(serializers.RelatedField):
             raise serializers.ValidationError('Unknown unit')
 
 
+class ImageField(serializers.RelatedField):
+    """Matches images by id or returns them as a url and meta information."""
+    queryset = Image.objects.all()
+
+    def to_representation(self, value):
+        return ImageRetrieveSerializer(instance=value).data
+
+    def to_internal_value(self, data):
+        try:
+            return self.queryset.get(pk=data)
+        except Image.DoesNotExist:
+            raise serializers.ValidationError('Image does not exist')
+
+
 class UsernameField(serializers.RelatedField):
     def get_queryset(self):
         return get_user_model().objects.all()
@@ -170,12 +183,7 @@ class RecipeSerializer(serializers.Serializer):
         model_field=Recipe._meta.get_field('published_on'), read_only=True)
     author = UsernameField(required=False)
 
-    # images = serializers.PrimaryKeyRelatedField(
-    #     queryset=Image.objects.all(),
-    #     many=True,
-    #     read_only=False,
-    # )
-    images = ImageRetrieveSerializer(many=True)
+    images = ImageField(many=True)
 
     instructions = RecipeInstructionSerializer(many=True)
     is_starred = serializers.SerializerMethodField()
@@ -260,6 +268,7 @@ class RecipeSerializer(serializers.Serializer):
 
         # save images
         existing = set(instance.images.values_list('id', flat=True))
+
         new = set(i.pk for i in validated_data['images'])
         remove = existing - new
         add = new - existing
