@@ -4,7 +4,7 @@
     @submit.prevent="submitImages"
   >
     <label class="input">
-      <span class="btn btn-default">Select images</span>
+      <span class="btn btn-default">{{ $t('image_upload.upload_button') }}</span>
       <input
         ref="input"
         type="file"
@@ -25,7 +25,7 @@
         <span
           class="delete"
           @click="removeImage(index)"
-        >Delete</span>
+        >{{ $t('image_upload.delete_button') }}</span>
         <img
           :src="image.url"
           :class="{
@@ -40,7 +40,7 @@
       v-if="isFailed"
       class="btn btn-default"
       @click="submitImages"
-    >Retry</span>
+    >{{ $t('image_upload.retry_button') }}</span>
   </form>
 </template>
 

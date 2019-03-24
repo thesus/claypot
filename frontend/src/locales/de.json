@@ -101,6 +101,12 @@
         "add_instruction": "Hinzufügen",
         "add_group": "Gruppe hinzufügen",
         "save": "Speichern",
-        "delete": "Rezept löschen"
+        "delete": "Rezept löschen",
+        "action": "Aktion"
+    },
+    "image_upload": {
+        "upload_button": "Bilder hochladen",
+        "delete_button": "Löschen",
+        "retry_button": "Erneut versuchen"
     }
 }

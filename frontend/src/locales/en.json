@@ -100,6 +100,12 @@
         "add_instruction": "Add new instruction",
         "add_group": "Add new Ingredient Group",
         "save": "Save",
-        "delete": "Delete recipe"
+        "delete": "Delete recipe",
+        "action": "Action"
+    },
+    "image_upload": {
+        "upload_button": "Add Images",
+        "delete_button": "Delete",
+        "retry_button": "Retry"
     }
 }
