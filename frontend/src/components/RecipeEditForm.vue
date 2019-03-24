@@ -188,6 +188,8 @@ export default {
         instructions: [this.createEmptyInstruction()],
         images: [],
       },
+      /* Used to pass image data with urls to ImageUpload Component.
+         recipe_diry.images is filled by the component and consists only of id's */
       images: null,
       saving: false,
       errors: {

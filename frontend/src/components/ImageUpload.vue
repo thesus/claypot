@@ -18,6 +18,7 @@
         v-for="(image, index) in images"
         :key="index"
         class="thumbnail"
+        @click="removeImage(index)"
       >
         <img
           :src="image.url"
@@ -63,9 +64,21 @@ export default {
           'id': image.id
         })
       }
+
+      this.update()
     },
   },
   methods: {
+    update () {
+      /* Could update with watch but that's more specific. */
+      this.$emit('input', this.images.filter(image => image.success === true).map(image => image.id))
+    },
+    removeImage (id) {
+      console.log(id)
+      this.$delete(this.images, id)
+
+      this.update()
+    },
     imageChange (event) {
       const images = this.$refs.input.files
 
@@ -92,7 +105,7 @@ export default {
       }
 
       await Promise.all(promises)
-      this.$emit('input', this.images.filter(image => image.success === true).map(image => image.id))
+      this.update()
     },
     async uploadImage (image) {
       let data = new FormData()
