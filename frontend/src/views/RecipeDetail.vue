@@ -26,7 +26,9 @@
         <router-link
           v-if="canEdit"
           :to="{name: 'recipe-edit', param: {id: recipeId}}"
-          >{{ $t('recipe_detail.edit') }}</router-link>
+        >
+          {{ $t('recipe_detail.edit') }}
+        </router-link>
         <span>{{ $t('recipe_detail.posted_by', {user: author}) }}</span>
       </div>
     </div>
@@ -36,7 +38,10 @@
       class="header"
       :class="{'ingredients-single': (allIngredients.length == 1)}"
     >
-    <div v-if="recipe && recipe.images" class="images">
+      <div
+        v-if="recipe && recipe.images"
+        class="images"
+      >
         <ImageGallery :images="recipe.images" />
       </div>
 

@@ -98,12 +98,13 @@
       <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
       <ul>
         <li
-          v-for="ingredient, i in newIngredients"
-          :key="i">
+          v-for="(ingredient, i) in newIngredients"
+          :key="i"
+        >
           <div>{{ ingredient }}</div>
           <FormFieldValidationError
             :errors="(((newIngredientsError || [])[i] || {}).text) || []"
-            />
+          />
         </li>
       </ul>
       <button
@@ -122,12 +123,13 @@
     <div v-if="!newIngredientsDecision && newIngredientsError">
       <ul>
         <li
-          v-for="ingredient, i in newIngredients"
-          :key="i">
+          v-for="(ingredient, i) in newIngredients"
+          :key="i"
+        >
           <div>{{ ingredient }}</div>
           <FormFieldValidationError
             :errors="(((newIngredientsError || [])[i] || {}).text) || []"
-            />
+          />
         </li>
       </ul>
     </div>

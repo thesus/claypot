@@ -1,5 +1,8 @@
 <template>
-  <form enctype="multipart/form-data" @submit.prevent="submitImages">
+  <form
+    enctype="multipart/form-data"
+    @submit.prevent="submitImages"
+  >
     <label class="input">
       <span class="btn btn-default">Select images</span>
       <input
@@ -19,7 +22,10 @@
         :key="index"
         class="thumbnail"
       >
-        <span class="delete" @click="removeImage(index)">Delete</span>
+        <span
+          class="delete"
+          @click="removeImage(index)"
+        >Delete</span>
         <img
           :src="image.url"
           :class="{
@@ -30,7 +36,11 @@
         >
       </div>
     </div>
-    <span v-if="isFailed" @click="submitImages" class="btn btn-default">Retry</span>
+    <span
+      v-if="isFailed"
+      class="btn btn-default"
+      @click="submitImages"
+    >Retry</span>
   </form>
 </template>
 

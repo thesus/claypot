@@ -1,8 +1,20 @@
 <template>
   <div class="gallery">
     <div class="control">
-      <button class="btn" :disabled="!hasPrev" @click="current--">Prev</button>
-      <button class="btn" :disabled="!hasNext" @click="current++">Next</button>
+      <button
+        class="btn"
+        :disabled="!hasPrev"
+        @click="current--"
+      >
+        Prev
+      </button>
+      <button
+        class="btn"
+        :disabled="!hasNext"
+        @click="current++"
+      >
+        Next
+      </button>
     </div>
     <ImageFrame :files="getCurrentImage" />
   </div>
