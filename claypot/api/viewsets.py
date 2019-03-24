@@ -177,6 +177,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe.starred_by.remove(request.user)
         return Response(False)
 
+    @action(
+        detail=True,
+        methods=['post'],
+        permission_classes=[permissions.IsAuthenticated]
+    )
+    def fork(self, request, pk=None):
+        fork = get_object_or_404(Recipe, pk=pk)
+        fork.pk = None
+        fork.author = request.user
+        fork.slug = fork.slug + 'a'
+
+        print(fork.slug)
+        fork.save()
+
+        return Response(fork.pk)
+
+
+
+
     def destroy(self, request, pk=None):
         obj = self.get_object()
         for i in obj.images.all():

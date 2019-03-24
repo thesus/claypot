@@ -11,17 +11,25 @@
     </header>
 
     <div class="functions">
-      <div class="stars">
-        <div class="countainer">
-          {{ $tc('recipes.stars', recipe.stars, {count: recipe.stars}) }}
+      <div class="left">
+        <div class="stars">
+          <div class="countainer">
+            {{ $tc('recipes.stars', recipe.stars, {count: recipe.stars}) }}
+          </div>
+          <RecipeStarInput
+            v-if="isLoggedIn"
+            v-model="recipe.is_starred"
+            :recipe-id="recipeId"
+            class="button"
+            @input="updateStars"
+          />
         </div>
-        <RecipeStarInput
+        <span
+          class="fork button"
           v-if="isLoggedIn"
-          v-model="recipe.is_starred"
-          :recipe-id="recipeId"
-          class="button"
-          @input="updateStars"
-        />
+          @click="fork"
+        >{{ $t('recipes.fork') }}
+        </span>
       </div>
       <div class="right">
         <router-link
@@ -128,6 +136,30 @@ export default {
     updateStars (result) {
       this.recipe.stars += (result) ? 1 : -1
     },
+    async fork () {
+      try {
+        const r = await api(
+          endpoints.fork(this.recipeId),
+          {},
+          { method: 'POST' }
+        )
+        if (r.ok) {
+          this.$router.push(
+            {
+              name: 'recipe-detail',
+              params: {
+                id: await r.json()
+              }
+            }
+          )
+        } else {
+          throw new Error("Fork not working!")
+        }
+      } catch (err) {
+        console.log(err)
+        // TODO: Show error
+      }
+    },
     async update () {
       if (!this.recipeId) {
         return
@@ -151,6 +183,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/modules/variables.scss';
+
 .functions {
   display: flex;
   justify-content: space-between;
@@ -170,12 +204,25 @@ export default {
     .button {
       border-left: solid 1px #ccc;
     }
+
   }
 
   .right {
     span {
       margin-left: 10px;
     }
+  }
+}
+
+.button {
+  border: solid 1px #ccc;
+  padding: 0 5px 0 5px;
+  cursor: pointer;
+  display: inline-block;
+
+  &:hover {
+    background-color: $font_color;
+    color: white;
   }
 }
 
