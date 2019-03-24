@@ -36,7 +36,18 @@
       "plugin:vue/essential",
       "eslint:recommended"
     ],
-    "rules": {},
+    "rules": {
+      "vue/singleline-html-element-content-newline": [
+        "error",
+        {
+          "ignoreWhenNoAttributes": true,
+          "ignoreWhenEmpty": true,
+          "ignores": [
+            "pre", "textarea", "a", "router-link", "span"
+          ]
+        }
+      ]
+    },
     "parserOptions": {
       "parser": "babel-eslint"
     }
