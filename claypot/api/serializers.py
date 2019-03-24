@@ -271,15 +271,9 @@ class RecipeSerializer(serializers.Serializer):
 
         new = set(i.pk for i in validated_data['images'])
         remove = existing - new
-        add = new - existing
 
         instance.images.remove(*remove)
-
-        instance.images.add(*[
-            i
-            for i in validated_data['images']
-            if i.pk in add
-        ])
+        instance.images.set(new)
 
         # save instructions
         existing = set(ri.order for ri in instance.instructions.all())
