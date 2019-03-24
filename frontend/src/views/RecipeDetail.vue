@@ -36,7 +36,7 @@
       class="header"
       :class="{'ingredients-single': (allIngredients.length == 1)}"
     >
-    <div v-if="recipe && recipe.images.length > 0" class="images">
+    <div v-if="recipe && recipe.images" class="images">
         <ImageGallery :images="recipe.images" />
       </div>
 

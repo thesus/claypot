@@ -38,7 +38,7 @@ import { api, endpoints, InvalidRequestError } from '@/api'
 
 export default {
   props: {
-    value: {
+    initial: {
       type: Array,
       default: () => [],
     }
@@ -54,17 +54,22 @@ export default {
     },
   },
   watch: {
-    value () {
-      // TODO: Fill this.images to properly show images to user
+    initial () {
+      /* Add already existing images to stock */
+      for (const image of this.initial) {
+        this.images.push({
+          'success': true,
+          'url': image.files[0]['image_file'], // Thumbnail
+          'id': image.id
+        })
+      }
     },
   },
   methods: {
     imageChange (event) {
-      /* Clear existing images */
-      this.images = []
       const images = this.$refs.input.files
 
-      for (const image of images) {
+      for (let image of images) {
         this.images.push({
           'file': image,
           'url': URL.createObjectURL(image),
@@ -78,8 +83,9 @@ export default {
     },
     async submitImages () {
       const promises = []
-      for (const image of this.images) {
-        if (image.succes !== true) {
+
+      for (let image of this.images) {
+        if (image.success !== true) {
           image.success = null
           promises.push(this.uploadImage(image))
         }

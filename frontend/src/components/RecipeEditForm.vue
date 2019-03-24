@@ -13,7 +13,10 @@
     </header>
 
     <div class="images">
-      <ImageUpload v-model="recipe_dirty.images" />
+      <ImageUpload
+        v-model="recipe_dirty.images"
+        :initial="images"
+      />
     </div>
 
     <div class="ingredients">
@@ -185,6 +188,7 @@ export default {
         instructions: [this.createEmptyInstruction()],
         images: [],
       },
+      images: null,
       saving: false,
       errors: {
         title: [],
@@ -242,6 +246,8 @@ export default {
         instructions: clone(r.instructions || []),
         ingredients: clone(r.ingredients || []),
       }
+
+      this.images = clone(r.images) || []
     }
   },
   methods: {
