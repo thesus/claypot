@@ -17,8 +17,12 @@ if settings.DEBUG:
         path(
             '',
             TemplateView.as_view(template_name='index.html')
+        ),
+        path(
+            'app.js',
+            TemplateView.as_view(template_name='app.js')
         )
     ] + static(
-        '/',
-        document_root=str(settings.ROOT_DIR.path('claypot/contrib'))
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT,
     )

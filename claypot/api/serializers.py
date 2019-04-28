@@ -18,11 +18,49 @@ from claypot.models import (
     Unit,
 )
 
+from claypot.images.models import (
+    Image,
+    ImageFile,
+)
 
 class OrderedListSerializer(serializers.ListSerializer):
     def to_representation(self, data):
         data = data.order_by('order')
         return super().to_representation(data)
+
+
+class ImageCreateSerializer(serializers.Serializer):
+    image = serializers.ImageField()
+
+
+class ImageFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImageFile
+        fields = [
+            'image_file',
+            'height',
+            'width',
+        ]
+        read_only_fields = [
+            'image_file',
+            'height',
+            'width'
+        ]
+
+
+class ImageRetrieveSerializer(serializers.ModelSerializer):
+    files = ImageFileSerializer(many=True)
+
+    class Meta:
+        model = Image
+        fields = [
+            'id',
+            'files',
+        ]
+        read_only_fields = [
+            'id',
+            'files',
+        ]
 
 
 class ManyIngredientSerializer(serializers.Serializer):
@@ -118,7 +156,6 @@ class RecipeListSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ['id', 'title']
 
-
 class RecipeSerializer(serializers.Serializer):
     id = serializers.ModelField(
         model_field=Recipe._meta.get_field('id'), read_only=True)
@@ -131,6 +168,11 @@ class RecipeSerializer(serializers.Serializer):
     published_on = serializers.ModelField(
         model_field=Recipe._meta.get_field('published_on'), read_only=True)
     author = UsernameField(required=False)
+
+    images = serializers.PrimaryKeyRelatedField(
+            queryset=Image.objects.all(),
+            many=True)
+
     instructions = RecipeInstructionSerializer(many=True)
     is_starred = serializers.SerializerMethodField()
     stars = serializers.SerializerMethodField()
@@ -212,7 +254,15 @@ class RecipeSerializer(serializers.Serializer):
         instance.slug = instance.slug or instance.title.lower().replace(' ', '-')
         instance.save()
 
-        print(validated_data)
+        # save images
+        existing = set(instance.images.values_list('id', flat=True))
+
+        new = set(i.pk for i in validated_data['images'])
+        remove = existing - new
+
+        instance.images.remove(*remove)
+        instance.images.set(new)
+
         # save instructions
         existing = set(ri.order for ri in instance.instructions.all())
         new = set(ri['order'] for ri in validated_data['instructions'])
@@ -303,3 +353,34 @@ class RecipeSerializer(serializers.Serializer):
             i.delete()
 
         return instance
+
+    class Meta:
+        model = Recipe
+        fields = [
+            'id',
+            'title',
+            'slug',
+            'instructions',
+            'ingredients',
+            'ingredient_groups',
+            'images',
+            'author',
+            'author_id',
+            'published_on',
+            'is_starred',
+            'stars',
+        ]
+        read_only_fields = [
+            'id',
+            'slug',
+            'author',
+            'author_id',
+            'published_on',
+            'starred_by',
+            'is_starred',
+            'stars',
+        ]
+
+class RecipeReadSerializer(RecipeSerializer):
+    images = ImageRetrieveSerializer(read_only=True, many=True)
+

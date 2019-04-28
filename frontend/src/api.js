@@ -53,7 +53,10 @@ const endpoints = {
   search_ingredients (term) {
     term = encodeURIComponent(term)
     return `/api/ingredients/?name=${term}`
-  }
+  },
+  upload_image () {
+    return '/api/images/'
+  },
 }
 
 for (let [e, f] of Object.entries(endpoints)) {
@@ -95,6 +98,7 @@ async function api(endpoint, data, options) {
   if (!endpoint.earmarked) {
     throw new UnknownEndpointError()
   }
+
   let url = endpoint.url
   const fetchOptions = options || {}
   fetchOptions.credentials = fetchOptions.credentials || 'same-origin'

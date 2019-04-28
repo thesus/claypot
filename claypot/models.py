@@ -74,6 +74,7 @@ class Recipe(models.Model):
         settings.AUTH_USER_MODEL,
         related_name='starred_recipes',
     )
+    images = models.ManyToManyField('images.Image')
 
     def tags(self):
         return reduce(

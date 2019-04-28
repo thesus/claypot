@@ -26,7 +26,7 @@
         <router-link
           v-if="canEdit"
           :to="{name: 'recipe-edit', param: {id: recipeId}}"
-          >{{ $t('recipe_detail.edit') }}</router-link>
+        >{{ $t('recipe_detail.edit') }}</router-link>
         <span>{{ $t('recipe_detail.posted_by', {user: author}) }}</span>
       </div>
     </div>
@@ -36,7 +36,12 @@
       class="header"
       :class="{'ingredients-single': (allIngredients.length == 1)}"
     >
-      <div class="images">photos</div>
+      <div
+        v-if="recipe && recipe.images"
+        class="images"
+      >
+        <ImageGallery :images="recipe.images" />
+      </div>
 
       <RecipeIngredientTable
         v-for="(i, c) in allIngredients"
@@ -67,6 +72,7 @@
 import {mapGetters} from 'vuex'
 import {api, endpoints} from '@/api'
 
+import ImageGallery from '@/components/ImageGallery'
 import RecipeStarInput from '@/components/RecipeStarInput'
 import RecipeIngredientTable from '@/components/RecipeIngredientTable'
 
@@ -74,6 +80,7 @@ export default {
   components: {
     RecipeIngredientTable,
     RecipeStarInput,
+    ImageGallery,
   },
   data () {
     return {
@@ -183,10 +190,10 @@ export default {
 
   .images {
     border: solid 1px #ccc;
+    padding: 0;
     margin: 5px;
     height: 40vh;
     width: 100%;
-    overflow: hidden;
     img {
       width: 100%;
       object-fit: contain;

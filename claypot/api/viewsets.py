@@ -20,11 +20,18 @@ from claypot.models import (
     Recipe,
 )
 
+from claypot.images.models import (
+    Image,
+)
+
 from .serializers import (
+    ImageCreateSerializer,
+    ImageRetrieveSerializer,
     IngredientSerializer,
     ManyIngredientSerializer,
-    RecipeListSerializer,
     RecipeSerializer,
+    RecipeListSerializer,
+    RecipeReadSerializer,
 )
 
 class ReadAllEditOwn(permissions.BasePermission):
@@ -154,6 +161,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list' and self.request.method.lower() == 'get':
             return RecipeListSerializer
+        if self.action == 'retrieve' and self.request.method.lower() == 'get':
+            return RecipeReadSerializer
         return self.serializer_class
 
     @action(detail=True, methods=['post'])
@@ -170,4 +179,31 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, pk=None):
         obj = self.get_object()
+        for i in obj.images.all():
+            delete_image = False
+            if not i.recipe_set.exclude(pk=obj.pk).exists():
+                delete_image = True
+            obj.images.remove(i)
+            if delete_image:
+                i.delete()
         return super().destroy(request, pk=pk)
+
+
+class ImageViewSet(viewsets.ModelViewSet):
+    queryset = Image.objects.all()
+    permission_classes = [ReadAllEditOwn]
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return ImageCreateSerializer
+        else:
+            return ImageRetrieveSerializer
+
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance = Image()
+        instance.save(**serializer.validated_data)
+
+        return Response({'id': instance.pk})
