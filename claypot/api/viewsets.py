@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
@@ -33,6 +34,7 @@ from .serializers import (
     RecipeListSerializer,
     RecipeReadSerializer,
 )
+
 
 class ReadAllEditOwn(permissions.BasePermission):
     message = _('You may only edit your own recipes.')
@@ -100,6 +102,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
         else:
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class RecipeFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(lookup_expr='icontains')
@@ -182,19 +185,42 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=['post'],
         permission_classes=[permissions.IsAuthenticated]
     )
+    @transaction.atomic
     def fork(self, request, pk=None):
-        fork = get_object_or_404(Recipe, pk=pk)
-        fork.pk = None
-        fork.author = request.user
-        fork.slug = fork.slug + 'a'
+        instance = get_object_or_404(Recipe, pk=pk)
 
-        print(fork.slug)
-        fork.save()
+        instance.parent_recipe = get_object_or_404(Recipe, pk=pk)
 
-        return Response(fork.pk)
+        recipe_ingredients = instance.ingredients.all()
+        ingredient_groups = instance.ingredient_groups.all()
 
+        instructions = instance.instructions.all()
 
+        instance.pk = None
+        instance.author = request.user
+        instance.save()
 
+        for group in ingredient_groups:
+            ingredients = group.ingredients.all()
+            group.pk = None
+            group.recipe = instance
+            group.save()
+            for ingredient in ingredients:
+                ingredient.pk = None
+                ingredient.group = group
+                ingredient.save()
+
+        for ingredient in recipe_ingredients:
+            ingredient.pk = None
+            ingredient.recipe = instance
+            ingredient.save()
+
+        for instruction in instructions:
+            instruction.pk = None
+            instruction.recipe = instance
+            instruction.save()
+
+        return Response(instance.pk)
 
     def destroy(self, request, pk=None):
         obj = self.get_object()

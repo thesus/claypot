@@ -46,14 +46,7 @@ class Unit(models.Model):
         unique_together = ('name',)
 
 
-class RecipeManager(models.Manager):
-    def get_by_natural_key(self, slug):
-        return self.get(slug=slug)
-
-
 class Recipe(models.Model):
-    objects = RecipeManager()
-
     title = models.CharField(
         max_length=500,
         verbose_name=ugettext_lazy('Title'),
@@ -76,6 +69,13 @@ class Recipe(models.Model):
     )
     images = models.ManyToManyField('images.Image')
 
+    parent_recipe = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
+
     def tags(self):
         return reduce(
             operator.or_,
@@ -87,9 +87,6 @@ class Recipe(models.Model):
     def is_starred_by(self, user):
         return self.starred_by.filter(pk=user.pk).exists()
 
-    def natural_key(self):
-        return (self.slug,)
-
     def __str__(self):
         # Translators: Recipe display name
         return ugettext('{0.title}').format(self)
@@ -97,7 +94,6 @@ class Recipe(models.Model):
     class Meta:
         verbose_name = ugettext_lazy('Recipe')
         verbose_name_plural = ugettext_lazy('Recipes')
-        unique_together = ('slug',)
 
 
 AMOUNT_TYPE_NONE = 1
@@ -128,8 +124,8 @@ class AbstractIngredient(models.Model):
 
     ingredient_extra = models.TextField(
         blank=True,
-        # Translators: Optional field to note additional things about one specific
-        # ingredient
+        # Translators: Optional field to note additional things about one
+        # specific ingredient
         verbose_name=ugettext_lazy('Additional notes about ingredient'),
     )
     optional = models.BooleanField(
@@ -242,7 +238,9 @@ class RecipeIngredientGroupIngredient(AbstractIngredient):
 
     class Meta:
         verbose_name = ugettext_lazy('Recipe ingredient group ingredient')
-        verbose_name_plural = ugettext_lazy('Recipe ingredient group ingredients')
+        verbose_name_plural = ugettext_lazy(
+            'Recipe ingredient group ingredients'
+        )
         unique_together = ('group', 'order')
 
 
