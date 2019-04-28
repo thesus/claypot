@@ -29,8 +29,9 @@ from .serializers import (
     ImageRetrieveSerializer,
     IngredientSerializer,
     ManyIngredientSerializer,
-    RecipeListSerializer,
     RecipeSerializer,
+    RecipeListSerializer,
+    RecipeReadSerializer,
 )
 
 class ReadAllEditOwn(permissions.BasePermission):
@@ -160,6 +161,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list' and self.request.method.lower() == 'get':
             return RecipeListSerializer
+        if self.action == 'retrieve' and self.request.method.lower() == 'get':
+            return RecipeReadSerializer
         return self.serializer_class
 
     @action(detail=True, methods=['post'])
