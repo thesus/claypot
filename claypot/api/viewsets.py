@@ -187,18 +187,30 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     @transaction.atomic
     def fork(self, request, pk=None):
+        """Forks a existing recipe and sets a new owner."""
+
+        def copy_foreign_key_relation(recipe, queryset):
+            for instance in queryset:
+                instance.pk = None
+                instance.recipe = recipe
+                instance.save()
+
         instance = get_object_or_404(Recipe, pk=pk)
+        instance.parent_recipe = Recipe.objects.get(pk=pk)
 
-        instance.parent_recipe = get_object_or_404(Recipe, pk=pk)
-
+        # Get all foreign key relationships
         recipe_ingredients = instance.ingredients.all()
         ingredient_groups = instance.ingredient_groups.all()
-
         instructions = instance.instructions.all()
+        images = instance.images.all()
 
         instance.pk = None
         instance.author = request.user
         instance.save()
+
+        # Images are kind of immutable at the moment. They can't be deleted,
+        # therefore they are simply copied to the fork.
+        instance.images.set(images)
 
         for group in ingredient_groups:
             ingredients = group.ingredients.all()
@@ -210,15 +222,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 ingredient.group = group
                 ingredient.save()
 
-        for ingredient in recipe_ingredients:
-            ingredient.pk = None
-            ingredient.recipe = instance
-            ingredient.save()
-
-        for instruction in instructions:
-            instruction.pk = None
-            instruction.recipe = instance
-            instruction.save()
+        copy_foreign_key_relation(instance, recipe_ingredients)
+        copy_foreign_key_relation(instance, instructions)
 
         return Response(instance.pk)
 
