@@ -46,7 +46,14 @@ class Unit(models.Model):
         unique_together = ('name',)
 
 
+class RecipeManager(models.Manager):
+    def get_by_natural_key(self, slug):
+        return self.get(slug=slug)
+
+
 class Recipe(models.Model):
+    objects = RecipeManager()
+
     title = models.CharField(
         max_length=500,
         verbose_name=ugettext_lazy('Title'),
@@ -86,6 +93,9 @@ class Recipe(models.Model):
 
     def is_starred_by(self, user):
         return self.starred_by.filter(pk=user.pk).exists()
+
+    def natural_key(self):
+        return (self.slug, )
 
     def __str__(self):
         # Translators: Recipe display name
