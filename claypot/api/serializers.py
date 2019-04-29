@@ -156,6 +156,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ['id', 'title']
 
+
 class RecipeSerializer(serializers.Serializer):
     id = serializers.ModelField(
         model_field=Recipe._meta.get_field('id'), read_only=True)
@@ -168,6 +169,10 @@ class RecipeSerializer(serializers.Serializer):
     published_on = serializers.ModelField(
         model_field=Recipe._meta.get_field('published_on'), read_only=True)
     author = UsernameField(required=False)
+    parent_recipe = serializers.ModelField(
+        model_field=Recipe._meta.get_field('parent_recipe'),
+        read_only=True
+    )
 
     images = serializers.PrimaryKeyRelatedField(
             queryset=Image.objects.all(),

@@ -24,6 +24,7 @@
             @input="updateStars"
           />
         </div>
+
         <span
           class="fork button"
           v-if="isLoggedIn"
@@ -34,8 +35,12 @@
       <div class="right">
         <router-link
           v-if="canEdit"
-          :to="{name: 'recipe-edit', param: {id: recipeId}}"
+          :to="{name: 'recipe-edit', params: {id: recipeId}}"
         >{{ $t('recipe_detail.edit') }}</router-link>
+        <router-link
+          v-if="recipe.parent_recipe"
+          :to="{ name: 'recipe-detail', params: {id: recipe.parent_recipe }}"
+        >{{ $t('recipes.parent') }}</router-link>
         <span>{{ $t('recipe_detail.posted_by', {user: author}) }}</span>
       </div>
     </div>
@@ -210,6 +215,9 @@ export default {
   .right {
     span {
       margin-left: 10px;
+    }
+    a {
+      margin: 0 2px 0 2px;
     }
   }
 }
