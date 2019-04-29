@@ -20,6 +20,7 @@
           v-model="recipe.is_starred"
           :recipe-id="recipeId"
           class="button"
+          @input="updateStars"
         />
       </div>
       <div class="right">
@@ -124,6 +125,9 @@ export default {
     this.update()
   },
   methods: {
+    updateStars (result) {
+      this.recipe.stars += (result) ? 1 : -1
+    },
     async update () {
       if (!this.recipeId) {
         return
