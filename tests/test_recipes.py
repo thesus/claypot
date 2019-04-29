@@ -10,6 +10,9 @@ import pytest
 
 from claypot.api import serializers
 
+from claypot.models import (
+    Recipe
+)
 
 @pytest.mark.django_db
 def test_tagging(
@@ -59,6 +62,38 @@ def test_post_new_recipe(
     assert response.status_code == status.HTTP_200_OK
     assert [i for i in response.data['ingredients'] if i['is_group'] is True] == []
     assert len([i for i in response.data['ingredients'] if i['is_group'] is False]) > 0
+
+
+@pytest.mark.django_db
+def test_fork_recipe(
+        api_client, recipe_factory,
+        recipe_ingredient_factory,
+        recipe_ingredient_group_ingredient_factory,
+        recipe_ingredient_group_factory,
+        user):
+
+    orig = recipe_factory()
+    recipe_ingredient_factory(recipe=orig)
+
+    group = recipe_ingredient_group_factory(recipe=orig, order=2)
+    recipe_ingredient_group_ingredient_factory(group=group, order=1)
+
+    api_client.force_login(user)
+
+    url = reverse('api:recipe-fork', kwargs={'pk': orig.pk})
+    response = api_client.post(url)
+
+    assert response.status_code == status.HTTP_200_OK
+
+    fork = Recipe.objects.get(pk=response.data)
+
+    assert orig.pk == fork.parent_recipe.pk
+    assert orig.instructions.count() == fork.instructions.count()
+    # Check sporadically if the groups are correctly copied.
+    orig_ingredient = orig.ingredient_groups.first().ingredients.first()
+    fork_ingredient = fork.ingredient_groups.first().ingredients.first()
+    assert orig_ingredient.ingredient == fork_ingredient.ingredient
+    assert orig_ingredient.amount_type == fork_ingredient.amount_type
 
 
 @pytest.mark.django_db
