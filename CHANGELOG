@@ -1,3 +1,10 @@
+# Version 0.2.0
+
+- Add image galleries to recipe
+- Ability to fork recipes
+- Update star count instantly
+
+
 # Version 0.1.17
 
 - Add EMAIL_URL to docker-compose.yml
