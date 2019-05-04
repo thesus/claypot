@@ -9,6 +9,7 @@
     v-else-if="recipe"
     :recipe="recipe"
     @input="onUpdate"
+    @remove="onRemove"
   />
   <div v-else>
     {{ $t('recipe_edit.no_data') }}
@@ -22,6 +23,12 @@ import RecipeEditForm from '@/components/RecipeEditForm'
 export default {
   components: {
     RecipeEditForm,
+  },
+  props: {
+    'onRemoveRouteTo': {
+      type: Object,
+      default: () => ({name: 'home'}),
+    }
   },
   data () {
     return {
@@ -64,7 +71,10 @@ export default {
           id: this.$route.params.id,
         },
       })
-    }
+    },
+    onRemove () {
+      this.$router.push(this.onRemoveRouteTo)
+    },
   }
 }
 </script>

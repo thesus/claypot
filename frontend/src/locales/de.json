@@ -70,7 +70,8 @@
         "starred": "Gemerkt",
         "star": "Merken",
         "unstar": "Nicht mehr merken",
-        "stars": "Kein Mal gemerkt | Ein Mal gemerkt | {count} Mal gemerkt"
+        "stars": "Kein Mal gemerkt | Ein Mal gemerkt | {count} Mal gemerkt",
+        "parent": "Original"
     },
     "recipe_detail": {
         "loading": "@:generic.loading",
@@ -100,6 +101,13 @@
         "add_ingredient": "Hinzufügen",
         "add_instruction": "Hinzufügen",
         "add_group": "Gruppe hinzufügen",
-        "save": "Speichern"
+        "save": "Speichern",
+        "delete": "Rezept löschen",
+        "action": "Aktion"
+    },
+    "image_upload": {
+        "upload_button": "Bilder hochladen",
+        "delete_button": "Löschen",
+        "retry_button": "Erneut versuchen"
     }
 }

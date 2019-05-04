@@ -50,6 +50,7 @@ yarn run lint
    ```env
    DJANGO_SECRET_KEY=quite-secret
    POSTGRES_PASSWORD=very-secret
+   EMAIL_URL=smtp+tls://smtp-user:smtp-pass@smtp-host:smtp-port
    ```
 
 3. Optional: Set `CLAYPOT_VERSION` environment variable to a specific versions Docker image tag. If you do not set a specific version, the compose file will default to `master` tagged image.

@@ -12,6 +12,13 @@
       <FormFieldValidationError :errors="errors.title" />
     </header>
 
+    <div class="images">
+      <ImageUpload
+        v-model="recipe_dirty.images"
+        :initial="images"
+      />
+    </div>
+
     <div class="ingredients">
       <div class="table">
         <RecipeEditIngredientTable
@@ -78,17 +85,26 @@
       >
         {{ $t('recipe_edit.save') }}
       </button>
+      <button
+        v-if="canDeleteRecipe"
+        :disabled="saving"
+        class="btn btn-right"
+        @click.prevent="deleteRecipe"
+      >
+        {{ $t('recipe_edit.delete') }}
+      </button>
     </div>
     <div v-if="newIngredientsDecision">
       <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
       <ul>
         <li
-          v-for="ingredient, i in newIngredients"
-          :key="i">
+          v-for="(ingredient, i) in newIngredients"
+          :key="i"
+        >
           <div>{{ ingredient }}</div>
           <FormFieldValidationError
             :errors="(((newIngredientsError || [])[i] || {}).text) || []"
-            />
+          />
         </li>
       </ul>
       <button
@@ -107,12 +123,13 @@
     <div v-if="!newIngredientsDecision && newIngredientsError">
       <ul>
         <li
-          v-for="ingredient, i in newIngredients"
-          :key="i">
+          v-for="(ingredient, i) in newIngredients"
+          :key="i"
+        >
           <div>{{ ingredient }}</div>
           <FormFieldValidationError
             :errors="(((newIngredientsError || [])[i] || {}).text) || []"
-            />
+          />
         </li>
       </ul>
     </div>
@@ -138,6 +155,7 @@ import {api, endpoints} from '@/api'
 import {clone} from '@/utils'
 import FormFieldValidationError from '@/components/FormFieldValidationError'
 import RecipeEditIngredientTable from '@/components/RecipeEditIngredientTable'
+import ImageUpload from '@/components/ImageUpload'
 
 const amount_types = {
   none: 1,
@@ -150,12 +168,14 @@ export default {
   components: {
     FormFieldValidationError,
     RecipeEditIngredientTable,
+    ImageUpload,
   },
   props: {
     recipe: {
       type: Object,
       default: function () {
         return {
+          images: [],
           ingredient_groups: [],
           ingredients: [],
           title: '',
@@ -168,7 +188,11 @@ export default {
       recipe_dirty: {
         ingredients: [{is_group: false, title: '', ingredients: []}],
         instructions: [this.createEmptyInstruction()],
+        images: [],
       },
+      /* Used to pass image data with urls to ImageUpload Component.
+         recipe_diry.images is filled by the component and consists only of id's */
+      images: null,
       saving: false,
       errors: {
         title: [],
@@ -211,6 +235,12 @@ export default {
         return r
       }
     },
+    isExistingRecipe () {
+      return !!this.recipe.id
+    },
+    canDeleteRecipe () {
+      return this.isExistingRecipe && this.recipe.deletable
+    },
   },
   watch: {
     recipe () {
@@ -220,6 +250,8 @@ export default {
         instructions: clone(r.instructions || []),
         ingredients: clone(r.ingredients || []),
       }
+
+      this.images = clone(r.images) || []
     }
   },
   methods: {
@@ -308,6 +340,7 @@ export default {
 
         const d = {
           title: this.recipe_dirty.title,
+          images: this.recipe_dirty.images,
           instructions: this.recipe_dirty.instructions.map((instruction, i) => { return {order: i, text: instruction.text}}),
           ingredients: this.recipe_dirty.ingredients,
         }
@@ -328,6 +361,19 @@ export default {
         }
       } catch (err) {
         this.errors.client_side = err.message
+      } finally {
+        this.saving = false
+      }
+    },
+    async deleteRecipe () {
+      this.saving = true
+      try {
+        const r = await api(endpoints.post_recipe(this.recipe.id), null, {method: 'delete'})
+        if (r.ok) {
+          this.$emit('remove', {})
+        } else {
+            this.errors.detail = errors.detail || ''
+        }
       } finally {
         this.saving = false
       }
@@ -401,5 +447,9 @@ export default {
     float: left;
     width: calc(100% - 65px);
   }
+}
+
+.images {
+  padding: 10px;
 }
 </style>

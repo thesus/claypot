@@ -7,3 +7,4 @@ pytest-django==3.4.2
 pytest-factoryboy==2.0.1
 pytest-faker==2.0.0
 factory-boy==2.11.1
+fakeredis==1.0.2

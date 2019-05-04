@@ -1,6 +1,9 @@
 <template>
   <div class="ingredients-group">
-    <div class="caption" v-if="caption">
+    <div
+      v-if="caption"
+      class="caption"
+    >
       <caption>
         {{ caption }}
       </caption>
@@ -20,7 +23,7 @@
             </span>
           </td>
           <td class="ingredient">
-            {{ ingredient.ingredient }}<span v-if="ingredient.ingredient_extra">, {{ ingredient.ingredient_extra }}</span>
+            {{ ingredient.ingredient }}{{ ingredient.ingredient_extra ? ', ' + ingredient.ingredient_extra : '' }}
           </td>
         </tr>
       </tbody>

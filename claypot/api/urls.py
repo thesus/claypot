@@ -9,12 +9,14 @@ from .views import (
     csrf_token_view,
 )
 from .viewsets import (
+    ImageViewSet,
     IngredientViewSet,
     RecipeViewSet,
 )
 
 
 router = DefaultRouter()
+router.register('images', ImageViewSet)
 router.register('ingredients', IngredientViewSet)
 router.register('recipes', RecipeViewSet)
 

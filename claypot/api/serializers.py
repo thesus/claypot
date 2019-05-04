@@ -1,7 +1,11 @@
+from datetime import datetime
+
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils.decorators import method_decorator
 from rest_framework import serializers
+from pytz import utc
 
 from claypot.models import (
     AMOUNT_TYPES,
@@ -14,11 +18,49 @@ from claypot.models import (
     Unit,
 )
 
+from claypot.images.models import (
+    Image,
+    ImageFile,
+)
 
 class OrderedListSerializer(serializers.ListSerializer):
     def to_representation(self, data):
         data = data.order_by('order')
         return super().to_representation(data)
+
+
+class ImageCreateSerializer(serializers.Serializer):
+    image = serializers.ImageField()
+
+
+class ImageFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImageFile
+        fields = [
+            'image_file',
+            'height',
+            'width',
+        ]
+        read_only_fields = [
+            'image_file',
+            'height',
+            'width'
+        ]
+
+
+class ImageRetrieveSerializer(serializers.ModelSerializer):
+    files = ImageFileSerializer(many=True)
+
+    class Meta:
+        model = Image
+        fields = [
+            'id',
+            'files',
+        ]
+        read_only_fields = [
+            'id',
+            'files',
+        ]
 
 
 class ManyIngredientSerializer(serializers.Serializer):
@@ -127,9 +169,19 @@ class RecipeSerializer(serializers.Serializer):
     published_on = serializers.ModelField(
         model_field=Recipe._meta.get_field('published_on'), read_only=True)
     author = UsernameField(required=False)
+    parent_recipe = serializers.ModelField(
+        model_field=Recipe._meta.get_field('parent_recipe'),
+        read_only=True
+    )
+
+    images = serializers.PrimaryKeyRelatedField(
+            queryset=Image.objects.all(),
+            many=True)
+
     instructions = RecipeInstructionSerializer(many=True)
     is_starred = serializers.SerializerMethodField()
     stars = serializers.SerializerMethodField()
+    deletable = serializers.SerializerMethodField()
 
     def to_representation(self, recipe):
         data = super().to_representation(recipe)
@@ -182,6 +234,21 @@ class RecipeSerializer(serializers.Serializer):
     def get_stars(self, obj):
         return obj.starred_by.all().count()
 
+    def get_deletable(self, obj):
+        if 'request' in self.context:
+            request = self.context['request']
+            user = request.user
+            if user.is_superuser or user.is_staff:
+                return True
+            elif obj.author == request.user:
+                now = datetime.utcnow().replace(tzinfo=utc)
+                cut_off = now - settings.RECIPE_DELETE_GRACE_PERIOD
+                return obj.published_on > cut_off
+            else:
+                return False
+        else:
+            return False
+
     def create(self, validated_data):
         instance = Recipe(author=self.context['request'].user)
         return self.update(instance, validated_data)
@@ -189,10 +256,17 @@ class RecipeSerializer(serializers.Serializer):
     @method_decorator(transaction.atomic)
     def update(self, instance, validated_data):
         instance.title = validated_data['title']
-        instance.slug = instance.slug or instance.title.lower().replace(' ', '-')
         instance.save()
 
-        print(validated_data)
+        # save images
+        existing = set(instance.images.values_list('id', flat=True))
+
+        new = set(i.pk for i in validated_data['images'])
+        remove = existing - new
+
+        instance.images.remove(*remove)
+        instance.images.set(new)
+
         # save instructions
         existing = set(ri.order for ri in instance.instructions.all())
         new = set(ri['order'] for ri in validated_data['instructions'])
@@ -283,3 +357,34 @@ class RecipeSerializer(serializers.Serializer):
             i.delete()
 
         return instance
+
+    class Meta:
+        model = Recipe
+        fields = [
+            'id',
+            'title',
+            'slug',
+            'instructions',
+            'ingredients',
+            'ingredient_groups',
+            'images',
+            'author',
+            'author_id',
+            'published_on',
+            'is_starred',
+            'stars',
+        ]
+        read_only_fields = [
+            'id',
+            'slug',
+            'author',
+            'author_id',
+            'published_on',
+            'starred_by',
+            'is_starred',
+            'stars',
+        ]
+
+class RecipeReadSerializer(RecipeSerializer):
+    images = ImageRetrieveSerializer(read_only=True, many=True)
+

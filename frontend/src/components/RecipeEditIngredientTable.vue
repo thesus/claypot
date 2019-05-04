@@ -16,7 +16,7 @@
           <th>{{ $t('recipe_edit.ingredient') }}</th>
           <th>{{ $t('recipe_edit.ingredient_extra') }}</th>
           <th>{{ $t('recipe_edit.optional') }}</th>
-          <th>Action</th>
+          <th>{{ $t('recipe_edit.action') }}</th>
         </tr>
       </thead>
       <tbody>

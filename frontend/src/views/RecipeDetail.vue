@@ -11,22 +11,36 @@
     </header>
 
     <div class="functions">
-      <div class="stars">
-        <div class="countainer">
-          {{ $tc('recipes.stars', recipe.stars, {count: recipe.stars}) }}
+      <div class="left">
+        <div class="stars">
+          <div class="countainer">
+            {{ $tc('recipes.stars', recipe.stars, {count: recipe.stars}) }}
+          </div>
+          <RecipeStarInput
+            v-if="isLoggedIn"
+            v-model="recipe.is_starred"
+            :recipe-id="recipeId"
+            class="button"
+            @input="updateStars"
+          />
         </div>
-        <RecipeStarInput
+
+        <span
+          class="fork button"
           v-if="isLoggedIn"
-          v-model="recipe.is_starred"
-          :recipe-id="recipeId"
-          class="button"
-        />
+          @click="fork"
+        >{{ $t('recipes.fork') }}
+        </span>
       </div>
       <div class="right">
         <router-link
           v-if="canEdit"
-          :to="{name: 'recipe-edit', param: {id: recipeId}}"
-          >{{ $t('recipe_detail.edit') }}</router-link>
+          :to="{name: 'recipe-edit', params: {id: recipeId}}"
+        >{{ $t('recipe_detail.edit') }}</router-link>
+        <router-link
+          v-if="recipe.parent_recipe"
+          :to="{ name: 'recipe-detail', params: {id: recipe.parent_recipe }}"
+        >{{ $t('recipes.parent') }}</router-link>
         <span>{{ $t('recipe_detail.posted_by', {user: author}) }}</span>
       </div>
     </div>
@@ -36,7 +50,12 @@
       class="header"
       :class="{'ingredients-single': (allIngredients.length == 1)}"
     >
-      <div class="images">photos</div>
+      <div
+        v-if="recipe && recipe.images"
+        class="images"
+      >
+        <ImageGallery :images="recipe.images" />
+      </div>
 
       <RecipeIngredientTable
         v-for="(i, c) in allIngredients"
@@ -67,6 +86,7 @@
 import {mapGetters} from 'vuex'
 import {api, endpoints} from '@/api'
 
+import ImageGallery from '@/components/ImageGallery'
 import RecipeStarInput from '@/components/RecipeStarInput'
 import RecipeIngredientTable from '@/components/RecipeIngredientTable'
 
@@ -74,6 +94,7 @@ export default {
   components: {
     RecipeIngredientTable,
     RecipeStarInput,
+    ImageGallery,
   },
   data () {
     return {
@@ -100,7 +121,7 @@ export default {
       )
     },
     allIngredients () {
-      return this.recipe.ingredients
+      return this.recipe.ingredients || []
     },
     ...mapGetters([
       'isSuperUser',
@@ -117,6 +138,33 @@ export default {
     this.update()
   },
   methods: {
+    updateStars (result) {
+      this.recipe.stars += (result) ? 1 : -1
+    },
+    async fork () {
+      try {
+        const r = await api(
+          endpoints.fork(this.recipeId),
+          {},
+          { method: 'POST' }
+        )
+        if (r.ok) {
+          this.$router.push(
+            {
+              name: 'recipe-detail',
+              params: {
+                id: await r.json()
+              }
+            }
+          )
+        } else {
+          throw new Error("Fork not working!")
+        }
+      } catch (err) {
+        console.log(err)
+        // TODO: Show error
+      }
+    },
     async update () {
       if (!this.recipeId) {
         return
@@ -140,6 +188,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/modules/variables.scss';
+
 .functions {
   display: flex;
   justify-content: space-between;
@@ -159,12 +209,28 @@ export default {
     .button {
       border-left: solid 1px #ccc;
     }
+
   }
 
   .right {
     span {
       margin-left: 10px;
     }
+    a {
+      margin: 0 2px 0 2px;
+    }
+  }
+}
+
+.button {
+  border: solid 1px #ccc;
+  padding: 0 5px 0 5px;
+  cursor: pointer;
+  display: inline-block;
+
+  &:hover {
+    background-color: $font_color;
+    color: white;
   }
 }
 
@@ -183,10 +249,10 @@ export default {
 
   .images {
     border: solid 1px #ccc;
+    padding: 0;
     margin: 5px;
     height: 40vh;
     width: 100%;
-    overflow: hidden;
     img {
       width: 100%;
       object-fit: contain;

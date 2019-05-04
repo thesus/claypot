@@ -24,12 +24,12 @@ test:backend:
       - .cache/pip/
 
 test:frontend:
-  image: node:latest
+  image: node:10-alpine
   stage: test
   tags:
     - docker
   before_script:
-    - cd frontend/
+    - cd frontend
     - yarn install
   script:
     - node_modules/eslint/bin/eslint.js --ext .js,.vue src
