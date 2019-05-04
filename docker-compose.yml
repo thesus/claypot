@@ -10,6 +10,8 @@ services:
         plugins: git,filebrowser,cors,realip,expires,cache,prometheus
     ports:
       - "80:80"
+    volumes:
+      - media:/srv/media
 
   claypot:
     image: dev.cryptec.at:5000/root/claypot:${CLAYPOT_VERSION:-master}

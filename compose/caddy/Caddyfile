@@ -18,3 +18,7 @@
         websocket
     }
 }
+
+:80/media/ {
+    root /srv/media
+}
