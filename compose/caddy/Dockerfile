@@ -13,8 +13,8 @@ RUN cd /code \
 #
 FROM abiosoft/caddy:builder as builder
 
-ARG version="0.11.4"
-ARG plugins="git,filebrowser,cors,realip,expires,cache"
+ARG version="1.0.0"
+ARG plugins="git,cors,realip,expires,cache"
 
 # process wrapper
 RUN go get -v github.com/abiosoft/parent
@@ -27,7 +27,7 @@ RUN VERSION=${version} PLUGINS=${plugins} ENABLE_TELEMETRY=false /bin/sh /usr/bi
 FROM alpine:3.8
 LABEL maintainer "Abiola Ibrahim <abiola89@gmail.com>"
 
-ARG version="0.11.4"
+ARG version="1.0.0"
 LABEL caddy_version="$version"
 
 # Let's Encrypt Agreement
