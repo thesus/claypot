@@ -2,6 +2,7 @@
   <div v-if="value">
     <div
       :disabled="saving"
+      class="button starred"
       @click="doUnstar"
     >
       {{ $t('recipes.unstar') }}
@@ -10,6 +11,7 @@
   <div
     v-else
     :disabled="saving"
+    class="button"
     @click="doStar"
   >
     {{ $t('recipes.star') }}
@@ -68,3 +70,17 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+@import '@/modules/variables.scss';
+
+.button {
+  cursor: pointer;
+  display: inline-block;
+
+  &:hover {
+    background-color: $font_color;
+    color: white;
+  }
+}
+</style>
