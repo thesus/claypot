@@ -1,5 +1,5 @@
 # Build JavaScript code
-FROM node:alpine as js
+FROM node:10-alpine as js
 COPY frontend/ /code/
 RUN cd /code \
     && npm install -g yarn \
