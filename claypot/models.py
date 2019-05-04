@@ -1,6 +1,8 @@
 from functools import reduce
 import operator
 
+import uuid
+
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -83,6 +85,11 @@ class Recipe(models.Model):
         null=True
     )
 
+    def save(self, *args, **kwargs):
+        if not self.slug and not 'slug' in kwargs:
+            self.slug = str(uuid.uuid4())
+        super().save(*args, **kwargs)
+
     def tags(self):
         return reduce(
             operator.or_,
@@ -104,6 +111,7 @@ class Recipe(models.Model):
     class Meta:
         verbose_name = ugettext_lazy('Recipe')
         verbose_name_plural = ugettext_lazy('Recipes')
+        unique_together = ('slug',)
 
 
 AMOUNT_TYPE_NONE = 1

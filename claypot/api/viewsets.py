@@ -197,6 +197,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         instance = get_object_or_404(Recipe, pk=pk)
         instance.parent_recipe = Recipe.objects.get(pk=pk)
+        instance.slug = None
 
         # Get all foreign key relationships
         recipe_ingredients = instance.ingredients.all()

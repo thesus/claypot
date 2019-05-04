@@ -256,7 +256,6 @@ class RecipeSerializer(serializers.Serializer):
     @method_decorator(transaction.atomic)
     def update(self, instance, validated_data):
         instance.title = validated_data['title']
-        instance.slug = instance.slug or instance.title.lower().replace(' ', '-')
         instance.save()
 
         # save images
