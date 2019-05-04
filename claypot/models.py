@@ -1,6 +1,8 @@
 from functools import reduce
 import operator
 
+import uuid
+
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -76,6 +78,18 @@ class Recipe(models.Model):
     )
     images = models.ManyToManyField('images.Image')
 
+    parent_recipe = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
+
+    def save(self, *args, **kwargs):
+        if not self.slug and not 'slug' in kwargs:
+            self.slug = str(uuid.uuid4())
+        super().save(*args, **kwargs)
+
     def tags(self):
         return reduce(
             operator.or_,
@@ -88,7 +102,7 @@ class Recipe(models.Model):
         return self.starred_by.filter(pk=user.pk).exists()
 
     def natural_key(self):
-        return (self.slug,)
+        return (self.slug, )
 
     def __str__(self):
         # Translators: Recipe display name
@@ -128,8 +142,8 @@ class AbstractIngredient(models.Model):
 
     ingredient_extra = models.TextField(
         blank=True,
-        # Translators: Optional field to note additional things about one specific
-        # ingredient
+        # Translators: Optional field to note additional things about one
+        # specific ingredient
         verbose_name=ugettext_lazy('Additional notes about ingredient'),
     )
     optional = models.BooleanField(
@@ -242,7 +256,9 @@ class RecipeIngredientGroupIngredient(AbstractIngredient):
 
     class Meta:
         verbose_name = ugettext_lazy('Recipe ingredient group ingredient')
-        verbose_name_plural = ugettext_lazy('Recipe ingredient group ingredients')
+        verbose_name_plural = ugettext_lazy(
+            'Recipe ingredient group ingredients'
+        )
         unique_together = ('group', 'order')
 
 

@@ -69,7 +69,9 @@
         "starred": "Starred",
         "star": "Star",
         "unstar": "Unstar",
-        "stars": "Not starred | Starred once | Starred {count} times"
+        "stars": "Not starred | Starred once | Starred {count} times",
+        "fork": "Fork",
+        "parent": "Original"
     },
     "recipe_detail": {
         "loading": "@:generic.loading",

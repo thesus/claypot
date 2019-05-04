@@ -40,6 +40,9 @@ const endpoints = {
   recipe_unstar (id) {
     return `/api/recipes/${id}/unstar/`
   },
+  fork (id) {
+    return `/api/recipes/${id}/fork/`
+  },
   signup () {
     return '/accounts/signup'
   },
