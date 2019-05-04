@@ -1,3 +1,8 @@
+# Version 0.2.2
+
+- Pull images in pipeline before building
+
+
 # Version 0.2.1
 
 - Update caddy to 1.0.0
