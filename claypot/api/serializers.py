@@ -173,6 +173,14 @@ class RecipeSerializer(serializers.Serializer):
         model_field=Recipe._meta.get_field('parent_recipe'),
         read_only=True
     )
+    estimated_work_duration = serializers.ModelField(
+        model_field=Recipe._meta.get_field('estimated_work_duration'),
+        allow_null=True,
+    )
+    estimated_waiting_duration = serializers.ModelField(
+        model_field=Recipe._meta.get_field('estimated_waiting_duration'),
+        allow_null=True,
+    )
 
     images = serializers.PrimaryKeyRelatedField(
             queryset=Image.objects.all(),
@@ -256,6 +264,8 @@ class RecipeSerializer(serializers.Serializer):
     @method_decorator(transaction.atomic)
     def update(self, instance, validated_data):
         instance.title = validated_data['title']
+        instance.estimated_work_duration = validated_data['estimated_work_duration']
+        instance.estimated_waiting_duration = validated_data['estimated_waiting_duration']
         instance.save()
 
         # save images
@@ -373,6 +383,8 @@ class RecipeSerializer(serializers.Serializer):
             'published_on',
             'is_starred',
             'stars',
+            'estimated_work_duration',
+            'estimated_waiting_duration',
         ]
         read_only_fields = [
             'id',
