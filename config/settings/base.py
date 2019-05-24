@@ -55,9 +55,7 @@ if DEBUG:
         'debug_toolbar',
     ]
     MIDDLEWARE += [
-    # ...
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-    # ...
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
     ]
     INTERNAL_IPS = ['::1', '127.0.0.1']
 
@@ -254,3 +252,6 @@ RECIPE_DELETE_GRACE_PERIOD = timedelta(
         default=3600,
     ),
 )
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
