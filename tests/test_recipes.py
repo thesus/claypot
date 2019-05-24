@@ -57,6 +57,8 @@ def test_post_new_recipe(
       "instructions": src['instructions'],
       "ingredients": [i for i in src['ingredients'] if i['is_group'] is not True],
       "images": [],
+      "estimated_work_duration": None,
+      "estimated_waiting_duration": None,
     }
     response = api_client.put(url, data, format='json')
     assert response.status_code == status.HTTP_200_OK
