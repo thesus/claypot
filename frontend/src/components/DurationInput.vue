@@ -1,12 +1,14 @@
 <template>
-  <span>
+  <div>
     <input
-      class=""
       :disabled="disabled"
       :value="displayedValue"
       @input="onInput"
-    />&nbsp;{{ $t('duration_input.minutes') }}
-  </span>
+    />
+    <span>
+      {{ $t('duration_input.minutes') }}
+    </span>
+  </div>
 </template>
 
 <script>
@@ -51,3 +53,23 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+div {
+  width: 100%;
+  position: relative;
+  height: 25px;
+}
+
+input {
+  width: 100%;
+  padding-right: 65px;
+  text-align: right;
+}
+
+span {
+  right: 6px;
+  position: absolute;
+  bottom: 3px;
+}
+</style>

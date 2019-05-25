@@ -15,8 +15,11 @@
           :key="ingredient.ingredient"
         >
           <td class="amount">
-            <span v-if="ingredient.amount_type === AMOUNT_TYPE_NUMERIC">
+            <span v-if="ingredient.amount_type === AMOUNT_TYPE_NUMERIC && ingredient.unit != ''">
               {{ formatter.format(ingredient.amount_numeric * scaling) }}&nbsp;{{ ingredient.unit }}
+            </span>
+            <span v-else-if="ingredient.amount_type === AMOUNT_TYPE_NUMERIC">
+              {{ formatter.format(ingredient.amount_numeric * scaling) }}
             </span>
             <span v-else-if="ingredient.amount_type === AMOUNT_TYPE_APPROX">
               {{ ingredient.amount_approx }}
