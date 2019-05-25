@@ -288,14 +288,13 @@ export default {
     }
   }
 
-  @media screen and (min-width: 900px) {
+  @media screen and (min-width: 780px) {
     &.ingredients-single {
-
       flex-direction: row-reverse;
       .images {
         flex: 1;
-        width: initial;
-        flex-basis: auto;
+        width: auto;
+        flex-basis: min-content;
       }
     }
   }
@@ -308,7 +307,7 @@ export default {
 }
 
 article {
-  max-width: 1000px;
   margin: auto;
+  max-width: 1000px;
 }
 </style>
