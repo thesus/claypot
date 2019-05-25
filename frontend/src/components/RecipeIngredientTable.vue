@@ -16,7 +16,7 @@
         >
           <td class="amount">
             <span v-if="ingredient.amount_type === AMOUNT_TYPE_NUMERIC">
-              {{ ingredient.amount_numeric }}&nbsp;{{ ingredient.unit }}
+              {{ (ingredient.amount_numeric * scaling).toFixed(0) }}&nbsp;{{ ingredient.unit }}
             </span>
             <span v-else-if="ingredient.amount_type === AMOUNT_TYPE_APPROX">
               {{ ingredient.amount_approx }}
@@ -43,6 +43,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    scaling: {
+      type: Number,
+      default: 1.0,
+    }
   },
   data () {
     return {
