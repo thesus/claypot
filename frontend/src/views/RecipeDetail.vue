@@ -65,6 +65,15 @@
       />
     </div>
 
+    <p v-if="hasEstimatedWorkDuration">
+      {{ $t('recipe_detail.estimated_work_duration') }}:
+      <duration-span :value="recipe.estimated_work_duration" />
+    </p>
+    <p v-if="hasEstimatedWaitingDuration">
+      {{ $t('recipe_detail.estimated_waiting_duration') }}:
+      <duration-span :value="recipe.estimated_waiting_duration" />
+    </p>
+
     <ol
       v-if="recipe"
       class="instructions"
@@ -86,15 +95,17 @@
 import {mapGetters} from 'vuex'
 import {api, endpoints} from '@/api'
 
+import DurationSpan from '@/components/DurationSpan'
 import ImageGallery from '@/components/ImageGallery'
 import RecipeStarInput from '@/components/RecipeStarInput'
 import RecipeIngredientTable from '@/components/RecipeIngredientTable'
 
 export default {
   components: {
+    DurationSpan,
+    ImageGallery,
     RecipeIngredientTable,
     RecipeStarInput,
-    ImageGallery,
   },
   data () {
     return {
@@ -122,6 +133,12 @@ export default {
     },
     allIngredients () {
       return this.recipe.ingredients || []
+    },
+    hasEstimatedWorkDuration () {
+      return typeof this.recipe.estimated_work_duration !== 'undefined' && this.recipe.estimated_work_duration !== null
+    },
+    hasEstimatedWaitingDuration () {
+      return typeof this.recipe.estimated_waiting_duration !== 'undefined' && this.recipe.estimated_waiting_duration !== null
     },
     ...mapGetters([
       'isSuperUser',

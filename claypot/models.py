@@ -70,6 +70,14 @@ class Recipe(models.Model):
     parent_recipe = models.ForeignKey(
         "self", on_delete=models.SET_NULL, blank=True, null=True
     )
+    estimated_work_duration = models.DurationField(
+        null=True, verbose_name=ugettext_lazy("Estimated time spent working")
+    )
+    estimated_waiting_duration = models.DurationField(
+        null=True,
+        verbose_name=ugettext_lazy("Estimated waiting time"),
+        help_text=ugettext_lazy("Cooking and baking"),
+    )
 
     def save(self, *args, **kwargs):
         if not self.slug and not "slug" in kwargs:

@@ -78,6 +78,26 @@
     </div>
 
     <div>
+      <label>
+        {{ $t('recipe_edit.estimated_work_duration') }}
+      </label>
+      <duration-input
+        v-model="recipe_dirty.estimated_work_duration"
+        :disabled="saving"
+      />
+    </div>
+
+    <div>
+      <label>
+        {{ $t('recipe_edit.estimated_waiting_duration') }}
+      </label>
+      <duration-input
+        v-model="recipe_dirty.estimated_waiting_duration"
+        :disabled="saving"
+      />
+    </div>
+
+    <div>
       <button
         :disabled="saving"
         class="btn btn-right btn-primary"
@@ -153,6 +173,7 @@ import Vue from 'vue'
 
 import {api, endpoints} from '@/api'
 import {clone} from '@/utils'
+import DurationInput from '@/components/DurationInput'
 import FormFieldValidationError from '@/components/FormFieldValidationError'
 import RecipeEditIngredientTable from '@/components/RecipeEditIngredientTable'
 import ImageUpload from '@/components/ImageUpload'
@@ -166,6 +187,7 @@ const amount_types = {
 export default {
   name: 'RecipeEditForm',
   components: {
+    DurationInput,
     FormFieldValidationError,
     RecipeEditIngredientTable,
     ImageUpload,
@@ -179,6 +201,8 @@ export default {
           ingredient_groups: [],
           ingredients: [],
           title: '',
+          estimated_work_duration: null,
+          estimated_waiting_duration: null,
         }
       },
     },
@@ -189,6 +213,8 @@ export default {
         ingredients: [{is_group: false, title: '', ingredients: []}],
         instructions: [this.createEmptyInstruction()],
         images: [],
+        estimated_work_duration: null,
+        estimated_waiting_duration: null,
       },
       /* Used to pass image data with urls to ImageUpload Component.
          recipe_diry.images is filled by the component and consists only of id's */
@@ -196,6 +222,8 @@ export default {
       saving: false,
       errors: {
         title: [],
+        estimated_work_duration: [],
+        estimated_waiting_duration: [],
         ingredients: [],
         ingredient_groups: [],
         instructions: [],
@@ -247,6 +275,8 @@ export default {
       const r = this.recipe
       this.recipe_dirty = {
         title: r.title,
+        estimated_work_duration: r.estimated_work_duration,
+        estimated_waiting_duration: r.estimated_waiting_duration,
         instructions: clone(r.instructions || []),
         ingredients: clone(r.ingredients || []),
       }
@@ -340,6 +370,8 @@ export default {
 
         const d = {
           title: this.recipe_dirty.title,
+          estimated_work_duration: this.recipe_dirty.estimated_work_duration,
+          estimated_waiting_duration: this.recipe_dirty.estimated_waiting_duration,
           images: this.recipe_dirty.images,
           instructions: this.recipe_dirty.instructions.map((instruction, i) => { return {order: i, text: instruction.text}}),
           ingredients: this.recipe_dirty.ingredients,
@@ -354,6 +386,8 @@ export default {
           // TODO: Notify user about broken fields?
           const errors = await r.json()
           this.errors.title = errors.title || []
+          this.errors.estimated_work_duration = errors.estimated_work_duration || []
+          this.errors.estimated_waiting_duration = errors.estimated_waiting_duration || []
           this.errors.ingredients = errors.ingredients || []
           this.errors.ingredient_groups = errors.ingredient_groups || []
           this.errors.instructions = errors.instructions || []
