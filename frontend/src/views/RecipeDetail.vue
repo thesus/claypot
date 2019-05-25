@@ -45,6 +45,8 @@
       </div>
     </div>
 
+    <scale-input v-model="scaling"/>
+
     <div
       v-if="recipe"
       class="header"
@@ -62,6 +64,7 @@
         :key="c + 1"
         :ingredients="i.is_group ? i.ingredients : i.ingredients"
         :caption="i.is_group ? i.title : ''"
+        :scaling="scaling"
       />
     </div>
 
@@ -99,6 +102,7 @@ import DurationSpan from '@/components/DurationSpan'
 import ImageGallery from '@/components/ImageGallery'
 import RecipeStarInput from '@/components/RecipeStarInput'
 import RecipeIngredientTable from '@/components/RecipeIngredientTable'
+import ScaleInput from '@/components/ScaleInput'
 
 export default {
   components: {
@@ -106,13 +110,15 @@ export default {
     ImageGallery,
     RecipeIngredientTable,
     RecipeStarInput,
+    ScaleInput,
   },
   data () {
     return {
       loading: false,
       error: false,
       recipe: {
-      }
+      },
+      scaling: 1.0,
     }
   },
   computed: {
