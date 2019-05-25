@@ -19,7 +19,7 @@ export default {
   },
   computed: {
     fraction () {
-      const result = this.numerator / this.denominator
+      const result = Number(this.numerator) / Number(this.denominator)
       if (!isNaN(result)) {
         return result
       } else {
@@ -29,15 +29,24 @@ export default {
   },
   methods: {
     increase () {
-      this.numerator += 1
+      if (!isNaN(Number(this.numerator))) {
+        this.numerator = Number(this.numerator) + 1
+      } else {
+        this.numerator = 1
+      }
     },
     decrease () {
+      if (isNaN(Number(this.numerator)) || isNaN(Number(this.denominator))) {
+        this.numerator = 1
+        this.denominator = 1
+        return
+      }
       if (this.numerator - 1 === 0) {
         this.numerator = 1
-        this.denominator += 1
+        this.denominator = Number(this.denominator) + 1
         this.denominatorHidden = false
       } else {
-        this.numerator -= 1
+        this.numerator = Number(this.numerator) - 1
       }
     },
   },
