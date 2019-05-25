@@ -18,14 +18,12 @@ from claypot.models import (
     Unit,
 )
 
-from claypot.images.models import (
-    Image,
-    ImageFile,
-)
+from claypot.images.models import Image, ImageFile
+
 
 class OrderedListSerializer(serializers.ListSerializer):
     def to_representation(self, data):
-        data = data.order_by('order')
+        data = data.order_by("order")
         return super().to_representation(data)
 
 
@@ -36,16 +34,8 @@ class ImageCreateSerializer(serializers.Serializer):
 class ImageFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImageFile
-        fields = [
-            'image_file',
-            'height',
-            'width',
-        ]
-        read_only_fields = [
-            'image_file',
-            'height',
-            'width'
-        ]
+        fields = ["image_file", "height", "width"]
+        read_only_fields = ["image_file", "height", "width"]
 
 
 class ImageRetrieveSerializer(serializers.ModelSerializer):
@@ -53,31 +43,20 @@ class ImageRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Image
-        fields = [
-            'id',
-            'files',
-        ]
-        read_only_fields = [
-            'id',
-            'files',
-        ]
+        fields = ["id", "files"]
+        read_only_fields = ["id", "files"]
 
 
 class ManyIngredientSerializer(serializers.Serializer):
     ingredients = serializers.ListField(
-        child=serializers.CharField(),
-        min_length=0,
-        max_length=20,
+        child=serializers.CharField(), min_length=0, max_length=20
     )
 
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = [
-            'id',
-            'name',
-        ]
+        fields = ["id", "name"]
 
 
 class IngredientField(serializers.RelatedField):
@@ -90,18 +69,13 @@ class IngredientField(serializers.RelatedField):
         try:
             return Ingredient.objects.get(name=data)
         except Ingredient.DoesNotExist:
-            raise serializers.ValidationError('Unknown ingredient')
+            raise serializers.ValidationError("Unknown ingredient")
 
 
 class UnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Unit
-        fields = [
-            'id',
-            'name',
-            'name_plural',
-            'code',
-        ]
+        fields = ["id", "name", "name_plural", "code"]
 
 
 class UnitField(serializers.RelatedField):
@@ -114,7 +88,7 @@ class UnitField(serializers.RelatedField):
         try:
             return Unit.objects.get(code=data)
         except Unit.DoesNotExist:
-            raise serializers.ValidationError('Unknown unit')
+            raise serializers.ValidationError("Unknown unit")
 
 
 class UsernameField(serializers.RelatedField):
@@ -129,10 +103,7 @@ class RecipeInstructionSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeInstruction
         list_serializer_class = OrderedListSerializer
-        fields = [
-            'order',
-            'text',
-        ]
+        fields = ["order", "text"]
 
 
 class RecipeIngredientSerializer(serializers.Serializer):
@@ -154,29 +125,29 @@ class RecipeIngredientListSerializer(serializers.Serializer):
 class RecipeListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ['id', 'title']
+        fields = ["id", "title"]
 
 
 class RecipeSerializer(serializers.Serializer):
     id = serializers.ModelField(
-        model_field=Recipe._meta.get_field('id'), read_only=True)
-    title = serializers.ModelField(
-        model_field=Recipe._meta.get_field('title'))
+        model_field=Recipe._meta.get_field("id"), read_only=True
+    )
+    title = serializers.ModelField(model_field=Recipe._meta.get_field("title"))
     slug = serializers.ModelField(
-        model_field=Recipe._meta.get_field('slug'), read_only=True)
+        model_field=Recipe._meta.get_field("slug"), read_only=True
+    )
     author_id = serializers.ModelField(
-        model_field=Recipe._meta.get_field('author_id'), read_only=True)
+        model_field=Recipe._meta.get_field("author_id"), read_only=True
+    )
     published_on = serializers.ModelField(
-        model_field=Recipe._meta.get_field('published_on'), read_only=True)
+        model_field=Recipe._meta.get_field("published_on"), read_only=True
+    )
     author = UsernameField(required=False)
     parent_recipe = serializers.ModelField(
-        model_field=Recipe._meta.get_field('parent_recipe'),
-        read_only=True
+        model_field=Recipe._meta.get_field("parent_recipe"), read_only=True
     )
 
-    images = serializers.PrimaryKeyRelatedField(
-            queryset=Image.objects.all(),
-            many=True)
+    images = serializers.PrimaryKeyRelatedField(queryset=Image.objects.all(), many=True)
 
     instructions = RecipeInstructionSerializer(many=True)
     is_starred = serializers.SerializerMethodField()
@@ -185,19 +156,19 @@ class RecipeSerializer(serializers.Serializer):
 
     def to_representation(self, recipe):
         data = super().to_representation(recipe)
-        ingredients = (
-            set(recipe.ingredients.all()) |
-            set(recipe.ingredient_groups.all()))
+        ingredients = set(recipe.ingredients.all()) | set(
+            recipe.ingredient_groups.all()
+        )
         all_ingredients = sorted(ingredients, key=lambda i: i.order)
         ingredients = []
         buf = []
+
         def _flush():
             ingredients.append(
-                RecipeIngredientListSerializer({
-                    'is_group': False,
-                    'title': '',
-                    'ingredients': buf,
-                }).data)
+                RecipeIngredientListSerializer(
+                    {"is_group": False, "title": "", "ingredients": buf}
+                ).data
+            )
             buf.clear()
 
         for i in all_ingredients:
@@ -207,27 +178,32 @@ class RecipeSerializer(serializers.Serializer):
                 if len(buf) > 0:
                     _flush()
                 ingredients.append(
-                    RecipeIngredientListSerializer({
-                        'is_group': True,
-                        'title': i.title,
-                        'ingredients': i.ingredients.all().order_by('order'),
-                    }).data)
+                    RecipeIngredientListSerializer(
+                        {
+                            "is_group": True,
+                            "title": i.title,
+                            "ingredients": i.ingredients.all().order_by("order"),
+                        }
+                    ).data
+                )
         if len(buf) > 0:
             _flush()
-        data['ingredients'] = ingredients
+        data["ingredients"] = ingredients
         return data
 
     def to_internal_value(self, data):
         value = super().to_internal_value(data)
-        sub_serializer = RecipeIngredientListSerializer(data=data['ingredients'], many=True)
+        sub_serializer = RecipeIngredientListSerializer(
+            data=data["ingredients"], many=True
+        )
         if not sub_serializer.is_valid():
-            raise serializers.ValidationError({'ingredients': sub_serializer.errors})
-        value['ingredients'] = sub_serializer.validated_data
+            raise serializers.ValidationError({"ingredients": sub_serializer.errors})
+        value["ingredients"] = sub_serializer.validated_data
         return value
 
     def get_is_starred(self, obj):
-        if 'request' in self.context:
-            return obj.starred_by.filter(pk=self.context['request'].user.id).exists()
+        if "request" in self.context:
+            return obj.starred_by.filter(pk=self.context["request"].user.id).exists()
         else:
             return None
 
@@ -235,8 +211,8 @@ class RecipeSerializer(serializers.Serializer):
         return obj.starred_by.all().count()
 
     def get_deletable(self, obj):
-        if 'request' in self.context:
-            request = self.context['request']
+        if "request" in self.context:
+            request = self.context["request"]
             user = request.user
             if user.is_superuser or user.is_staff:
                 return True
@@ -250,18 +226,18 @@ class RecipeSerializer(serializers.Serializer):
             return False
 
     def create(self, validated_data):
-        instance = Recipe(author=self.context['request'].user)
+        instance = Recipe(author=self.context["request"].user)
         return self.update(instance, validated_data)
 
     @method_decorator(transaction.atomic)
     def update(self, instance, validated_data):
-        instance.title = validated_data['title']
+        instance.title = validated_data["title"]
         instance.save()
 
         # save images
-        existing = set(instance.images.values_list('id', flat=True))
+        existing = set(instance.images.values_list("id", flat=True))
 
-        new = set(i.pk for i in validated_data['images'])
+        new = set(i.pk for i in validated_data["images"])
         remove = existing - new
 
         instance.images.remove(*remove)
@@ -269,19 +245,14 @@ class RecipeSerializer(serializers.Serializer):
 
         # save instructions
         existing = set(ri.order for ri in instance.instructions.all())
-        new = set(ri['order'] for ri in validated_data['instructions'])
+        new = set(ri["order"] for ri in validated_data["instructions"])
         remove = existing - new
         instance.instructions.filter(order__in=remove).delete()
-        for ri in validated_data['instructions']:
-            obj = instance.instructions.filter(
-                order=ri['order'],
-            ).first()
+        for ri in validated_data["instructions"]:
+            obj = instance.instructions.filter(order=ri["order"]).first()
             if obj is None:
-                obj = RecipeInstruction(
-                    recipe=instance,
-                    order=ri['order'],
-                )
-            obj.text = ri['text']
+                obj = RecipeInstruction(recipe=instance, order=ri["order"])
+            obj.text = ri["text"]
             obj.save()
 
         # save ingredients
@@ -293,16 +264,11 @@ class RecipeSerializer(serializers.Serializer):
             existing[grp.order,] = grp
             for i in grp.ingredients.all():
                 existing[grp.order, i.order] = i
-        for grp in validated_data['ingredients']:
+        for grp in validated_data["ingredients"]:
             relevant_order = order
-            if grp['is_group'] is True:
-                pk = {
-                    "recipe": instance,
-                    "order": order,
-                }
-                values = {
-                    "title": grp['title'],
-                }
+            if grp["is_group"] is True:
+                pk = {"recipe": instance, "order": order}
+                values = {"title": grp["title"]}
                 complete_ref = (order,)
                 if complete_ref in existing:
                     existing_obj = existing[complete_ref]
@@ -311,7 +277,9 @@ class RecipeSerializer(serializers.Serializer):
                         existing_obj.delete()
                         rig = RecipeIngredientGroup.objects.create(**pk, **values)
                     else:
-                        RecipeIngredientGroup.objects.filter(pk=existing_obj.pk).update(**values)
+                        RecipeIngredientGroup.objects.filter(pk=existing_obj.pk).update(
+                            **values
+                        )
                     rig = RecipeIngredientGroup.objects.get(**pk)
                 else:
                     rig = RecipeIngredientGroup.objects.create(**pk, **values)
@@ -319,28 +287,26 @@ class RecipeSerializer(serializers.Serializer):
                 ref = (order,)
                 order += 1
                 cls = RecipeIngredientGroupIngredient
-                parent_ref = {'group': rig}
+                parent_ref = {"group": rig}
             else:
                 ref = ()
-                order += len(grp['ingredients'])
+                order += len(grp["ingredients"])
                 cls = RecipeIngredient
-                parent_ref = {'recipe': instance}
-            for ingredient in grp['ingredients']:
-                pk = {
-                    "order": relevant_order,
-                }
+                parent_ref = {"recipe": instance}
+            for ingredient in grp["ingredients"]:
+                pk = {"order": relevant_order}
                 pk.update(parent_ref)
                 values = {
-                    "ingredient": ingredient['ingredient'],
-                    "ingredient_extra": ingredient['ingredient_extra'],
-                    "optional": ingredient['optional'],
-                    "amount_type": ingredient['amount_type'],
-                    "amount_numeric": ingredient['amount_numeric'],
-                    "amount_approx": ingredient['amount_approx'],
-                    "unit": ingredient['unit'],
+                    "ingredient": ingredient["ingredient"],
+                    "ingredient_extra": ingredient["ingredient_extra"],
+                    "optional": ingredient["optional"],
+                    "amount_type": ingredient["amount_type"],
+                    "amount_numeric": ingredient["amount_numeric"],
+                    "amount_approx": ingredient["amount_approx"],
+                    "unit": ingredient["unit"],
                 }
-                #import pdb
-                #pdb.set_trace()
+                # import pdb
+                # pdb.set_trace()
                 complete_ref = ref + (relevant_order,)
                 if complete_ref in existing:
                     existing_obj = existing[complete_ref]
@@ -361,30 +327,30 @@ class RecipeSerializer(serializers.Serializer):
     class Meta:
         model = Recipe
         fields = [
-            'id',
-            'title',
-            'slug',
-            'instructions',
-            'ingredients',
-            'ingredient_groups',
-            'images',
-            'author',
-            'author_id',
-            'published_on',
-            'is_starred',
-            'stars',
+            "id",
+            "title",
+            "slug",
+            "instructions",
+            "ingredients",
+            "ingredient_groups",
+            "images",
+            "author",
+            "author_id",
+            "published_on",
+            "is_starred",
+            "stars",
         ]
         read_only_fields = [
-            'id',
-            'slug',
-            'author',
-            'author_id',
-            'published_on',
-            'starred_by',
-            'is_starred',
-            'stars',
+            "id",
+            "slug",
+            "author",
+            "author_id",
+            "published_on",
+            "starred_by",
+            "is_starred",
+            "stars",
         ]
+
 
 class RecipeReadSerializer(RecipeSerializer):
     images = ImageRetrieveSerializer(read_only=True, many=True)
-
