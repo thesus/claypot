@@ -16,7 +16,7 @@
         >
           <td class="amount">
             <span v-if="ingredient.amount_type === AMOUNT_TYPE_NUMERIC">
-              {{ (ingredient.amount_numeric * scaling).toFixed(0) }}&nbsp;{{ ingredient.unit }}
+              {{ formatter.format(ingredient.amount_numeric * scaling) }}&nbsp;{{ ingredient.unit }}
             </span>
             <span v-else-if="ingredient.amount_type === AMOUNT_TYPE_APPROX">
               {{ ingredient.amount_approx }}
@@ -53,6 +53,7 @@ export default {
       AMOUNT_TYPE_NONE: 1,
       AMOUNT_TYPE_NUMERIC: 2,
       AMOUNT_TYPE_APPROX: 3,
+      formatter: new Intl.NumberFormat(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2}),
     }
   },
 }
