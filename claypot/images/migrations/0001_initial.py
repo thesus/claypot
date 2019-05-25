@@ -7,28 +7,43 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Image',
+            name="Image",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                )
             ],
         ),
         migrations.CreateModel(
-            name='ImageFile',
+            name="ImageFile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image_file', models.FileField(upload_to='')),
-                ('height', models.IntegerField()),
-                ('width', models.IntegerField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("image_file", models.FileField(upload_to="")),
+                ("height", models.IntegerField()),
+                ("width", models.IntegerField()),
             ],
         ),
         migrations.AddField(
-            model_name='image',
-            name='files',
-            field=models.ManyToManyField(to='images.ImageFile'),
+            model_name="image",
+            name="files",
+            field=models.ManyToManyField(to="images.ImageFile"),
         ),
     ]

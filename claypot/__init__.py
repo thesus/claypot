@@ -1,3 +1,3 @@
-default_app_config = 'claypot.apps.ClaypotConfig'
+default_app_config = "claypot.apps.ClaypotConfig"
 
-__version__ = '0.1.17'
+__version__ = "0.1.17"

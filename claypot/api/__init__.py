@@ -1,1 +1,1 @@
-default_app_config = 'claypot.api.apps.ApiConfig'
+default_app_config = "claypot.api.apps.ApiConfig"

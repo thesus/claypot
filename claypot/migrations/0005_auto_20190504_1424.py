@@ -3,21 +3,19 @@
 from django.db import migrations
 import uuid
 
+
 def forwards(apps, schema_editor):
-    if schema_editor.connection.alias != 'default':
+    if schema_editor.connection.alias != "default":
         return
 
-    Recipe = apps.get_model('claypot', 'Recipe')
+    Recipe = apps.get_model("claypot", "Recipe")
     for recipe in Recipe.objects.all():
         recipe.slug = str(uuid.uuid4())
         recipe.save()
 
+
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('claypot', '0004_recipe_parent_recipe'),
-    ]
+    dependencies = [("claypot", "0004_recipe_parent_recipe")]
 
-    operations = [
-        migrations.RunPython(forwards),
-    ]
+    operations = [migrations.RunPython(forwards)]
