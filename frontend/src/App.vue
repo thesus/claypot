@@ -24,11 +24,11 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: $font_color;
-  margin: 10px;
+  margin: 50px 10px 10px 10px;
 
   @media screen and (min-width: 1000px) {
     width: 80%;
-    margin: auto;
+    margin: 50px auto auto auto;
   }
 }
 
