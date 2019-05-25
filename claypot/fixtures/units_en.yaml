@@ -22,4 +22,9 @@
   fields:
     name: pinch
     name_plural: pinches
+    code: pinch
+- model: claypot.Unit
+  fields:
+    name: piece
+    name_plural: pieces
     code: ""
