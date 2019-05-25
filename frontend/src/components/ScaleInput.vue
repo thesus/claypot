@@ -1,10 +1,12 @@
 <template>
-  <span>
-    <input v-model="numerator"/>
-    <input v-model="denominator" v-if="!denominatorHidden"/>
-    <button @click="increase">+</button>
-    <button @click="decrease">-</button>
-  </span>
+  <div class="scale">
+    <div class="button" @click="decrease">-</div>
+    <span v-if="denominatorHidden">{{ numerator }}</span>
+    <span class="fraction" v-else>
+      <sup>{{ numerator }}</sup>&frasl;<sub>{{ denominator }}</sub>
+    </span>
+    <div class="button" @click="increase">+</div>
+  </div>
 </template>
 
 <script>
@@ -29,8 +31,15 @@ export default {
   },
   methods: {
     increase () {
-      if (!isNaN(Number(this.numerator))) {
-        this.numerator = Number(this.numerator) + 1
+      if (!isNaN(Number(this.numerator)) || !isNaN(Number(this.denominator))) {
+        if (this.denominatorHidden) {
+          this.numerator = Number(this.numerator) + 1
+        } else if (this.denominator > 2) {
+          this.denominator = this.denominator - 1
+        } else {
+          this.denominator = 1
+          this.denominatorHidden = true
+        }
       } else {
         this.numerator = 1
       }
@@ -57,3 +66,36 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+@import '@/modules/variables.scss';
+
+.scale {
+  display: inline-block;
+  box-sizing: border-box;
+  border: solid 1px #ccc;
+}
+
+.button {
+  user-select: none;
+  display: inline-block;
+  text-align: center;
+  width: 18px;
+  &:hover {
+    background-color: $font_color;
+    color: white;
+    cursor: pointer;
+  }
+}
+
+span {
+  display: inline-block;
+  padding: 0 2px 0 2px;
+  width: 18px;
+  text-align: center;
+
+  &.fraction {
+    font-size: 10px;
+  }
+}
+</style>

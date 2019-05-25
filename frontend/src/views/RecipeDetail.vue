@@ -25,6 +25,8 @@
           />
         </div>
 
+        <scale-input v-model="scaling"/>
+
         <span
           class="fork button"
           v-if="isLoggedIn"
@@ -44,8 +46,6 @@
         <span>{{ $t('recipe_detail.posted_by', {user: author}) }}</span>
       </div>
     </div>
-
-    <scale-input v-model="scaling"/>
 
     <div
       v-if="recipe"
@@ -219,7 +219,7 @@ export default {
 
   .stars {
     border: solid 1px #ccc;
-    display: inline;
+    display: inline-block;
     white-space: nowrap;
     margin-right: 5px;
 

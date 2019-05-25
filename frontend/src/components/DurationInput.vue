@@ -63,7 +63,7 @@ div {
 
 input {
   width: 100%;
-  padding-right: 60px;
+  padding-right: 65px;
   text-align: right;
 }
 
