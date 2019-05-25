@@ -34,6 +34,7 @@
         >{{ $t('recipes.fork') }}
         </span>
       </div>
+
       <div class="right">
         <router-link
           v-if="canEdit"
@@ -214,6 +215,13 @@ export default {
 @import '@/modules/variables.scss';
 
 .functions {
+  line-height: 24px;
+
+  @media screen and (max-width: 500px) {
+    line-height: 40px;
+    flex-direction: column;
+  }
+
   display: flex;
   justify-content: space-between;
 
@@ -233,6 +241,10 @@ export default {
       border-left: solid 1px #ccc;
     }
 
+  }
+
+  .scale {
+    margin-right: 5px;
   }
 
   .right {

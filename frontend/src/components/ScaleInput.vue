@@ -80,7 +80,12 @@ export default {
   user-select: none;
   display: inline-block;
   text-align: center;
-  width: 18px;
+  width: 25px;
+
+  @media screen and (max-width: 500px) {
+    width: 35px;
+  }
+
   &:hover {
     background-color: $font_color;
     color: white;
@@ -92,10 +97,18 @@ span {
   display: inline-block;
   padding: 0 2px 0 2px;
   width: 18px;
-  text-align: center;
+
+  @media screen and (max-width: 500px) {
+    width: 23px;
+  }
 
   &.fraction {
     font-size: 10px;
+    line-height: 17px;
+    @media screen and (max-width: 500px) {
+      line-height: 22px;
+      font-size: 14px;
+    }
   }
 }
 </style>
