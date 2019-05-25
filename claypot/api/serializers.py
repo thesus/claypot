@@ -107,6 +107,12 @@ class UnitSerializer(serializers.ModelSerializer):
 class UnitField(serializers.RelatedField):
     queryset = Unit.objects.all()
 
+    def run_validation(self, *args, **kwargs):
+        # This is required, because RelatedField sets empty strings to None.
+        # The best way to avoid this seems to be skipping it and directly
+        # calling its ancestor, Field.
+        return serializers.Field.run_validation(self, *args, **kwargs)
+
     def to_representation(self, value):
         return value.code
 
