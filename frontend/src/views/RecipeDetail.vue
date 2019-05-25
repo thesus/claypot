@@ -67,16 +67,19 @@
         :caption="i.is_group ? i.title : ''"
         :scaling="scaling"
       />
-    </div>
 
-    <p v-if="hasEstimatedWorkDuration">
-      {{ $t('recipe_detail.estimated_work_duration') }}:
-      <duration-span :value="recipe.estimated_work_duration" />
-    </p>
-    <p v-if="hasEstimatedWaitingDuration">
-      {{ $t('recipe_detail.estimated_waiting_duration') }}:
-      <duration-span :value="recipe.estimated_waiting_duration" />
-    </p>
+
+      <div class="information" v-if="hasEstimatedWorkDuration || hasEstimatedWaitingDuration">
+        <div class="item" v-if="hasEstimatedWorkDuration">
+          {{ $t('recipe_detail.estimated_work_duration') }}:
+          <duration-span :value="recipe.estimated_work_duration" />
+        </div>
+        <div class="item" v-if="hasEstimatedWaitingDuration">
+          {{ $t('recipe_detail.estimated_waiting_duration') }}:
+          <duration-span :value="recipe.estimated_waiting_duration" />
+        </div>
+      </div>
+    </div>
 
     <ol
       v-if="recipe"
@@ -248,6 +251,9 @@ export default {
   }
 
   .right {
+    @media screen and (max-width: 500px) {
+      line-height: 32px;
+    }
     span {
       margin-left: 10px;
     }
@@ -272,7 +278,7 @@ export default {
 .header {
   display: flex;
   flex-wrap: wrap;
-  margin: 15px -10px;
+  margin: 0px -10px 5px -10px;
   justify-content: space-between;
   border: none;
 
@@ -280,6 +286,7 @@ export default {
     padding: 0 5px 0 5px;
     margin: 5px;
     width: 220px;
+    order: 3;
   }
 
   .images {
@@ -292,6 +299,18 @@ export default {
       width: 100%;
       object-fit: contain;
     }
+
+  }
+
+  .information {
+    display: flex;
+    margin: 0 5px 0 5px;
+    width: 100%;
+    justify-content: space-around;
+    background-color: rgba(184, 203, 214, 0.4);
+    padding: 6px;
+    order: 2;
+    border: solid 1px #B8CBD6;
   }
 
   @media screen and (min-width: 780px) {
@@ -303,6 +322,11 @@ export default {
   @media screen and (min-width: 780px) {
     &.ingredients-single {
       flex-direction: row-reverse;
+
+      .ingredients-group {
+        order: 1;
+      }
+
       .images {
         flex: 1;
         width: auto;
@@ -311,6 +335,8 @@ export default {
     }
   }
 }
+
+
 
 .instructions {
   margin: 5px;
