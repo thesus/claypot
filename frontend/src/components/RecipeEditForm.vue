@@ -67,7 +67,8 @@
         </div>
       </li>
     </ol>
-    <div>
+    <div
+      class="addInstruction">
       <button
         :disabled="saving"
         class="btn btn-right submit"
@@ -77,27 +78,29 @@
       </button>
     </div>
 
-    <div>
-      <label>
-        {{ $t('recipe_edit.estimated_work_duration') }}
-      </label>
-      <duration-input
-        v-model="recipe_dirty.estimated_work_duration"
-        :disabled="saving"
-      />
+    <div class="estimation">
+      <div class="column">
+        <label>
+          {{ $t('recipe_edit.estimated_work_duration') }}
+        </label>
+        <duration-input
+          v-model="recipe_dirty.estimated_work_duration"
+          :disabled="saving"
+        />
+      </div>
+
+      <div class="column">
+        <label>
+          {{ $t('recipe_edit.estimated_waiting_duration') }}
+        </label>
+        <duration-input
+          v-model="recipe_dirty.estimated_waiting_duration"
+          :disabled="saving"
+        />
+      </div>
     </div>
 
-    <div>
-      <label>
-        {{ $t('recipe_edit.estimated_waiting_duration') }}
-      </label>
-      <duration-input
-        v-model="recipe_dirty.estimated_waiting_duration"
-        :disabled="saving"
-      />
-    </div>
-
-    <div>
+    <div class="save">
       <button
         :disabled="saving"
         class="btn btn-right btn-primary"
@@ -483,7 +486,35 @@ export default {
   }
 }
 
+.addInstruction {
+  height: 25px;
+}
+
 .images {
   padding: 10px;
+}
+
+.estimation {
+  margin-top: 5px;
+  display: flex;
+  @media screen and (max-width: 469px) {
+      flex-direction: column;
+   }
+
+  .column {
+    @media screen and (min-width: 470px) {
+      &:first-child {
+         padding-right: 5px;
+      }
+      &:last-child {
+        padding-left: 5px;
+      }
+      flex: 50%;
+    }
+  }
+}
+
+.save {
+  margin-top: 8px;
 }
 </style>
