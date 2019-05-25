@@ -22,9 +22,9 @@
   fields:
     name: Prise
     name_plural: Prisen
-    code: ""
+    code: Prise
 - model: claypot.Unit
   fields:
     name: Stück
     name_plural: Stücke
-    code: x
+    code: ""
