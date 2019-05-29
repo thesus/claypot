@@ -51,7 +51,9 @@
         "retry": "Wiederholen",
         "no_recipes": "Es sind noch keine Rezepte eingepflegt.",
         "error": "@:generic.loading_error",
-        "search": "Suchen"
+        "search": "Suchen",
+        "next": "Nächste Seite",
+        "previous": "Vorherige Seite"
     },
     "recipes": {
         "title": "Titel",
