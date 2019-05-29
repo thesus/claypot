@@ -28,6 +28,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sessions",
     "django.contrib.staticfiles",
+    "django.contrib.postgres",
+
     "rest_framework",
     "django_filters",
     "django_rq",

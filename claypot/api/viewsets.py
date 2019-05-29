@@ -3,8 +3,10 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, get_language_info
 from django_filters.rest_framework import DjangoFilterBackend
 from pytz import utc
 from rest_framework import permissions, status, viewsets
@@ -12,8 +14,15 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 import django_filters
 
-from claypot.models import Ingredient, Recipe
+from django.contrib.postgres.aggregates import StringAgg
+from django.contrib.postgres.search import (
+    SearchQuery,
+    SearchRank,
+    SearchVector,
+    TrigramSimilarity,
+)
 
+from claypot.models import Ingredient, Recipe
 from claypot.images.models import Image
 
 from .serializers import (
@@ -102,6 +111,7 @@ class RecipeFilter(django_filters.FilterSet):
     is_my_recipe = django_filters.BooleanFilter(
         label="Is my recipe", method="filter_is_my_recipe"
     )
+    search = django_filters.CharFilter(label="Search", method="search_filter")
 
     def filter_is_starred(self, queryset, name, value):
         if value is True:
@@ -132,6 +142,47 @@ class RecipeFilter(django_filters.FilterSet):
                 # anonymous
                 return queryset
         return queryset
+
+    def search_filter(self, queryset, name, value):
+        if value:
+            # Build search vector containing the following fields:
+            # - title
+            # - instructions
+            # - ingredients (group/non group)
+            vector = (
+                SearchVector("title", weight="A")
+                + SearchVector(
+                    StringAgg("instructions__text", delimiter=" "), weight="C"
+                )
+                + SearchVector(
+                    StringAgg("ingredients__ingredient__name", delimiter=" "),
+                    weight="B",
+                )
+                + SearchVector(
+                    StringAgg(
+                        "ingredient_groups__ingredients__ingredient__name",
+                        delimiter=" ",
+                    ),
+                    weight="B",
+                )
+            )
+
+            # extract language in lowercase for postgres tsquery
+            lang = get_language_info(get_language())["name"].lower()
+            query = SearchQuery(value, config=lang)
+
+           # Query based on vector search and trigram similarity
+            queryset = (
+                queryset.annotate(
+                    rank=SearchRank(vector, query),
+                    similarity=TrigramSimilarity("title", value),
+                )
+                .filter(Q(rank__gte=0.1) | Q(similarity__gt=0.1))
+                .order_by("-rank")
+            )
+            return queryset
+        else:
+            return queryset
 
     class Meta:
         model = Recipe
