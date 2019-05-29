@@ -52,19 +52,27 @@ export default {
 $border_color: #ddd;
 
 .nav {
-    margin: 5px 5px 5px 5px;
-    // border-bottom: solid 1px $border_color;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  background-color: rgb(20, 133, 204);
+  // border-bottom: solid 1px $border_color;
     // border-top: solid 1px $border_color;
 }
 
 a {
-    margin: 8px 5px 5px 5px;
+    padding: 10px 8px 8px 8px;
     display: inline-block;
-    color: #2c3e50;
+    color: white;
+    font-weight: bolder;
     text-decoration: none;
+    &:hover {
+      background-color: #116DA6;
+    }
 }
 
 .router-link-exact-active {
-    text-decoration: underline;
+   background-color: #0D5480;
 }
 </style>

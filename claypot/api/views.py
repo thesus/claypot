@@ -12,7 +12,8 @@ from claypot import __version__
 
 class CsrfTokenView(View):
     def get(self, request):
-        return HttpResponse('', content_type='text/plain')
+        return HttpResponse("", content_type="text/plain")
+
 
 csrf_token_view = ensure_csrf_cookie(CsrfTokenView.as_view())
 
@@ -22,8 +23,10 @@ class SentryConfigView(generics.GenericAPIView):
 
     @method_decorator(cache_control(max_age=3600))
     def get(self, request):
-        response = Response({
-            'sentry_dsn': getattr(settings, 'SENTRY_PUBLIC_DSN', ''),
-            'version': __version__,
-        })
+        response = Response(
+            {
+                "sentry_dsn": getattr(settings, "SENTRY_PUBLIC_DSN", ""),
+                "version": __version__,
+            }
+        )
         return response

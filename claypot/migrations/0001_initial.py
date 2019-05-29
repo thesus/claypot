@@ -9,164 +9,351 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-    ]
+    dependencies = [migrations.swappable_dependency(settings.AUTH_USER_MODEL)]
 
     operations = [
         migrations.CreateModel(
-            name='Ingredient',
+            name="Ingredient",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200, verbose_name='Name')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=200, verbose_name="Name")),
             ],
             options={
-                'verbose_name': 'Ingredient',
-                'verbose_name_plural': 'Ingredients',
+                "verbose_name": "Ingredient",
+                "verbose_name_plural": "Ingredients",
             },
         ),
         migrations.CreateModel(
-            name='IngredientTag',
+            name="IngredientTag",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('tag', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("tag", models.CharField(max_length=100)),
+            ],
+            options={"verbose_name": "Tag", "verbose_name_plural": "Tags"},
+        ),
+        migrations.CreateModel(
+            name="Recipe",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=500, verbose_name="Title")),
+                ("slug", models.SlugField(max_length=200)),
+                ("published_on", models.DateTimeField(auto_now=True)),
+                (
+                    "author",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="authored_recipes",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Author",
+                    ),
+                ),
+                (
+                    "starred_by",
+                    models.ManyToManyField(
+                        related_name="starred_recipes", to=settings.AUTH_USER_MODEL
+                    ),
+                ),
+            ],
+            options={"verbose_name": "Recipe", "verbose_name_plural": "Recipes"},
+        ),
+        migrations.CreateModel(
+            name="RecipeIngredient",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "ingredient_extra",
+                    models.TextField(
+                        blank=True, verbose_name="Additional notes about ingredient"
+                    ),
+                ),
+                (
+                    "optional",
+                    models.BooleanField(default=False, verbose_name="Optional"),
+                ),
+                (
+                    "amount_type",
+                    models.IntegerField(
+                        choices=[
+                            (1, "Unspecified amount"),
+                            (2, "Numeric amount"),
+                            (3, "Approximated amount"),
+                        ],
+                        default=2,
+                        verbose_name="Amount type",
+                    ),
+                ),
+                (
+                    "amount_numeric",
+                    models.FloatField(
+                        blank=True, null=True, verbose_name="Amount, numeric"
+                    ),
+                ),
+                (
+                    "amount_approx",
+                    models.CharField(
+                        blank=True,
+                        max_length=250,
+                        null=True,
+                        verbose_name="Amount, approximated",
+                    ),
+                ),
+                ("order", models.IntegerField()),
+                (
+                    "ingredient",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="+",
+                        to="claypot.Ingredient",
+                        verbose_name="Ingredient",
+                    ),
+                ),
+                (
+                    "recipe",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ingredients",
+                        to="claypot.Recipe",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Tag',
-                'verbose_name_plural': 'Tags',
+                "verbose_name": "Recipe ingredient",
+                "verbose_name_plural": "Recipe ingredients",
             },
         ),
         migrations.CreateModel(
-            name='Recipe',
+            name="RecipeIngredientGroup",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=500, verbose_name='Title')),
-                ('slug', models.SlugField(max_length=200)),
-                ('published_on', models.DateTimeField(auto_now=True)),
-                ('author', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='authored_recipes', to=settings.AUTH_USER_MODEL, verbose_name='Author')),
-                ('starred_by', models.ManyToManyField(related_name='starred_recipes', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("order", models.IntegerField()),
+                ("title", models.CharField(max_length=1000)),
+                (
+                    "recipe",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ingredient_groups",
+                        to="claypot.Recipe",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Recipe',
-                'verbose_name_plural': 'Recipes',
+                "verbose_name": "Recipe ingredient group",
+                "verbose_name_plural": "Recipe ingredient groups",
             },
         ),
         migrations.CreateModel(
-            name='RecipeIngredient',
+            name="RecipeIngredientGroupIngredient",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ingredient_extra', models.TextField(blank=True, verbose_name='Additional notes about ingredient')),
-                ('optional', models.BooleanField(default=False, verbose_name='Optional')),
-                ('amount_type', models.IntegerField(choices=[(1, 'Unspecified amount'), (2, 'Numeric amount'), (3, 'Approximated amount')], default=2, verbose_name='Amount type')),
-                ('amount_numeric', models.FloatField(blank=True, null=True, verbose_name='Amount, numeric')),
-                ('amount_approx', models.CharField(blank=True, max_length=250, null=True, verbose_name='Amount, approximated')),
-                ('order', models.IntegerField()),
-                ('ingredient', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='claypot.Ingredient', verbose_name='Ingredient')),
-                ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ingredients', to='claypot.Recipe')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "ingredient_extra",
+                    models.TextField(
+                        blank=True, verbose_name="Additional notes about ingredient"
+                    ),
+                ),
+                (
+                    "optional",
+                    models.BooleanField(default=False, verbose_name="Optional"),
+                ),
+                (
+                    "amount_type",
+                    models.IntegerField(
+                        choices=[
+                            (1, "Unspecified amount"),
+                            (2, "Numeric amount"),
+                            (3, "Approximated amount"),
+                        ],
+                        default=2,
+                        verbose_name="Amount type",
+                    ),
+                ),
+                (
+                    "amount_numeric",
+                    models.FloatField(
+                        blank=True, null=True, verbose_name="Amount, numeric"
+                    ),
+                ),
+                (
+                    "amount_approx",
+                    models.CharField(
+                        blank=True,
+                        max_length=250,
+                        null=True,
+                        verbose_name="Amount, approximated",
+                    ),
+                ),
+                ("order", models.IntegerField()),
+                (
+                    "group",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ingredients",
+                        to="claypot.RecipeIngredientGroup",
+                    ),
+                ),
+                (
+                    "ingredient",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="+",
+                        to="claypot.Ingredient",
+                        verbose_name="Ingredient",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Recipe ingredient',
-                'verbose_name_plural': 'Recipe ingredients',
+                "verbose_name": "Recipe ingredient group ingredient",
+                "verbose_name_plural": "Recipe ingredient group ingredients",
             },
         ),
         migrations.CreateModel(
-            name='RecipeIngredientGroup',
+            name="RecipeInstruction",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('order', models.IntegerField()),
-                ('title', models.CharField(max_length=1000)),
-                ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ingredient_groups', to='claypot.Recipe')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("order", models.IntegerField()),
+                ("text", models.TextField(blank=True)),
+                (
+                    "recipe",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="instructions",
+                        to="claypot.Recipe",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Recipe ingredient group',
-                'verbose_name_plural': 'Recipe ingredient groups',
+                "verbose_name": "Recipe instruction",
+                "verbose_name_plural": "Recipe instructions",
             },
         ),
         migrations.CreateModel(
-            name='RecipeIngredientGroupIngredient',
+            name="Unit",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ingredient_extra', models.TextField(blank=True, verbose_name='Additional notes about ingredient')),
-                ('optional', models.BooleanField(default=False, verbose_name='Optional')),
-                ('amount_type', models.IntegerField(choices=[(1, 'Unspecified amount'), (2, 'Numeric amount'), (3, 'Approximated amount')], default=2, verbose_name='Amount type')),
-                ('amount_numeric', models.FloatField(blank=True, null=True, verbose_name='Amount, numeric')),
-                ('amount_approx', models.CharField(blank=True, max_length=250, null=True, verbose_name='Amount, approximated')),
-                ('order', models.IntegerField()),
-                ('group', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ingredients', to='claypot.RecipeIngredientGroup')),
-                ('ingredient', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='claypot.Ingredient', verbose_name='Ingredient')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, verbose_name="Name")),
+                (
+                    "name_plural",
+                    models.CharField(max_length=100, verbose_name="Name, plural"),
+                ),
+                (
+                    "code",
+                    models.CharField(blank=True, max_length=5, verbose_name="Code"),
+                ),
             ],
-            options={
-                'verbose_name': 'Recipe ingredient group ingredient',
-                'verbose_name_plural': 'Recipe ingredient group ingredients',
-            },
+            options={"verbose_name": "Unit", "verbose_name_plural": "Units"},
         ),
-        migrations.CreateModel(
-            name='RecipeInstruction',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('order', models.IntegerField()),
-                ('text', models.TextField(blank=True)),
-                ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='instructions', to='claypot.Recipe')),
-            ],
-            options={
-                'verbose_name': 'Recipe instruction',
-                'verbose_name_plural': 'Recipe instructions',
-            },
-        ),
-        migrations.CreateModel(
-            name='Unit',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, verbose_name='Name')),
-                ('name_plural', models.CharField(max_length=100, verbose_name='Name, plural')),
-                ('code', models.CharField(blank=True, max_length=5, verbose_name='Code')),
-            ],
-            options={
-                'verbose_name': 'Unit',
-                'verbose_name_plural': 'Units',
-            },
-        ),
-        migrations.AlterUniqueTogether(
-            name='unit',
-            unique_together={('name',)},
+        migrations.AlterUniqueTogether(name="unit", unique_together={("name",)}),
+        migrations.AddField(
+            model_name="recipeingredientgroupingredient",
+            name="unit",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="+",
+                to="claypot.Unit",
+                verbose_name="Unit",
+            ),
         ),
         migrations.AddField(
-            model_name='recipeingredientgroupingredient',
-            name='unit',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='claypot.Unit', verbose_name='Unit'),
+            model_name="recipeingredient",
+            name="unit",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="+",
+                to="claypot.Unit",
+                verbose_name="Unit",
+            ),
+        ),
+        migrations.AlterUniqueTogether(
+            name="ingredienttag", unique_together={("tag",)}
         ),
         migrations.AddField(
-            model_name='recipeingredient',
-            name='unit',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='+', to='claypot.Unit', verbose_name='Unit'),
+            model_name="ingredient",
+            name="tags",
+            field=models.ManyToManyField(
+                related_name="ingredients", to="claypot.IngredientTag"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='ingredienttag',
-            unique_together={('tag',)},
-        ),
-        migrations.AddField(
-            model_name='ingredient',
-            name='tags',
-            field=models.ManyToManyField(related_name='ingredients', to='claypot.IngredientTag'),
+            name="recipeinstruction", unique_together={("recipe", "order")}
         ),
         migrations.AlterUniqueTogether(
-            name='recipeinstruction',
-            unique_together={('recipe', 'order')},
+            name="recipeingredientgroupingredient", unique_together={("group", "order")}
         ),
         migrations.AlterUniqueTogether(
-            name='recipeingredientgroupingredient',
-            unique_together={('group', 'order')},
+            name="recipeingredientgroup", unique_together={("recipe", "order")}
         ),
         migrations.AlterUniqueTogether(
-            name='recipeingredientgroup',
-            unique_together={('recipe', 'order')},
+            name="recipeingredient", unique_together={("recipe", "order")}
         ),
-        migrations.AlterUniqueTogether(
-            name='recipeingredient',
-            unique_together={('recipe', 'order')},
-        ),
-        migrations.AlterUniqueTogether(
-            name='ingredient',
-            unique_together={('name',)},
-        ),
+        migrations.AlterUniqueTogether(name="ingredient", unique_together={("name",)}),
     ]

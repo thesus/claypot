@@ -5,13 +5,8 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('claypot', '0005_auto_20190504_1424'),
-    ]
+    dependencies = [("claypot", "0005_auto_20190504_1424")]
 
     operations = [
-        migrations.AlterUniqueTogether(
-            name='recipe',
-            unique_together={('slug',)},
-        ),
+        migrations.AlterUniqueTogether(name="recipe", unique_together={("slug",)})
     ]

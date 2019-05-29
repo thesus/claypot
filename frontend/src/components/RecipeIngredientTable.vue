@@ -15,8 +15,11 @@
           :key="ingredient.ingredient"
         >
           <td class="amount">
-            <span v-if="ingredient.amount_type === AMOUNT_TYPE_NUMERIC">
-              {{ ingredient.amount_numeric }}&nbsp;{{ ingredient.unit }}
+            <span v-if="ingredient.amount_type === AMOUNT_TYPE_NUMERIC && ingredient.unit != ''">
+              {{ formatter.format(ingredient.amount_numeric * scaling) }}&nbsp;{{ ingredient.unit }}
+            </span>
+            <span v-else-if="ingredient.amount_type === AMOUNT_TYPE_NUMERIC">
+              {{ formatter.format(ingredient.amount_numeric * scaling) }}
             </span>
             <span v-else-if="ingredient.amount_type === AMOUNT_TYPE_APPROX">
               {{ ingredient.amount_approx }}
@@ -43,12 +46,17 @@ export default {
       type: Array,
       default: () => [],
     },
+    scaling: {
+      type: Number,
+      default: 1.0,
+    }
   },
   data () {
     return {
       AMOUNT_TYPE_NONE: 1,
       AMOUNT_TYPE_NUMERIC: 2,
       AMOUNT_TYPE_APPROX: 3,
+      formatter: new Intl.NumberFormat(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2}),
     }
   },
 }

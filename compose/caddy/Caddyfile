@@ -1,16 +1,13 @@
 :80 {
     root /var/www/html
     proxy /accounts/ claypot:80 {
-        transparent
-        websocket
+        header_upstream Host {host}
     }
     proxy /admin/ claypot:80 {
-        transparent
-        websocket
+        header_upstream Host {host}
     }
     proxy /api/ claypot:80 {
-        transparent
-        websocket
+        header_upstream Host {host}
     }
 }
 

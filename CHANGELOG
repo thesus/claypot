@@ -1,3 +1,11 @@
+# Version 0.2.6
+
+- Add basic search function
+- Layout improvements
+- Recipe scaling
+- Time estimation on recipes
+- Foundation for unit without code
+
 # Version 0.2.2
 
 - Pull images in pipeline before building

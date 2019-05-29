@@ -47,11 +47,11 @@
     },
     "home": {
         "loading": "@:generic.loading",
-        "all_recipes": "Alle Rezepte",
         "add": "Neues Rezept hinzufügen",
         "retry": "Wiederholen",
         "no_recipes": "Es sind noch keine Rezepte eingepflegt.",
-        "error": "@:generic.loading_error"
+        "error": "@:generic.loading_error",
+        "search": "Suchen"
     },
     "recipes": {
         "title": "Titel",
@@ -83,7 +83,9 @@
         "optional": "Optional",
         "posted_by": "@:recipes.posted_by",
         "unknown_user": "@:recipes.unknown_user",
-        "edit": "Bearbeiten"
+        "edit": "Bearbeiten",
+        "estimated_work_duration": "Geschätzte Arbeitszeit",
+        "estimated_waiting_duration": "Geschätzte Koch-/Backzeit"
     },
     "recipe_edit": {
         "loading": "@:generic.loading",
@@ -103,11 +105,16 @@
         "add_group": "Gruppe hinzufügen",
         "save": "Speichern",
         "delete": "Rezept löschen",
-        "action": "Aktion"
+        "action": "Aktion",
+        "estimated_work_duration": "@:recipe_detail.estimated_work_duration",
+        "estimated_waiting_duration": "@:recipe_detail.estimated_waiting_duration"
     },
     "image_upload": {
         "upload_button": "Bilder hochladen",
         "delete_button": "Löschen",
         "retry_button": "Erneut versuchen"
+    },
+    "duration_input": {
+        "minutes": "Minuten"
     }
 }
