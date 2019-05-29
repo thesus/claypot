@@ -1,16 +1,16 @@
 <template>
-  <input @input="update" :value="value" :type='type' :placeholder="placeholder">
+  <input @input="update" :value="value" :type="type" :placeholder="placeholder">
 </template>
 
 <script>
 export default {
   props: {
-    'value': {},
-    'type': {
+    value: {},
+    type: {
       type: String,
       default: 'text'
     },
-    'placeholder': {
+    placeholder: {
       type: String
     }
   },

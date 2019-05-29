@@ -10,7 +10,7 @@
         {{ $t('home.add') }}
       </router-link>
     </div>
-    <RecipeList :filters="getFilters" />
+    <RecipeList :filters="allFilters" />
   </article>
 </template>
 
@@ -35,13 +35,13 @@ export default {
     }
   },
   props: {
-    'filters': {
+    filters: {
       type: Object,
-      default: () => {}
+      default: () => ({})
     }
   },
   computed: {
-    getFilters () {
+    allFilters () {
       return this.search === '' ? this.filters : {'search': this.search, ...this.filters}
     },
     ...mapGetters([
