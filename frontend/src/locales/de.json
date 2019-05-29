@@ -47,11 +47,11 @@
     },
     "home": {
         "loading": "@:generic.loading",
-        "all_recipes": "Alle Rezepte",
         "add": "Neues Rezept hinzufügen",
         "retry": "Wiederholen",
         "no_recipes": "Es sind noch keine Rezepte eingepflegt.",
-        "error": "@:generic.loading_error"
+        "error": "@:generic.loading_error",
+        "search": "Suchen"
     },
     "recipes": {
         "title": "Titel",
