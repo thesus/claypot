@@ -34,9 +34,15 @@ export default {
       search: ''
     }
   },
+  props: {
+    'filters': {
+      type: Object,
+      default: () => {}
+    }
+  },
   computed: {
     getFilters () {
-      return this.search === '' ? {} : {'search': this.search}
+      return this.search === '' ? this.filters : {'search': this.search, ...this.filters}
     },
     ...mapGetters([
       'isLoggedIn',
