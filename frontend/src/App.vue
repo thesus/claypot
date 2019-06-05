@@ -39,4 +39,10 @@ body {
 h3, h4, h5, h6 {
     margin: 2px 0 5px 0;
 }
+
+@media screen and (max-width: 500px) {
+  article {
+    font-size: large;
+  }
+}
 </style>

@@ -53,7 +53,8 @@
         "error": "@:generic.loading_error",
         "search": "Suchen",
         "next": "Nächste Seite",
-        "previous": "Vorherige Seite"
+        "previous": "Vorherige Seite",
+        "mode": "Ansicht"
     },
     "recipes": {
         "title": "Titel",
