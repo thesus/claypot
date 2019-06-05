@@ -6,8 +6,6 @@ from django.conf import settings
 from django.db import models
 import django_rq
 
-from claypot.images.utils import delegate
-
 
 class ImageFile(models.Model):
     """Stores an image on a specific location and the dimensions."""
@@ -21,6 +19,14 @@ class Image(models.Model):
     """Stores multiple version of one image in different sizes."""
 
     files = models.ManyToManyField(ImageFile)
+
+    thumbnail = models.ForeignKey(
+        ImageFile,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="parent",
+    )
 
     def save(self, *args, **kwargs):
         image = kwargs.pop("image", None)
@@ -43,4 +49,4 @@ class Image(models.Model):
                 f.write(c)
 
         queue = django_rq.get_queue("default")
-        queue.enqueue(delegate, classes=(Image, ImageFile), pk=self.pk, filename=name)
+        queue.enqueue('claypot.images.utils.delegate', pk=self.pk, filename=name)

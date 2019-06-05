@@ -117,13 +117,17 @@ MEDIA_URL = "/media/"
 
 IMAGE_ROOT = env("IMAGE_ROOT", default=str(ROOT_DIR("images")))
 
-# Image sizes for resizing/thumbnails
+# Image sizes for resizing and thumbnail
 # If both dimensions are given, the image will be cropped. (center)
 IMAGE_SIZES = {
-    "thumbnail": {"w": 200, "h": 200},
-    "small": {"w": 400},
-    "medium": {"w": 700},
-    "large": {"w": 1000},
+    "small": {"w": 500},
+    "medium": {"w": 900},
+    "large": {"w": 1400},
+}
+
+THUMBNAIL_SIZE = {
+    "w": 400,
+    "h": 400
 }
 
 # Email

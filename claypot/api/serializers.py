@@ -40,10 +40,11 @@ class ImageFileSerializer(serializers.ModelSerializer):
 
 class ImageRetrieveSerializer(serializers.ModelSerializer):
     files = ImageFileSerializer(many=True)
+    thumbnail = ImageFileSerializer()
 
     class Meta:
         model = Image
-        fields = ["id", "files"]
+        fields = ["id", "files", "thumbnail"]
         read_only_fields = ["id", "files"]
 
 
