@@ -4,7 +4,7 @@
     @submit.prevent="submitImages"
   >
     <label class="input">
-      <span class="btn btn-default">{{ $t('image_upload.upload_button') }}</span>
+      <span class="btn">{{ $t('image_upload.upload_button') }}</span>
       <input
         ref="input"
         type="file"
