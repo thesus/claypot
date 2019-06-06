@@ -4,11 +4,11 @@
   </div>
   <div v-else-if="!!recipes">
     <div class="options">
-      <button class="btn" @click="mode = !mode">{{ $t('home.mode') }}</button>
+      <button class="btn" @click="updateMode">{{ $t('home.mode') }}</button>
     </div>
 
     <RecipeThumbnailView
-      v-if="mode"
+      v-if="getHomeView"
       :recipes="recipes"
       class="recipes"
     />
@@ -37,7 +37,7 @@
 
 <script>
 import Vue from 'vue'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 import RecipeThumbnailView from '@/components/RecipeThumbnailView'
 import RecipeTableView from '@/components/RecipeTableView'
@@ -66,6 +66,9 @@ export default {
       error: '',
     }
   },
+  computed: {
+    ...mapGetters(['getHomeView'])
+  },
   watch: {
     filters () {
       this.update()
@@ -75,13 +78,16 @@ export default {
     this.update()
   },
   methods: {
+    updateMode() {
+      this.$store.commit('updateProfile', { homeView: !this.getHomeView})
+    },
     updateLink(url) {
       let page = url.searchParams.get('page')
       page = page ? page : 1
       this.$set(this, 'filters', {...this.filters, page: page})
     },
     async update () {
-      /* Request format
+      /* Request format/
       {
         count: 5,
         next: 3,
