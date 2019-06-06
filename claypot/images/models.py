@@ -49,4 +49,4 @@ class Image(models.Model):
                 f.write(c)
 
         queue = django_rq.get_queue("default")
-        queue.enqueue('claypot.images.utils.delegate', pk=self.pk, filename=name)
+        queue.enqueue("claypot.images.utils.delegate", pk=self.pk, filename=name)
