@@ -50,7 +50,9 @@
         "retry": "Try again",
         "no_recipes": "There are no recipes, yet.",
         "error": "@:generic.error",
-        "search": "Search"
+        "search": "Search",
+        "next": "Next",
+        "previous": "Previous"
     },
     "recipes": {
         "title": "Title",
