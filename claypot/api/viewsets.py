@@ -12,6 +12,7 @@ from pytz import utc
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 import django_filters
 
 from django.contrib.postgres.aggregates import StringAgg
@@ -171,7 +172,7 @@ class RecipeFilter(django_filters.FilterSet):
             lang = get_language_info(get_language())["name"].lower()
             query = SearchQuery(value, config=lang)
 
-           # Query based on vector search and trigram similarity
+            # Query based on vector search and trigram similarity
             queryset = (
                 queryset.annotate(
                     rank=SearchRank(vector, query),
@@ -189,12 +190,19 @@ class RecipeFilter(django_filters.FilterSet):
         fields = ["title"]
 
 
+class RecipePagination(PageNumberPagination):
+    page_size = 16
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [ReadAllEditOwn]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+    pagination_class = RecipePagination
 
     def get_serializer_class(self):
         if self.action == "list" and self.request.method.lower() == "get":

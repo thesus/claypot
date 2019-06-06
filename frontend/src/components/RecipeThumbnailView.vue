@@ -8,8 +8,9 @@
       <div class="info">
         <recipe-link :recipe="recipe" />
       </div>
-      <div class="image" v-if="recipe.thumbnail">
-        <img :src="recipe.thumbnail">
+      <div class="image">
+        <img v-if="recipe.thumbnail" :src="recipe.thumbnail">
+        <span v-else>{{ $t('thumbnail.empty') }}</span>
       </div>
     </div>
   </div>
@@ -61,6 +62,11 @@ export default {
       width: 100%;
 
       object-fit: cover;
+    }
+
+    span {
+      padding-top: 70px;
+      display: block;
     }
   }
 }
