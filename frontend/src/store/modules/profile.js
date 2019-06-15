@@ -5,7 +5,7 @@ const state = {
 }
 
 const getters = {
-  getHomeView: state => state.homeView ? state.homeView : false
+  getHomeView: state => !!state.homeView
 }
 
 const actions = {}

@@ -28,6 +28,9 @@ class Image(models.Model):
         related_name="parent",
     )
 
+    class Meta:
+        ordering = ["id"]
+
     def save(self, *args, **kwargs):
         image = kwargs.pop("image", None)
         super().save(*args, **kwargs)
