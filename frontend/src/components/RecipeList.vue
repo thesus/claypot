@@ -3,7 +3,18 @@
     {{ $t('home.loading') }}
   </div>
   <div v-else-if="!!recipes">
+    <div class="options">
+      <button class="btn" @click="updateMode">{{ $t('home.mode') }}</button>
+    </div>
+
+    <RecipeThumbnailView
+      v-if="getHomeView"
+      :recipes="recipes"
+      class="recipes"
+    />
+
     <RecipeTableView
+      v-else
       :recipes="recipes"
       class="recipes"
     />
@@ -26,8 +37,9 @@
 
 <script>
 import Vue from 'vue'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
+import RecipeThumbnailView from '@/components/RecipeThumbnailView'
 import RecipeTableView from '@/components/RecipeTableView'
 
 import { api, endpoints } from '@/api'
@@ -35,7 +47,8 @@ import { api, endpoints } from '@/api'
 export default {
   name: 'RecipeList',
   components: {
-    RecipeTableView,
+    RecipeThumbnailView,
+    RecipeTableView
   },
   props: {
     filters: {
@@ -47,10 +60,14 @@ export default {
     return {
       recipes: [],
       loading: false,
+      mode: true,
       next: null,
       previous: null,
       error: '',
     }
+  },
+  computed: {
+    ...mapGetters(['getHomeView'])
   },
   watch: {
     filters () {
@@ -61,13 +78,16 @@ export default {
     this.update()
   },
   methods: {
+    updateMode() {
+      this.$store.commit('updateProfile', { homeView: !this.getHomeView})
+    },
     updateLink(url) {
       let page = url.searchParams.get('page')
       page = page ? page : 1
       this.$set(this, 'filters', {...this.filters, page: page})
     },
     async update () {
-      /* Request format
+      /* Request format/
       {
         count: 5,
         next: 3,
@@ -79,6 +99,7 @@ export default {
       */
       try {
         this.loading = true
+
         const r = await api(endpoints.fetch_recipes(), this.filters, {method: 'GET'})
         if (r.ok) {
           const result = await r.json()
@@ -125,5 +146,10 @@ export default {
 
 .btn {
   margin: 3px;
+}
+
+.options {
+  display: flex;
+  flex-direction: row-reverse;
 }
 </style>

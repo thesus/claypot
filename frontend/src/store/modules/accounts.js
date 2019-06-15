@@ -23,7 +23,7 @@ const actions = {
         password: password
       }
     )
-    
+
     if (response.ok) {
       commit(
         'login',

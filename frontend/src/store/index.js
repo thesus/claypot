@@ -3,6 +3,9 @@ import Vuex from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 
 import accounts from './modules/accounts'
+import profile from './modules/profile'
+
+
 import { api, endpoints } from '@/api'
 import { getCookie } from '@/utils'
 
@@ -13,7 +16,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   plugins: [
     createPersistedState({
-      paths: ['accounts'],
+      paths: ['accounts', 'profile'],
       getState(key, storage) {
         let value = storage.getItem(key)
         if (typeof value === 'undefined') {
@@ -48,6 +51,7 @@ const store = new Vuex.Store({
   ],
   modules: {
     accounts,
+    profile
   },
   state: {
 

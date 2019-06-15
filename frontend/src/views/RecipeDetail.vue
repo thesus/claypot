@@ -54,7 +54,7 @@
       :class="{'ingredients-single': (allIngredients.length == 1)}"
     >
       <div
-        v-if="recipe && recipe.images"
+        v-if="recipe && recipe.images && recipe.images.length > 0"
         class="images"
       >
         <ImageGallery :images="recipe.images" />
@@ -292,7 +292,7 @@ export default {
   .images {
     border: solid 1px #ccc;
     padding: 0;
-    margin: 5px;
+    margin: 5px 5px 0px 5px;
     height: 40vh;
     width: 100%;
     img {
@@ -304,7 +304,7 @@ export default {
 
   .information {
     display: flex;
-    margin: 0 5px 0 5px;
+    margin: 5px 5px 0px 5px;
     width: 100%;
     justify-content: space-around;
     background-color: rgba(184, 203, 214, 0.4);

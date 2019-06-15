@@ -40,11 +40,21 @@ class ImageFileSerializer(serializers.ModelSerializer):
 
 class ImageRetrieveSerializer(serializers.ModelSerializer):
     files = ImageFileSerializer(many=True)
+    thumbnail = ImageFileSerializer()
 
     class Meta:
         model = Image
-        fields = ["id", "files"]
+        fields = ["id", "files", "thumbnail"]
         read_only_fields = ["id", "files"]
+
+
+class ImageThumbnailSerializer(serializers.ModelSerializer):
+    thumbnail = ImageFileSerializer()
+
+    class Meta:
+        model = Image
+        fields = ["thumbnail"]
+        read_only_fields = ["thumbnail"]
 
 
 class ManyIngredientSerializer(serializers.Serializer):
@@ -129,9 +139,19 @@ class RecipeIngredientListSerializer(serializers.Serializer):
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
+    thumbnail = serializers.SerializerMethodField()
+
     class Meta:
         model = Recipe
-        fields = ["id", "title"]
+        fields = ["id", "title", "thumbnail"]
+
+    def get_thumbnail(self, obj):
+        image = obj.images.first()
+        if image and image.thumbnail and image.thumbnail.image_file:
+            return self.context["request"].build_absolute_uri(
+                image.thumbnail.image_file.url
+            )
+        return None
 
 
 class RecipeSerializer(serializers.Serializer):

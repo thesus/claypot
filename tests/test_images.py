@@ -1,7 +1,8 @@
 from io import BytesIO
 
 import django_rq
-import PIL
+
+import PIL.Image
 import pytest
 from django.conf import settings
 from django.core.files.base import File
