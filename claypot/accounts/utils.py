@@ -17,7 +17,7 @@ def send_signup_mail(user, request):
         "accounts/signup_email.html",
         {
             "token": signup_token_generator.make_token(user),
-            "uid": urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+            "uid": urlsafe_base64_encode(force_bytes(user.pk)),
             "domain": current_site.domain,
             "site_name": current_site.name,
             "user": user,
