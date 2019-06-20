@@ -22,7 +22,7 @@
               {{ formatter.format(ingredient.amount_numeric * scaling) }}
             </span>
             <span v-else-if="ingredient.amount_type === AMOUNT_TYPE_APPROX">
-              3
+
               {{ ingredient.amount_approx }}
             </span>
           </td>
