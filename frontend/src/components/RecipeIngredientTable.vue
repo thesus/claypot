@@ -18,10 +18,11 @@
             <span v-if="ingredient.amount_type === AMOUNT_TYPE_NUMERIC && ingredient.unit != ''">
               {{ formatter.format(ingredient.amount_numeric * scaling) }}&nbsp;{{ ingredient.unit }}
             </span>
-            <span v-else-if="ingredient.amount_type === AMOUNT_TYPE_NUMERIC">
+            <span v-else-if="ingredient.amount_type === AMOUNT_TYPE_NUMERIC && ingredient.amount_numeric != null">
               {{ formatter.format(ingredient.amount_numeric * scaling) }}
             </span>
             <span v-else-if="ingredient.amount_type === AMOUNT_TYPE_APPROX">
+              3
               {{ ingredient.amount_approx }}
             </span>
           </td>
