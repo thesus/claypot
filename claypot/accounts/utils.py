@@ -25,18 +25,13 @@ def send_signup_mail(user, request):
         },
     )
 
-    if settings.EMAIL_CONFIG.get("EMAIL_HOST_USER") and settings.EMAIL_CONFIG.get(
-        "EMAIL_HOST"
-    ):
-        email_address = (
-            settings.EMAIL_CONFIG["EMAIL_HOST_USER"]
-            + settings.EMAIL_CONFIG["EMAIL_HOST"]
-        )
-    else:
-        email_address = "webmaster@localhost"
+    # Django environ counts the @-character as part of the user
+    email_address = (settings.EMAIL_CONFIG.get("EMAIL_HOST_USER") or "webmaster@") + (
+        settings.EMAIL_CONFIG.get("EMAIL_HOST") or "localhost"
+    )
 
     send_mail(
-        _("E-Mail verification for {}".format(current_site.name)),
+        _("E-Mail verification for {}").format(current_site.name),
         email_body,
         email_address,
         [user.email],
