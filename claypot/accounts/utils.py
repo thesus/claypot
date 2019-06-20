@@ -25,9 +25,19 @@ def send_signup_mail(user, request):
         },
     )
 
+    if settings.EMAIL_CONFIG.get("EMAIL_HOST_USER") and settings.EMAIL_CONFIG.get(
+        "EMAIL_HOST"
+    ):
+        email_address = (
+            settings.EMAIL_CONFIG["EMAIL_HOST_USER"]
+            + settings.EMAIL_CONFIG["EMAIL_HOST"]
+        )
+    else:
+        email_address = "webmaster@localhost"
+
     send_mail(
         _("E-Mail verification for {}".format(current_site.name)),
         email_body,
-        getattr(settings, "DEFAULT_FROM_EMAIL"),
+        email_address,
         [user.email],
     )
