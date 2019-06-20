@@ -61,7 +61,7 @@ class ImageThumbnailSerializer(serializers.ModelSerializer):
 
 class ManyIngredientSerializer(serializers.Serializer):
     ingredients = serializers.ListField(
-        child=serializers.CharField(), min_length=0, max_length=20
+        child=serializers.CharField(), min_length=0, max_length=100
     )
 
 
