@@ -53,7 +53,6 @@ pages:
     - docker
   only:
     - master
-    - develop
   dependencies:
     - test:backend
   script:
@@ -71,7 +70,7 @@ build:claypot:
   tags:
     - docker-cli
   only:
-    - tags
+    - master
   before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
@@ -85,7 +84,7 @@ build:caddy:
   tags:
     - docker-cli
   only:
-    - tags
+    - master
   before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
@@ -100,7 +99,7 @@ deploy:cooking.cryptec.at:
     name: production/cooking.cryptec.at
     url: https://cooking.cryptec.at
   only:
-    - tags
+    - master
   tags:
     - docker
   image: ubuntu
