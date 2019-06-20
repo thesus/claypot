@@ -2,7 +2,7 @@
   <div v-if="loading">
     {{ $t('home.loading') }}
   </div>
-  <div v-else-if="!!recipes">
+  <div v-else-if="!!recipes && recipes.length > 0">
     <div class="options">
       <button class="btn" @click="updateMode">{{ $t('home.mode') }}</button>
     </div>
@@ -22,7 +22,7 @@
     <button class="btn" :disabled="!previous" @click="updateLink(previous)">{{ $t('home.previous') }}</button>
     <button class="btn" :disabled="!next" @click="updateLink(next)">{{ $t('home.next') }}</button>
   </div>
-  <div v-else-if="!error && recipes.length === 0">
+  <div v-else-if="!error">
     {{ $t('home.no_recipes') }}
   </div>
   <div v-else-if="error">

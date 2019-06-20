@@ -7,6 +7,8 @@ from django.utils.decorators import method_decorator
 from rest_framework import serializers
 from pytz import utc
 
+from django.db.models import prefetch_related_objects
+
 from claypot.models import (
     AMOUNT_TYPES,
     Ingredient,
@@ -189,38 +191,37 @@ class RecipeSerializer(serializers.Serializer):
 
     def to_representation(self, recipe):
         data = super().to_representation(recipe)
-        ingredients = set(recipe.ingredients.all()) | set(
-            recipe.ingredient_groups.all()
-        )
-        all_ingredients = sorted(ingredients, key=lambda i: i.order)
         ingredients = []
-        buf = []
+        ingredients.append(
+            RecipeIngredientListSerializer(
+                {
+                    "is_group": False,
+                    "title": "",
+                    "ingredients": recipe.ingredients.order_by("order")
+                    .prefetch_related("ingredient", "unit")
+                    .all(),
+                }
+            ).data
+        )
 
-        def _flush():
+        for group in recipe.ingredient_groups.all():
+            group_ingredients = (
+                group.ingredients.prefetch_related("ingredient")
+                .prefetch_related("unit")
+                .order_by("order")
+                .all()
+            )
+
             ingredients.append(
                 RecipeIngredientListSerializer(
-                    {"is_group": False, "title": "", "ingredients": buf}
+                    {
+                        "is_group": True,
+                        "title": group.title,
+                        "ingredients": group_ingredients,
+                    }
                 ).data
             )
-            buf.clear()
 
-        for i in all_ingredients:
-            if isinstance(i, RecipeIngredient):
-                buf.append(i)
-            else:
-                if len(buf) > 0:
-                    _flush()
-                ingredients.append(
-                    RecipeIngredientListSerializer(
-                        {
-                            "is_group": True,
-                            "title": i.title,
-                            "ingredients": i.ingredients.all().order_by("order"),
-                        }
-                    ).data
-                )
-        if len(buf) > 0:
-            _flush()
         data["ingredients"] = ingredients
         return data
 

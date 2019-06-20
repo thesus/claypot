@@ -67,7 +67,6 @@ export default {
   },
   methods: {
     async updateSuggestions () {
-      this.suggestions.length = 0
       if (this.dirtyValue.length === 0) {
         this.closeSuggestions()
         return
@@ -76,7 +75,8 @@ export default {
         const r = await api(endpoints.search_ingredients(this.dirtyValue))
         if (r.ok) {
           const d = await r.json()
-          for (let ingredient of d) {
+          this.suggestions.splice(0)
+          for (let ingredient of d['results']) {
             this.suggestions.push(ingredient.name)
           }
         } else {
