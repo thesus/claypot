@@ -197,7 +197,7 @@ class RecipePagination(PageNumberPagination):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
+    queryset = Recipe.objects.select_related('author').all()
     serializer_class = RecipeSerializer
     permission_classes = [ReadAllEditOwn]
     filter_backends = (DjangoFilterBackend,)
