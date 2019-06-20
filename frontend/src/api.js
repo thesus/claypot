@@ -55,7 +55,7 @@ const endpoints = {
   },
   search_ingredients (term) {
     term = encodeURIComponent(term)
-    return `/api/ingredients/?name=${term}`
+    return `/api/ingredients/?name=${term}&page_size=5`
   },
   upload_image () {
     return '/api/images/'

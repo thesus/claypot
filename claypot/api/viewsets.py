@@ -37,6 +37,12 @@ from .serializers import (
 )
 
 
+class Pagination(PageNumberPagination):
+    page_size = 16
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
 class ReadAllEditOwn(permissions.BasePermission):
     message = _("You may only edit your own recipes.")
 
@@ -77,6 +83,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
+    pagination_class = Pagination
 
     @action(detail=False, methods=["post"])
     def create_many(self, request):
@@ -190,19 +197,13 @@ class RecipeFilter(django_filters.FilterSet):
         fields = ["title"]
 
 
-class RecipePagination(PageNumberPagination):
-    page_size = 16
-    page_size_query_param = "page_size"
-    max_page_size = 100
-
-
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.select_related("author").order_by("title").all()
     serializer_class = RecipeSerializer
     permission_classes = [ReadAllEditOwn]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    pagination_class = RecipePagination
+    pagination_class = Pagination
 
     def get_serializer_class(self):
         if self.action == "list" and self.request.method.lower() == "get":
