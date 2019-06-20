@@ -43,7 +43,11 @@
           "ignoreWhenNoAttributes": true,
           "ignoreWhenEmpty": true,
           "ignores": [
-            "pre", "textarea", "a", "router-link", "span"
+            "pre",
+            "textarea",
+            "a",
+            "router-link",
+            "span"
           ]
         }
       ]
