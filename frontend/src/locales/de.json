@@ -43,7 +43,8 @@
         "password": "Kennwort",
         "password_again": "@:signup.password (wiederholen)",
         "signup": "Registrieren",
-        "confirm": "Herzlichen Glückwunsch! Das Anlegen des Benutzers war erfolgreich."
+        "confirm": "Herzlichen Glückwunsch! Das Anlegen des Benutzers war erfolgreich.",
+        "unknown_error": "Ein unbekannter Fehler ist aufgetreten!"
     },
     "home": {
         "loading": "@:generic.loading",

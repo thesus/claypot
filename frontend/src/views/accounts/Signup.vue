@@ -8,6 +8,7 @@
           :placeholder="$t('signup.email')"
           :class="{'form-error': !!getErrors.email.length}"
           type="email"
+          :disabled="disabled"
         >
         <FormFieldValidationError :errors="getErrors.email" />
         <input
@@ -15,6 +16,7 @@
           :placeholder="$t('signup.username')"
           :class="{'form-error': !!getErrors.username.length}"
           type="text"
+          :disabled="disabled"
         >
         <FormFieldValidationError :errors="getErrors.username" />
         <input
@@ -22,6 +24,7 @@
           :placeholder="$t('signup.password')"
           :class="{'form-error': !!getErrors.password1.length}"
           type="password"
+          :disabled="disabled"
         >
         <FormFieldValidationError :errors="getErrors.password1" />
         <input
@@ -29,6 +32,7 @@
           :placeholder="$t('signup.password_again')"
           :class="{'form-error': !!getErrors.password2.length}"
           type="password"
+          :disabled="disabled"
         >
         <FormFieldValidationError :errors="getErrors.password2" />
 
@@ -40,6 +44,7 @@
         <button
           type="submit"
           class="btn btn-right"
+          :disabled="disabled"
         >
           {{ $t('signup.signup') }}
         </button>
@@ -65,7 +70,9 @@ export default {
         password2: null
       },
       errors: {},
+
       finished: false,
+      working: false
     }
   },
   computed: {
@@ -79,10 +86,15 @@ export default {
 
         ...this.errors,
       }
+    },
+    disabled() {
+      return this.finished || this.working
     }
   },
   methods: {
     async submit () {
+      this.working = true
+
       try {
         const response = await api(
           endpoints.signup(),
@@ -104,8 +116,10 @@ export default {
             ...err.response
           }
         } else {
-          this.errors.other = [err.message]
+          this.$set(this.errors, 'other', [this.$t("signup.unknown_error") ])
         }
+      } finally {
+        this.working = false
       }
     },
   },

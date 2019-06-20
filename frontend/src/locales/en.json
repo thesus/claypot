@@ -42,7 +42,8 @@
         "password": "Password",
         "password_again": "@:signup.password (again)",
         "signup": "Sign Up",
-        "confirm": "Successfull. You received an email with a confirmation link."
+        "confirm": "Successfull. You received an email with a confirmation link.",
+        "unknown_error": "A unknown error occured!"
     },
     "home": {
         "loading": "@:generic.loading",
