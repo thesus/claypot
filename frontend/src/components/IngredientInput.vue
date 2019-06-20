@@ -75,7 +75,7 @@ export default {
         const r = await api(endpoints.search_ingredients(this.dirtyValue))
         if (r.ok) {
           const d = await r.json()
-          this.suggestions = []
+          this.suggestions.splice(0)
           for (let ingredient of d['results']) {
             this.suggestions.push(ingredient.name)
           }
