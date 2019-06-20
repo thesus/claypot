@@ -47,7 +47,7 @@ export default {
       try {
         /* Clear errors and status from previous attempts */
         this.finished = false
-        this.errors = []
+        this.errors.splice(0)
 
         await api(
           endpoints.password_reset(),
