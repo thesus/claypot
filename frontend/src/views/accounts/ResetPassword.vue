@@ -10,11 +10,13 @@
           type="email"
         >
         <FormFieldValidationError :errors="errors" />
-        <p v-if="finished">
+
+        <p v-if="finished && errors.length === 0">
           {{ $t('reset_password.confirm') }}
         </p>
+
         <button
-          :disabled="finished"
+          :disabled="finished && !errors"
           type="submit"
           class="btn btn-right"
         >
@@ -43,6 +45,10 @@ export default {
   methods: {
     async submit () {
       try {
+        /* Clear errors and status from previous attempts */
+        this.finished = false
+        this.errors = []
+
         await api(
           endpoints.password_reset(),
           {
@@ -54,7 +60,7 @@ export default {
       } catch (err) {
         this.errors = [err.message]
       } finally {
-        this.finished = !this.finished
+        this.finished = true
       }
     },
   },
