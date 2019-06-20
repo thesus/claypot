@@ -49,7 +49,7 @@
         "loading": "@:generic.loading",
         "add": "Add recipe",
         "retry": "Try again",
-        "no_recipes": "There are no recipes, yet.",
+        "no_recipes": "No recipes found.",
         "error": "@:generic.error",
         "search": "Search",
         "next": "Next",

@@ -50,7 +50,7 @@
         "loading": "@:generic.loading",
         "add": "Neues Rezept hinzufügen",
         "retry": "Wiederholen",
-        "no_recipes": "Es sind noch keine Rezepte eingepflegt.",
+        "no_recipes": "Keine Rezepte gefunden.",
         "error": "@:generic.loading_error",
         "search": "Suchen",
         "next": "Nächste Seite",
