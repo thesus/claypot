@@ -1,6 +1,7 @@
 import Vue from 'vue'
-import Raven from 'raven-js';
-import RavenVue from 'raven-js/plugins/vue';
+
+import * as Sentry from '@sentry/browser';
+import * as Integrations from '@sentry/integrations';
 
 import App from './App.vue'
 
@@ -26,12 +27,10 @@ import {api, endpoints} from '@/api'
     if (r.ok) {
       const config = await r.json()
       if (config.sentry_dsn) {
-        Raven
-          .config(config.sentry_dsn, {
-            version: config.version,
-          })
-          .addPlugin(RavenVue, vue)
-          .install()
+        Sentry.init({
+          dsn: config.sentry_dsn,
+          integrations: [new Integrations.Vue({Vue, attachProps: true})],
+        });
       }
     } else {
       throw new Error('Sentry setup failed', r)
