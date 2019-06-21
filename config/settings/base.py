@@ -46,11 +46,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-if DEBUG:
-    INSTALLED_APPS += ["debug_toolbar"]
-    MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
-    INTERNAL_IPS = ["::1", "127.0.0.1"]
-
 ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
@@ -70,8 +65,10 @@ TEMPLATES = [
 ]
 
 if DEBUG:
+    INSTALLED_APPS += ["debug_toolbar"]
+    MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
+    INTERNAL_IPS = ["::1", "127.0.0.1"]
     TEMPLATES[0]["DIRS"] += ["claypot/contrib"]
-
 
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -119,16 +116,9 @@ IMAGE_ROOT = env("IMAGE_ROOT", default=str(ROOT_DIR("images")))
 
 # Image sizes for resizing and thumbnail
 # If both dimensions are given, the image will be cropped. (center)
-IMAGE_SIZES = {
-    "small": {"w": 500},
-    "medium": {"w": 900},
-    "large": {"w": 1400},
-}
+IMAGE_SIZES = {"small": {"w": 500}, "medium": {"w": 900}, "large": {"w": 1400}}
 
-THUMBNAIL_SIZE = {
-    "w": 400,
-    "h": 400
-}
+THUMBNAIL_SIZE = {"w": 400, "h": 400}
 
 # Email
 EMAIL_CONFIG = env.email_url("EMAIL_URL", default="consolemail://")
@@ -145,11 +135,13 @@ REST_FRAMEWORK = {
     ),
 }
 
-# Disable browsable html renderer in production
+
+# Disable browsable html renderer in production and setup SSL_HEADER for proxy
 if not DEBUG:
     REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"]: (
         "rest_framework.renderers.JSONRenderer"
     )
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
 # Django RQ
@@ -157,69 +149,19 @@ RQ_QUEUES = {
     "default": {"HOST": env("REDIS_HOST", default="localhost"), "PORT": 6379, "DB": 0}
 }
 
+# Configures (production) error logging for both Django and django-rq, if set.
 SENTRY_DSN = env("SENTRY_DSN", default="")
+
+# Sentry logging for frontend.
+# Defaults to same key as backend since it also uses the new DSN format (without the private key).
+SENTRY_FRONTEND_DSN = env("SENTRY_FRONTEND_DSN", default=SENTRY_DSN)
+
 if SENTRY_DSN:
-    import raven
-    from claypot import __version__
+    from sentry_sdk import init
+    from sentry_sdk.integrations.django import DjangoIntegration
 
-    RAVEN_CONFIG = {"dsn": SENTRY_DSN, "release": __version__}
-    from urllib.parse import urlparse
-
-    _parts = urlparse(SENTRY_DSN)
-    _sentry_host = f"{_parts.hostname}"
-    if _parts.port is not None:
-        _sentry_host += f":{_parts.port}"
-    SENTRY_PUBLIC_DSN = env(
-        "SENTRY_PUBLIC_DSN",
-        default=(f"{_parts.scheme}://{_parts.username}@{_sentry_host}{_parts.path}"),
-    )
-    INSTALLED_APPS += ("raven.contrib.django.raven_compat",)
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": True,
-        "root": {"level": "WARNING", "handlers": ["console", "sentry"]},
-        "formatters": {
-            "verbose": {
-                "format": "%(levelname)s  %(asctime)s  %(module)s "
-                "%(process)d  %(thread)d  %(message)s"
-            }
-        },
-        "handlers": {
-            "sentry": {
-                "level": "ERROR",  # To capture more than ERROR, change to WARNING, INFO, etc.
-                "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
-                "tags": {},
-            },
-            "console": {
-                "level": "DEBUG",
-                "class": "logging.StreamHandler",
-                "formatter": "verbose",
-            },
-        },
-        "loggers": {
-            "": {
-                "level": "ERROR",
-                "handlers": ["console", "sentry"],
-                "propagate": False,
-            },
-            "django.db.backends": {
-                "level": "ERROR",
-                "handlers": ["console"],
-                "propagate": False,
-            },
-            "raven": {"level": "DEBUG", "handlers": ["console"], "propagate": False},
-            "sentry.errors": {
-                "level": "DEBUG",
-                "handlers": ["console"],
-                "propagate": False,
-            },
-        },
-    }
-
+    init(dsn=SENTRY_DSN, integrations=[DjangoIntegration()])
 
 RECIPE_DELETE_GRACE_PERIOD = timedelta(
     seconds=env.int("RECIPE_DELETE_GRACE_PERIOD", default=3600)
 )
-
-if not DEBUG:
-    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
