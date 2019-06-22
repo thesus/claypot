@@ -138,7 +138,7 @@ REST_FRAMEWORK = {
 
 # Disable browsable html renderer in production and setup SSL_HEADER for proxy
 if not DEBUG:
-    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"]: (
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = (
         "rest_framework.renderers.JSONRenderer"
     )
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
