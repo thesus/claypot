@@ -51,7 +51,10 @@
     <div
       v-if="recipe"
       class="header"
-      :class="{'ingredients-single': (allIngredients.length == 1)}"
+      :class="{
+        'ingredients-single': (allIngredients.length == 1),
+        'no-image': !(recipe.images && recipe.images.length > 0)
+      }"
     >
       <div
         v-if="recipe && recipe.images && recipe.images.length > 0"
@@ -313,6 +316,7 @@ export default {
     border: solid 1px #B8CBD6;
   }
 
+
   @media screen and (min-width: 780px) {
     .images {
       height: 500px;
@@ -325,6 +329,14 @@ export default {
 
       .ingredients-group {
         order: 1;
+      }
+
+      &.no-image {
+        flex-direction: row;
+
+        .ingredients-group {
+          order: 3;
+        }
       }
 
       .images {

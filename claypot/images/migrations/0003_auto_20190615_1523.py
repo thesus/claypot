@@ -5,13 +5,8 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('images', '0002_image_thumbnail'),
-    ]
+    dependencies = [("images", "0002_image_thumbnail")]
 
     operations = [
-        migrations.AlterModelOptions(
-            name='image',
-            options={'ordering': ['id']},
-        ),
+        migrations.AlterModelOptions(name="image", options={"ordering": ["id"]})
     ]

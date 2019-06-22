@@ -192,17 +192,19 @@ class RecipeSerializer(serializers.Serializer):
     def to_representation(self, recipe):
         data = super().to_representation(recipe)
         ingredients = []
-        ingredients.append(
-            RecipeIngredientListSerializer(
-                {
-                    "is_group": False,
-                    "title": "",
-                    "ingredients": recipe.ingredients.order_by("order")
-                    .prefetch_related("ingredient", "unit")
-                    .all(),
-                }
-            ).data
-        )
+
+        if recipe.ingredients.exists():
+            ingredients.append(
+                RecipeIngredientListSerializer(
+                    {
+                        "is_group": False,
+                        "title": "",
+                        "ingredients": recipe.ingredients.order_by("order")
+                        .prefetch_related("ingredient", "unit")
+                        .all(),
+                    }
+                ).data
+            )
 
         for group in recipe.ingredient_groups.all():
             group_ingredients = (

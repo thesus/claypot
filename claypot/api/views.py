@@ -24,9 +24,6 @@ class SentryConfigView(generics.GenericAPIView):
     @method_decorator(cache_control(max_age=3600))
     def get(self, request):
         response = Response(
-            {
-                "sentry_dsn": getattr(settings, "SENTRY_PUBLIC_DSN", ""),
-                "version": __version__,
-            }
+            {"sentry_dsn": getattr(settings, "SENTRY_FRONTEND_DSN", "")}
         )
         return response

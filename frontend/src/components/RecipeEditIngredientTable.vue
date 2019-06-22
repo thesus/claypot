@@ -184,10 +184,12 @@ export default {
           ]
           return fields.map(name => (i1[name] === i2[name])).every(i => i)
         }
+
         const changed = (
           (this.dirty.is_group !== this.value.is_group) ||
           (this.dirty.title !== this.value.title) ||
-          (this.dirty.ingredients.some((ingredient, i) => !equalIngredients(this.value.ingredients[i] || {}, ingredient)))
+          (this.dirty.ingredients.some((ingredient, i) => !equalIngredients(this.value.ingredients[i] || {}, ingredient))) ||
+          (this.value.ingredients.some((ingredient, i) => !equalIngredients(this.dirty.ingredients[i] || {}, ingredient)))
         )
         if (changed) {
           this.$emit('input', {

@@ -2,5 +2,5 @@
 -r testing.txt
 
 black
-django-debug-toolbar==1.11
+django-debug-toolbar==2.0
 pre-commit
