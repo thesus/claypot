@@ -333,7 +333,9 @@ export default {
                     return
                   }
                 } else {
-                  // cancel process
+                  this.newIngredients.length = 0
+                  this.newIngredientsCount = 0
+
                   return
                 }
               } finally {
