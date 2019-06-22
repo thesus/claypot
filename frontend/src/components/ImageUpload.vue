@@ -38,7 +38,7 @@
     </div>
     <span
       v-if="isFailed"
-      class="btn btn-default"
+      class="btn"
       @click="submitImages"
     >{{ $t('image_upload.retry_button') }}</span>
   </form>
@@ -148,6 +148,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/modules/inputs.scss';
+
 $thumbnail-size: 100px;
 
 input[type=file] {
@@ -211,5 +213,11 @@ img {
   &.failure {
     border: 2px solid red;
   }
+}
+
+span.btn {
+  display: table-cell;
+  vertical-align: middle;
+  height: 20px;
 }
 </style>
