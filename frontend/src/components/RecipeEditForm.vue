@@ -248,7 +248,8 @@ export default {
         const subsetOfErrors = (this.errors.ingredients[i] || {}).ingredients
         return j => {
           const e = subsetOfErrors || []
-          const r = e.length > j ? e[j] : {}
+          // note e might be a sparsely populated array
+          const r = e.length > j ? (e[j] || {}) : {}
           for (let p of ['ingredient', 'ingredient_extra', 'amount_numeric', 'amount_approx', 'unit', 'optional']) {
             r[p] = r[p] || []
           }
