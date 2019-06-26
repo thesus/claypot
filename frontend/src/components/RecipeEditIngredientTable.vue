@@ -52,7 +52,7 @@
               <IngredientInput
                 v-model="ingredient.ingredient"
                 :disabled="saving"
-                :class="{'form-error': !!recipeIngredientError(i).ingredient.length}"
+                :error="!!recipeIngredientError(i).ingredient.length"
               />
             </div>
             <FormFieldValidationError :errors="recipeIngredientError(i).ingredient" />

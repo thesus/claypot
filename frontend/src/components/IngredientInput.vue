@@ -20,7 +20,7 @@
     <input
       v-model="dirtyValue"
       :disabled="disabled"
-      bubbles="true"
+      :class="{'form-error': error}"
       @focus="onFocus()"
       @blur="onBlur()"
       @keyup.down="moveHighlightDown()"
@@ -45,6 +45,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    error: {
+      type: Boolean,
+      default: false
+    }
   },
   data () {
     return {
@@ -145,6 +149,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
+
 .wrapper {
   width: 100%;
   position: relative;

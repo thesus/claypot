@@ -3,13 +3,13 @@
 input, textarea {
     width: 100%;
     box-sizing: border-box;
-    margin: 0 0 5px 0;
+    margin: 0;
     border: 1px solid #ccc;
     border-radius: 0;
     font-size: 14px;
     color: $font_color;
     font-family: $font_family;
-    height: 25px;
+    height: 100%;
     text-indent: 5px;
 }
 
@@ -25,6 +25,7 @@ textarea {
 
 .form-error {
     border: 1px solid red;
+    box-sizing: border-box;
 }
 
 .btn {
@@ -56,6 +57,7 @@ textarea {
         float: right;
     }
 
+    /* Buttons are bigger on mobile devices */
     @media screen and (max-width: 500px) {
         height: 30px;
     }
