@@ -21,6 +21,7 @@
       v-model="dirtyValue"
       :disabled="disabled"
       :class="{'form-error': error}"
+      :placeholder="$t('recipe_edit.ingredient')"
       @focus="onFocus()"
       @blur="onBlur()"
       @keyup.down="moveHighlightDown()"
@@ -152,6 +153,7 @@ export default {
 
 .wrapper {
   width: 100%;
+  height: 100%;
   position: relative;
   overflow: visible;
   outline: none;
