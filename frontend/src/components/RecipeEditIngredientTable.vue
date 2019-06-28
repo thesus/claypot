@@ -9,16 +9,22 @@
       placeholder="Ingredient group title"
       class="title"
     >
-    <div v-show="dirty.ingredients.length > 0" class="ingredients">
-      <span>{{ $t('recipe_edit.amount') }}</span>
-      <span>{{ $t('recipe_edit.unit') }}</span>
-      <span>{{ $t('recipe_edit.ingredient') }}</span>
-      <span>{{ $t('recipe_edit.ingredient_extra') }}</span>
-      <span>{{ $t('recipe_edit.optional') }}</span>
-      <span>{{ $t('recipe_edit.action') }}</span>
-      <template
+    <div
+      v-show="dirty.ingredients.length > 0"
+    >
+      <div class="header">
+        <span>{{ $t('recipe_edit.amount') }}</span>
+        <span>{{ $t('recipe_edit.unit') }}</span>
+        <span>{{ $t('recipe_edit.ingredient') }}</span>
+        <span>{{ $t('recipe_edit.ingredient_extra') }}</span>
+        <span>{{ $t('recipe_edit.optional') }}</span>
+        <span>{{ $t('recipe_edit.action') }}</span>
+      </div>
+      <div
         v-for="(ingredient, i) in dirty.ingredients"
         ref="ingredientsNode"
+        :key="i"
+        class="ingredients"
       >
         <div class="input amount">
           <input
@@ -73,7 +79,7 @@
         >
           {{ $t('recipe_edit.remove') }}
         </button>
-      </template>
+      </div>
     </div>
     <button
       :disabled="saving"
@@ -89,6 +95,7 @@
     >
       {{ $t('recipe_edit.remove_group') }}
     </button>
+    <div style="clear:both"></div>
   </div>
 </template>
 
@@ -209,7 +216,7 @@ export default {
       /* And yeah. This is pretty dirty. */
       this.$nextTick(() => {
         if (this.$refs.ingredientsNode) {
-          this.$refs.ingredientsNode[pos].children[0].children[0].children[0].focus()
+          this.$refs.ingredientsNode[pos].children[0].children[0].focus()
         }
       })
     },
@@ -264,43 +271,50 @@ export default {
   margin: 0 0 10px 0;
 }
 
-.ingredients {
+.header, .ingredients {
   display: grid;
   grid-template-columns:  2fr 1fr 3fr 3fr 1fr 1fr;
   grid-gap: 2px;
 
   width: 100%;
   margin: 0 0 2px 0;
+}
 
+
+@media screen and (max-width: 500px) {
+   /* Don't display description at the top of the ingredient table on desktops */
+    span {
+      display: none;
+    }
+}
+
+.ingredients {
   /* Hide description of optional button on table view */
   .optional span {
     display: none;
   }
 
   @media screen and (max-width: 500px) {
-    .input {
-      height: 40px;
-
-      &.unit, &.amount {
-        width: calc(50% - 1px);
-        margin-top: 10px;
-      }
-    }
-
-    /* Scale inputs for better readability */
-    input {
-      height: 40px
-    }
-
     display: flex;
     flex-wrap: wrap;
+    margin: 0 0 10px 0;
+    border-bottom: solid 1px #97A7B0;
+    padding-bottom: 5px;
 
     button {
       width: calc(50% - 1px);
       margin: auto 0 auto 0;
     }
 
-    /* Optional label and button are a flexbox themselve */
+    .input {
+      height: 40px;
+
+      &.unit, &.amount {
+        width: calc(50% - 1px);
+      }
+    }
+
+    /* Optional's label and button are a flexbox themselve. */
     .optional {
       display: flex;
       justify-content: center;
@@ -314,19 +328,10 @@ export default {
         margin: auto 2px auto 2px;
       }
    }
-
-   /* Don't display description at the top of the ingredient table on desktops */
-    span {
-      display: none;
-    }
   }
 }
 
 .input {
   width: 100%;
-}
-
-.table {
-  overflow: hidden;
 }
 </style>

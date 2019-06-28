@@ -153,7 +153,6 @@ export default {
 
 .wrapper {
   width: 100%;
-  height: 100%;
   position: relative;
   overflow: visible;
   outline: none;
@@ -163,7 +162,7 @@ export default {
   border: 1px solid #ccc;
   background-color: white;
   position: absolute;
-  top: 26px;
+  top: 32px;
   z-index: 100;
   width: 100%;
   min-height: 22px;
@@ -175,6 +174,7 @@ export default {
     margin: 0;
     li {
       cursor: pointer;
+      line-height: 30px;
     }
   }
 }

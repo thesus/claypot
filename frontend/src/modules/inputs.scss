@@ -9,8 +9,18 @@ input, textarea {
     font-size: 14px;
     color: $font_color;
     font-family: $font_family;
-    height: 100%;
     text-indent: 5px;
+}
+
+/* Resize inputs on mobile devices */
+input {
+    height: 30px;
+}
+
+@media screen and (max-width: 500px) {
+    input {
+        height: 40px;
+    }
 }
 
 textarea {
