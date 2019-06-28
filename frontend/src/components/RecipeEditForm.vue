@@ -20,16 +20,14 @@
     </div>
 
     <div class="ingredients">
-      <div class="table">
-        <RecipeEditIngredientTable
-          v-for="(ingredientBatch,i) in recipe_dirty.ingredients"
-          :key="i"
-          v-model="recipe_dirty.ingredients[i]"
-          :recipe-ingredient-error="recipeIngredientError(i)"
-          :saving="saving"
-          @remove="recipe_dirty.ingredients.splice(i, 1)"
-        />
-      </div>
+      <RecipeEditIngredientTable
+        v-for="(ingredientBatch,i) in recipe_dirty.ingredients"
+        :key="i"
+        v-model="recipe_dirty.ingredients[i]"
+        :recipe-ingredient-error="recipeIngredientError(i)"
+        :saving="saving"
+        @remove="recipe_dirty.ingredients.splice(i, 1)"
+      />
       <button
         :disabled="saving"
         class="btn btn-right submit add-group"
@@ -422,7 +420,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import '@/modules/inputs.scss';
 @import '@/modules/variables.scss';
 
@@ -436,11 +434,9 @@ export default {
 
 .ingredients {
   margin-bottom: 5px;
-  border: solid 1px #ccc;
   display: inline-block;
   box-sizing: border-box;
   width: 100%;
-  padding: 4px;
 
   .submit {
     margin: 2px 2px 3px 0;
@@ -448,33 +444,6 @@ export default {
 
   .add-group {
     margin-right: 0;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-
-    .remove {
-      float: right;
-    }
-
-    tr {
-      position: relative;
-    }
-
-    td {
-      vertical-align:top;
-      padding: 2px 2px 0 2px;
-      margin: 0;
-
-      height: 100%;
-    }
-
-    .input, td > button {
-      padding: 0;
-      margin: 0;
-      min-height: 25px;
-    }
   }
 }
 
@@ -500,6 +469,7 @@ export default {
 .estimation {
   margin-top: 5px;
   display: flex;
+
   @media screen and (max-width: 469px) {
       flex-direction: column;
    }

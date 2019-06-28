@@ -55,6 +55,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/modules/inputs.scss';
+
 div {
   width: 100%;
   position: relative;
