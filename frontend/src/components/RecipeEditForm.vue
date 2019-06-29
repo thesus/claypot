@@ -100,19 +100,19 @@
 
     <div class="save">
       <button
-        :disabled="saving"
-        class="btn"
-        @click.prevent="save"
-      >
-        {{ $t('recipe_edit.save') }}
-      </button>
-      <button
         v-if="canDeleteRecipe"
         :disabled="saving"
         class="btn"
         @click.prevent="deleteRecipe"
       >
         {{ $t('recipe_edit.delete') }}
+      </button>
+      <button
+        :disabled="saving"
+        class="btn"
+        @click.prevent="save"
+      >
+        {{ $t('recipe_edit.save') }}
       </button>
     </div>
     <div v-if="newIngredientsDecision">

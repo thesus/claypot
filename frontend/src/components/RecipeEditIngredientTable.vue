@@ -293,6 +293,12 @@ export default {
     }
   }
 
+  /* Buttons have the same height as inputs */
+  .btn {
+    margin: 0;
+    height: 30px;
+  }
+
   /* Collapse view on smartphones */
   @media screen and (max-width: 500px) {
     display: flex;
