@@ -103,10 +103,23 @@
         v-if="canDeleteRecipe"
         :disabled="saving"
         class="btn"
-        @click.prevent="deleteRecipe"
+        @click.prevent="deleteModal = true"
       >
         {{ $t('recipe_edit.delete') }}
       </button>
+      <Modal
+        v-if="deleteModal"
+        :title="$t('recipe_edit.delete_title')"
+        @close="deleteModal = false"
+      >
+        {{ $t('recipe_edit.delete_confirm') }}
+        <button
+          class="btn"
+          @click.prevent="deleteRecipe"
+        >
+          {{ $t('recipe_edit.delete') }}
+        </button>
+      </Modal>
       <button
         :disabled="saving"
         class="btn"
@@ -178,6 +191,7 @@ import DurationInput from '@/components/DurationInput'
 import FormFieldValidationError from '@/components/FormFieldValidationError'
 import RecipeEditIngredientTable from '@/components/RecipeEditIngredientTable'
 import ImageUpload from '@/components/ImageUpload'
+import Modal from '@/components/Modal'
 
 const amount_types = {
   none: 1,
@@ -192,6 +206,7 @@ export default {
     FormFieldValidationError,
     RecipeEditIngredientTable,
     ImageUpload,
+    Modal
   },
   props: {
     recipe: {
@@ -210,6 +225,7 @@ export default {
   },
   data () {
     return {
+      deleteModal: false,
       recipe_dirty: {
         ingredients: [{is_group: false, title: '', ingredients: []}],
         instructions: [this.createEmptyInstruction()],
