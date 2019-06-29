@@ -287,18 +287,10 @@ export default {
 
 .ingredient {
   .optional {
-    /* center in table and smartphone mode */
-    align-self: center;
-
     /* Hide description of optional button on table view */
     span {
       display: none;
     }
-  }
-
-  /* center all buttons */
-  .btn {
-    margin: auto 0 auto 0;
   }
 
   /* Collapse view on smartphones */
@@ -316,7 +308,6 @@ export default {
     }
 
     .input {
-      height: 40px;
       margin: 1px auto 1px auto;
 
       /* Fill one row with unit and amount */
