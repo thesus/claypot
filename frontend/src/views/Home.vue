@@ -59,6 +59,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/modules/inputs.scss';
+
 .header {
   margin-bottom: 10px;
   display: flex;
