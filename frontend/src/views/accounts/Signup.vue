@@ -43,7 +43,7 @@
         </p>
         <button
           type="submit"
-          class="btn btn-right"
+          class="btn right"
           :disabled="disabled"
         >
           {{ $t('signup.signup') }}

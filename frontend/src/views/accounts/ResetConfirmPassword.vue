@@ -19,7 +19,7 @@
         <FormFieldValidationError :errors="errors.other" />
         <button
           type="submit"
-          class="btn btn-right"
+          class="btn right"
         >
           {{ $t('reset_password_confirm.reset') }}
         </button>

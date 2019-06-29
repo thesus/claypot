@@ -18,7 +18,7 @@
         <button
           :disabled="finished && !errors"
           type="submit"
-          class="btn btn-right"
+          class="btn right"
         >
           {{ $t('reset_password.reset') }}
         </button>

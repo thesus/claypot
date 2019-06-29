@@ -10,4 +10,8 @@ form {
     border: solid 1px #ccc;
     box-sizing: border-box;
     display: inline-block;
+
+    input {
+      margin: 2px 0 2px 0;
+    }
 }
