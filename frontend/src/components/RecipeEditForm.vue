@@ -30,46 +30,46 @@
       />
       <button
         :disabled="saving"
-        class="btn btn-right submit add-group"
+        class="btn right"
         @click.prevent="addIngredientGroup"
       >
         {{ $t('recipe_edit.add_group') }}
       </button>
     </div>
 
-    <ol>
-      <li
-        v-for="(instruction, i) in recipe_dirty.instructions"
-        ref="instructions"
-        :key="i"
-      >
-        <div class="instruction">
-          <textarea
-            v-model="instruction.text"
-            :placeholder="$t('recipes.instructions')"
-            :disabled="saving"
-            class="small"
-          />
-          <FormFieldValidationError
-            :errors="recipeInstructionError(i).text"
-            :saving="saving"
-          />
-          <button
-            :disabled="saving"
-            tabindex="-1"
-            class="btn btn-right remove"
-            @click="recipe_dirty.instructions.splice(i, 1)"
-          >
-            {{ $t('recipe_edit.remove') }}
-          </button>
-        </div>
-      </li>
-    </ol>
     <div
-      class="addInstruction">
+      v-for="(instruction, i) in recipe_dirty.instructions"
+      ref="instructions"
+      :key="i"
+      class="instruction"
+    >
+      <div class="text">
+        <textarea
+          v-model="instruction.text"
+          :placeholder="$t('recipes.instructions')"
+          :disabled="saving"
+          class="small"
+        />
+        <FormFieldValidationError
+          :errors="recipeInstructionError(i).text"
+          :saving="saving"
+        />
+      </div>
       <button
         :disabled="saving"
-        class="btn btn-right submit"
+        tabindex="-1"
+        class="btn remove"
+        @click="recipe_dirty.instructions.splice(i, 1)"
+      >
+        {{ $t('recipe_edit.remove') }}
+      </button>
+    </div>
+    <div
+      class="addInstruction"
+    >
+      <button
+        :disabled="saving"
+        class="btn right"
         @click.prevent="addInstruction"
       >
         {{ $t('recipe_edit.add_instruction') }}
@@ -101,7 +101,7 @@
     <div class="save">
       <button
         :disabled="saving"
-        class="btn btn-right btn-primary"
+        class="btn"
         @click.prevent="save"
       >
         {{ $t('recipe_edit.save') }}
@@ -109,7 +109,7 @@
       <button
         v-if="canDeleteRecipe"
         :disabled="saving"
-        class="btn btn-right"
+        class="btn"
         @click.prevent="deleteRecipe"
       >
         {{ $t('recipe_edit.delete') }}
@@ -129,7 +129,7 @@
         </li>
       </ul>
       <button
-        class="btn new-ingredient"
+        class="btn"
         @click="newIngredientsDecision(true)"
       >
         {{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}
@@ -424,37 +424,24 @@ export default {
 @import '@/modules/inputs.scss';
 @import '@/modules/variables.scss';
 
-.btn {
-  margin: 0;
-}
-
-.new-ingredient {
-  border-right: none;
-}
-
 .ingredients {
   margin-bottom: 5px;
   display: inline-block;
   box-sizing: border-box;
   width: 100%;
-
-  .submit {
-    margin: 2px 2px 3px 0;
-  }
-
-  .add-group {
-    margin-right: 0;
-  }
 }
 
 .instruction {
-  display: inline-block;
+  display: flex;
   width: 100%;
-  text-align: center;
-  textarea {
-    margin: 0;
-    float: left;
-    width: calc(100% - 65px);
+  margin: 3px 0 3px 0;
+
+  .text, textarea {
+    width: 100%;
+  }
+
+  .btn {
+    margin: auto 0 auto 5px;
   }
 }
 
@@ -467,15 +454,16 @@ export default {
 }
 
 .estimation {
+  width: 100%;
   margin-top: 5px;
   display: flex;
 
-  @media screen and (max-width: 469px) {
+  @media screen and (max-width: 500px) {
       flex-direction: column;
    }
 
   .column {
-    @media screen and (min-width: 470px) {
+    @media screen and (min-width: 501px) {
       &:first-child {
          padding-right: 5px;
       }
@@ -488,6 +476,12 @@ export default {
 }
 
 .save {
-  margin-top: 8px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+
+  .btn {
+    margin-right: 0;
+  }
 }
 </style>

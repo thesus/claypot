@@ -24,7 +24,7 @@
         v-for="(ingredient, i) in dirty.ingredients"
         ref="ingredientsNode"
         :key="i"
-        class="ingredients"
+        class="ingredient"
       >
         <div class="input amount">
           <input
@@ -74,7 +74,7 @@
         <button
           :disabled="saving"
           tabindex="-1"
-          class="btn btn-right remove"
+          class="btn"
           @click="dirty.ingredients.splice(i, 1)"
         >
           {{ $t('recipe_edit.remove') }}
@@ -83,14 +83,14 @@
     </div>
     <button
       :disabled="saving"
-      class="btn btn-right submit"
+      class="btn right"
       @click.prevent="addIngredient"
     >
       {{ $t('recipe_edit.add_ingredient') }}
     </button>
     <button
       :disabled="saving"
-      class="btn btn-right submit"
+      class="btn right"
       @click.prevent="removeGroup"
     >
       {{ $t('recipe_edit.remove_group') }}
@@ -260,10 +260,6 @@ export default {
   background: rgba(184, 203, 214, 0.4);
   padding: 5px;
   margin: 10px 0 10px 0;
-
-  >button {
-    margin: 2px;
-  }
 }
 
 /* Description if this is a group */
@@ -271,7 +267,8 @@ export default {
   margin: 0 0 10px 0;
 }
 
-.header, .ingredients {
+/* On desktops make grid layouts for header and ingredients */
+.header, .ingredient {
   display: grid;
   grid-template-columns:  2fr 1fr 3fr 3fr 1fr 1fr;
   grid-gap: 2px;
@@ -288,12 +285,23 @@ export default {
     }
 }
 
-.ingredients {
-  /* Hide description of optional button on table view */
-  .optional span {
-    display: none;
+.ingredient {
+  .optional {
+    /* center in table and smartphone mode */
+    align-self: center;
+
+    /* Hide description of optional button on table view */
+    span {
+      display: none;
+    }
   }
 
+  /* center all buttons */
+  .btn {
+    margin: auto 0 auto 0;
+  }
+
+  /* Collapse view on smartphones */
   @media screen and (max-width: 500px) {
     display: flex;
     flex-wrap: wrap;
@@ -301,16 +309,27 @@ export default {
     border-bottom: solid 1px #97A7B0;
     padding-bottom: 5px;
 
+    /* Button goes beside optional div */
     button {
       width: calc(50% - 1px);
-      margin: auto 0 auto 0;
+      margin: 1px 0 auto 0 !important;
     }
 
     .input {
       height: 40px;
+      margin: 1px auto 1px auto;
 
+      /* Fill one row with unit and amount */
       &.unit, &.amount {
         width: calc(50% - 1px);
+      }
+
+      &.unit {
+        margin-right: 0;
+      }
+
+      &.amount {
+        margin-left: 0;
       }
     }
 
@@ -320,6 +339,7 @@ export default {
       justify-content: center;
       width: calc(50% - 1px);
 
+      /* Show label on collapsed view */
       span {
         display: initial;
       }
@@ -327,11 +347,18 @@ export default {
       span, input {
         margin: auto 2px auto 2px;
       }
-   }
+    }
   }
 }
 
+/* Always fill boxes, since layout is defined as flex or grid */
 .input {
   width: 100%;
+}
+
+/* Checkboxes are not centered otherwise */
+input[type=checkbox] {
+  width: 14px;
+  height: 14px;
 }
 </style>

@@ -177,6 +177,13 @@ export default {
       line-height: 30px;
     }
   }
+
+  @media screen and (max-width: 500px) {
+    top: 42px;
+    ul li {
+      line-height: 35px;
+    }
+  }
 }
 
 .highlighted {
