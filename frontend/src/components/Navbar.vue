@@ -56,9 +56,7 @@ $border_color: #ddd;
   left: 0;
   top: 0;
   width: 100%;
-  background-color: rgb(20, 133, 204);
-  // border-bottom: solid 1px $border_color;
-    // border-top: solid 1px $border_color;
+  background-color: #56799C;
 }
 
 a {
@@ -67,9 +65,6 @@ a {
     color: white;
     font-weight: bolder;
     text-decoration: none;
-    &:hover {
-      background-color: #116DA6;
-    }
 }
 
 .router-link-exact-active {
