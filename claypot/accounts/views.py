@@ -102,7 +102,9 @@ class SignupConfirmView(APIView):
             uid = force_text(urlsafe_base64_decode(uid))
             user = User.objects.get(pk=uid)
         except (User.DoesNotExist, TypeError, ValueError, OverflowError):
-            return HttpResponse(_("Signup link is invalid. Have you copied it wrong?"))
+            return HttpResponse(
+                _("Signup link is invalid. Did you copy the URL correctly?")
+            )
 
         # Check if the token is valid
         # if the token is invalidated due to being too old, a new mail will be sent.
