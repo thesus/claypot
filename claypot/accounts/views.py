@@ -10,17 +10,19 @@ from claypot.accounts.serializers import (
     SignupSerializer,
 )
 
-from claypot.accounts.utils import signup_token_generator
+from claypot.accounts.utils import send_signup_mail
 
-from django.views import View
+from claypot.accounts.tokens import signup_token_generator, TimeoutError
 
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import ugettext_lazy as _
 
+from django.http import HttpResponse
+
 from rest_framework import permissions, viewsets
-from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
+from rest_framework.views import APIView
 from rest_framework.response import Response
 
 User = get_user_model()
@@ -93,18 +95,27 @@ class SignupView(GenericAPIView):
         return Response({"detail": _("Signup email has been sent.")})
 
 
-class SignupConfirmView(View):
+class SignupConfirmView(APIView):
     def get(self, request, uid, token):
+        # Decode user id to pk
         try:
             uid = force_text(urlsafe_base64_decode(uid))
             user = User.objects.get(pk=uid)
         except (User.DoesNotExist, TypeError, ValueError, OverflowError):
-            return Response(
-                {"detail": _("Signup link is invalid. Have copied it wrong?")}
+            return HttpResponse(
+                _("Signup link is invalid. Did you copy the URL correctly?")
             )
 
-        if not signup_token_generator.check_token(user, token):
-            return Response({"detail": _("Signup link is invalid!")})
+        # Check if the token is valid
+        # if the token is invalidated due to being too old, a new mail will be sent.
+        try:
+            if not signup_token_generator.check_token(user, token):
+                return HttpResponse(_("Signup link is invalid!"))
+        except TimeoutError:
+            send_signup_mail(user, request)
+            return HttpResponse(
+                _("Signup link no longer valid. New email has been sent.")
+            )
 
         user.is_active = True
         user.save()

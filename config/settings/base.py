@@ -163,3 +163,9 @@ if SENTRY_DSN:
 RECIPE_DELETE_GRACE_PERIOD = timedelta(
     seconds=env.int("RECIPE_DELETE_GRACE_PERIOD", default=3600)
 )
+
+# How many days should a signup link be valid?
+SIGNUP_TIMEOUT_DAYS = 3
+
+# How many days should a password reset link be valid?
+PASSWORD_RESET_TIMEOUT_DAYS = 3

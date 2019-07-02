@@ -7,4 +7,6 @@ You registered an account at {{ site_name }}.{% endblocktrans %}
 
 {{ protocol }}://{{ domain }}{% url 'activate' uid=uid token=token %}
 
+{% trans "Your username is: " %} {{ user.username }}
+
 {% endautoescape %}
