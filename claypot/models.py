@@ -265,6 +265,14 @@ class Ingredient(models.Model):
         unique_together = ("name",)
 
 
+class IngredientSynonym(models.Model):
+    name = models.CharField(max_length=200, verbose_name=ugettext_lazy("Name"))
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, related_name="synonyms")
+
+    class Meta:
+        unique_together = ("name",)
+
+
 class IngredientTagManager(models.Manager):
     def get_by_natural_key(self, tag):
         return self.get(tag=tag)

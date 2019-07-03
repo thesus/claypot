@@ -18,6 +18,8 @@ from claypot.models import (
     RecipeIngredientGroupIngredient,
     RecipeInstruction,
     Unit,
+    AbstractIngredient,
+    IngredientSynonym,
 )
 
 from claypot.images.models import Image, ImageFile
@@ -396,3 +398,34 @@ class RecipeSerializer(serializers.Serializer):
 
 class RecipeReadSerializer(RecipeSerializer):
     images = ImageRetrieveSerializer(read_only=True, many=True)
+
+
+class IngredientSynonymSerializer(serializers.Serializer):
+    ingredient = IngredientField()
+
+    synonyms = serializers.ListField(
+        child=serializers.CharField(), min_length=0, max_length=100
+    )
+
+    @transaction.atomic
+    def save(self):
+        ingredient = self.validated_data["ingredient"]
+
+        existing = set(i.name for i in ingredient.synonyms.all())
+        new = set(self.validated_data["synonyms"]) - existing
+
+        ingredients = Ingredient.objects.filter(name__in=new)
+        for synonymous_ingredient in ingredients:
+            ingredient.tags.add(synonymous_ingredient.tags.all())
+
+            AbstractIngredient.objects.filter(ingredient=synonymous_ingredient).update(
+                ingredient=ingredient
+            )
+
+        ingredients.delete()
+
+        for synonym in new:
+            IngredientSynonym.objects.create(name=synonym, ingredient=ingredient)
+
+    class Meta:
+        fields = ["id", "synonyms"]

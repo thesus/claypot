@@ -34,6 +34,7 @@ from .serializers import (
     RecipeSerializer,
     RecipeListSerializer,
     RecipeReadSerializer,
+    IngredientSynonymSerializer
 )
 
 
@@ -104,6 +105,16 @@ class IngredientViewSet(viewsets.ModelViewSet):
             )
             new = list(requested - existing)
             return Response(ManyIngredientSerializer({"ingredients": new}).data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    @action(detail=False, methods=["post"])
+    def update_synonyms(self, request):
+        serializer = IngredientSynonymSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("ok")
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
