@@ -13,6 +13,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+
 import django_filters
 
 from django.contrib.postgres.aggregates import StringAgg
@@ -34,7 +35,7 @@ from .serializers import (
     RecipeSerializer,
     RecipeListSerializer,
     RecipeReadSerializer,
-    IngredientSynonymSerializer
+    IngredientSynonymSerializer,
 )
 
 
@@ -108,13 +109,17 @@ class IngredientViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=True, methods=["post", "get"])
+    def synonyms(self, request, pk):
+        instance = self.queryset.get(pk=pk)
 
-    @action(detail=False, methods=["post"])
-    def update_synonyms(self, request):
-        serializer = IngredientSynonymSerializer(data=request.data)
+        if request.method.lower() == 'get':
+            return Response(IngredientSynonymSerializer(instance).data)
+
+        serializer = IngredientSynonymSerializer(instance, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response("ok")
+            return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

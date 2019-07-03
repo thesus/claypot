@@ -1,8 +1,9 @@
 from datetime import datetime
+from collections import OrderedDict
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.utils.decorators import method_decorator
 from rest_framework import serializers
 from pytz import utc
@@ -400,19 +401,24 @@ class RecipeReadSerializer(RecipeSerializer):
     images = ImageRetrieveSerializer(read_only=True, many=True)
 
 
-class IngredientSynonymSerializer(serializers.Serializer):
-    ingredient = IngredientField()
-
+class ManySynonymSerializer(serializers.Serializer):
     synonyms = serializers.ListField(
         child=serializers.CharField(), min_length=0, max_length=100
     )
 
+
+class IngredientSynonymSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def save(self):
-        ingredient = self.validated_data["ingredient"]
+        ingredient = self.instance
 
         existing = set(i.name for i in ingredient.synonyms.all())
-        new = set(self.validated_data["synonyms"]) - existing
+        retrieved = set(self.validated_data["synonyms"])
+
+        new = retrieved - existing
+        delete = existing - retrieved
+
+        IngredientSynonym.objects.filter(name__in=delete).delete()
 
         ingredients = Ingredient.objects.filter(name__in=new)
         for synonymous_ingredient in ingredients:
@@ -421,11 +427,32 @@ class IngredientSynonymSerializer(serializers.Serializer):
             AbstractIngredient.objects.filter(ingredient=synonymous_ingredient).update(
                 ingredient=ingredient
             )
-
         ingredients.delete()
 
+        i = 0
         for synonym in new:
-            IngredientSynonym.objects.create(name=synonym, ingredient=ingredient)
+            i = i + 1
+            try:
+                IngredientSynonym.objects.create(name=synonym, ingredient=ingredient)
+            except IntegrityError:
+                raise serializers.ValidationError(
+                    {"synonyms": {i: ["Integrity Error!"]}}
+                )
+
+    def to_internal_value(self, data):
+        serializer = ManySynonymSerializer(data=data)
+        if not serializer.is_valid():
+            raise serializers.ValidationError({"synonyms": sub_serializer.errors})
+        return serializer.validated_data
+
+    def to_representation(self, instance):
+        data = OrderedDict()
+        data["name"] = instance.name
+        data["synonyms"] = instance.synonyms.all().values_list("name", flat=True)
+
+        return data
 
     class Meta:
-        fields = ["id", "synonyms"]
+        model = Ingredient
+        fields = ["name", "synonyms"]
+        read_only_fields = ["name"]
