@@ -103,31 +103,35 @@
         v-if="canDeleteRecipe"
         :disabled="saving"
         class="btn"
+        style="float: left;"
         @click.prevent="deleteModal = true"
       >
         {{ $t('recipe_edit.delete') }}
       </button>
+
       <Modal
         v-if="deleteModal"
         :title="$t('recipe_edit.delete_title')"
         @close="deleteModal = false"
       >
-        {{ $t('recipe_edit.delete_confirm') }}
+        <span>{{ $t('recipe_edit.delete_confirm') }}</span>
         <button
-          class="btn"
+          class="btn right"
           @click.prevent="deleteRecipe"
         >
           {{ $t('recipe_edit.delete') }}
         </button>
       </Modal>
+
       <button
         :disabled="saving"
-        class="btn"
+        class="btn btn-save"
         @click.prevent="save"
       >
         {{ $t('recipe_edit.save') }}
       </button>
     </div>
+
     <div v-if="newIngredientsDecision">
       <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
       <ul>
@@ -498,6 +502,10 @@ export default {
 
   .btn {
     margin-right: 0;
+
+    &.btn-save {
+      padding: 0px 30px 0px 30px !important;
+    }
   }
 }
 </style>
