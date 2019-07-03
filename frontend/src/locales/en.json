@@ -109,6 +109,8 @@
         "add_group": "Add new Ingredient Group",
         "save": "Save",
         "delete": "Delete recipe",
+        "delete_title": "Delete",
+        "delete_confirm": "You are about to delete the recipe. Are you sure?",
         "action": "Action",
         "estimated_work_duration": "@:recipe_detail.estimated_work_duration",
         "estimated_waiting_duration": "@:recipe_detail.estimated_waiting_duration"

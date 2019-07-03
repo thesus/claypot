@@ -159,11 +159,12 @@ input[type=file] {
 }
 
 .list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, $thumbnail-size);
-  grid-gap: 8px;
+  display: flex;
   justify-content: center;
+  flex-flow: row wrap;
+
   width: 100%;
+  margin-top: 4px;
 }
 
 .thumbnail {
@@ -171,6 +172,7 @@ input[type=file] {
   height: $thumbnail-size;
   position: relative;
   display: block;
+  margin: 4px;
 
   .delete {
     display: none;
@@ -183,6 +185,7 @@ input[type=file] {
     cursor: pointer;
   }
 
+  /* Show delete option only on hover */
   &:hover {
     .delete {
       display: block;
@@ -218,6 +221,5 @@ img {
 span.btn {
   display: table-cell;
   vertical-align: middle;
-  height: 20px;
 }
 </style>

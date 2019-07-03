@@ -20,7 +20,8 @@
     <input
       v-model="dirtyValue"
       :disabled="disabled"
-      bubbles="true"
+      :class="{'form-error': error}"
+      :placeholder="$t('recipe_edit.ingredient')"
       @focus="onFocus()"
       @blur="onBlur()"
       @keyup.down="moveHighlightDown()"
@@ -45,6 +46,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    error: {
+      type: Boolean,
+      default: false
+    }
   },
   data () {
     return {
@@ -145,6 +150,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
+
 .wrapper {
   width: 100%;
   position: relative;
@@ -156,7 +162,7 @@ export default {
   border: 1px solid #ccc;
   background-color: white;
   position: absolute;
-  top: 26px;
+  top: 32px;
   z-index: 100;
   width: 100%;
   min-height: 22px;
@@ -168,6 +174,14 @@ export default {
     margin: 0;
     li {
       cursor: pointer;
+      line-height: 30px;
+    }
+  }
+
+  @media screen and (max-width: 500px) {
+    top: 42px;
+    ul li {
+      line-height: 35px;
     }
   }
 }

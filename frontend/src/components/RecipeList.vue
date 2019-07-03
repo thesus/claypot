@@ -4,7 +4,7 @@
   </div>
   <div v-else-if="!!recipes && recipes.length > 0">
     <div class="options">
-      <button class="btn" @click="updateMode">{{ $t('home.mode') }}</button>
+      <button class="btn right" @click="updateMode">{{ $t('home.mode') }}</button>
     </div>
 
     <RecipeThumbnailView
@@ -142,10 +142,6 @@ export default {
 
 .recipes {
   padding: 5px;
-}
-
-.btn {
-  margin: 3px;
 }
 
 .options {

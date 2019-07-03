@@ -1,39 +1,53 @@
 <template>
   <div class="recipes">
-    <div
+    <router-link
       v-for="recipe in $props.recipes"
       :key="recipe.id"
-      class="recipe"
-      >
-      <div class="info">
-        <recipe-link :recipe="recipe" />
+      :to="to(recipe.id)"
+    >
+      <div class="recipe">
+        <div class="info">
+          {{ recipe.title }}
+        </div>
+        <div class="image">
+          <img v-if="recipe.thumbnail" :src="recipe.thumbnail">
+          <span v-else>{{ $t('thumbnail.empty') }}</span>
+        </div>
       </div>
-      <div class="image">
-        <img v-if="recipe.thumbnail" :src="recipe.thumbnail">
-        <span v-else>{{ $t('thumbnail.empty') }}</span>
-      </div>
-    </div>
+    </router-link>
   </div>
 </template>
 
 <script>
-import RecipeLink from '@/components/RecipeLink'
-
 export default {
   name: 'RecipeThumbnailView',
-  components: {
-    RecipeLink
-  },
   props: {
     recipes: {
       type: Array,
       default: () => []
+    }
+  },
+  methods: {
+    to (id) {
+      return {
+        name: 'recipe-detail',
+        params: {
+          id: id
+        }
+      }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@import '@/modules/variables.scss';
+
+a {
+  text-decoration: none;
+  color: $font_color;
+}
+
 .recipes {
   display: flex;
   flex-wrap: wrap;
@@ -66,6 +80,7 @@ export default {
 
     span {
       padding-top: 70px;
+      text-decoration: none !important;
       display: block;
     }
   }

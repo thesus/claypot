@@ -34,7 +34,7 @@
         </router-link>
         <button
           type="submit"
-          class="btn btn-right"
+          class="btn right"
         >
           {{ $t('login.login') }}
         </button>

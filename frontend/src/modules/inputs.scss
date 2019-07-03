@@ -3,41 +3,57 @@
 input, textarea {
     width: 100%;
     box-sizing: border-box;
-    margin: 0 0 5px 0;
+    margin: 0;
     border: 1px solid #ccc;
     border-radius: 0;
     font-size: 14px;
     color: $font_color;
     font-family: $font_family;
-    height: 25px;
     text-indent: 5px;
+    width: 100%;
 }
+
+/* Resize inputs on mobile devices */
+input {
+    height: 30px;
+}
+
+@media screen and (max-width: 500px) {
+    input {
+        height: 40px;
+    }
+}
+
 
 textarea {
     padding: 5px;
     text-indent: 0;
     min-height: 200px;
     resize: vertical;
+
     &.small {
-        min-height: 50px;
+        min-height: 70px;
     }
 }
 
 .form-error {
     border: 1px solid red;
+    box-sizing: border-box;
 }
 
 .btn {
     border: solid 1px $font_color;
     border-radius: 1px;
     background-color: white;
+    color: $font_color;
+
     font-size: 12px;
     font-weight: 650;
-    color: $font_color;
     height: 25px;
     cursor: pointer;
 
     padding: 0 5px 0 5px !important;
+    margin: 2px;
 
     &:hover {
         background-color: $font_color;
@@ -52,10 +68,12 @@ textarea {
         cursor: default;
     }
 
-    &.btn-right {
+    &.right {
         float: right;
+        margin-right: 0;
     }
 
+    /* Buttons are bigger on mobile devices */
     @media screen and (max-width: 500px) {
         height: 30px;
     }

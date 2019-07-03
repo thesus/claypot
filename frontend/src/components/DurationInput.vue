@@ -55,21 +55,28 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/modules/inputs.scss';
+
 div {
   width: 100%;
   position: relative;
-  height: 25px;
+}
+
+/* Default input height is 30px */
+/* on mobile devices 40px */
+span {
+  right: 6px;
+  position: absolute;
+  top: 4px;
+
+  @media screen and (max-width: 500px) {
+     top: 9px;
+  }
 }
 
 input {
   width: 100%;
   padding-right: 65px;
   text-align: right;
-}
-
-span {
-  right: 6px;
-  position: absolute;
-  bottom: 3px;
 }
 </style>

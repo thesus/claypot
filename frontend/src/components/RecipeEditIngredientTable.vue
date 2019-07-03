@@ -7,104 +7,95 @@
       v-if="dirty.is_group"
       v-model="dirty.title"
       placeholder="Ingredient group title"
+      class="title"
     >
-    <table v-show="dirty.ingredients.length > 0">
-      <thead>
-        <tr>
-          <th>{{ $t('recipe_edit.amount') }}</th>
-          <th>{{ $t('recipe_edit.unit') }}</th>
-          <th>{{ $t('recipe_edit.ingredient') }}</th>
-          <th>{{ $t('recipe_edit.ingredient_extra') }}</th>
-          <th>{{ $t('recipe_edit.optional') }}</th>
-          <th>{{ $t('recipe_edit.action') }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(ingredient, i) in dirty.ingredients"
-          ref="ingredientsNode"
-          :key="i"
+    <div
+      v-show="dirty.ingredients.length > 0"
+    >
+      <div class="header">
+        <span>{{ $t('recipe_edit.amount') }}</span>
+        <span>{{ $t('recipe_edit.unit') }}</span>
+        <span>{{ $t('recipe_edit.ingredient') }}</span>
+        <span>{{ $t('recipe_edit.ingredient_extra') }}</span>
+        <span>{{ $t('recipe_edit.optional') }}</span>
+        <span>{{ $t('recipe_edit.action') }}</span>
+      </div>
+      <div
+        v-for="(ingredient, i) in dirty.ingredients"
+        ref="ingredientsNode"
+        :key="i"
+        class="ingredient"
+      >
+        <div class="input amount">
+          <input
+            :value="displayAmount(ingredient)"
+            :disabled="saving"
+            :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length || !!recipeIngredientError(i).amount_numeric.length}"
+            @input="updateAmount(ingredient, $event)"
+          >
+          <FormFieldValidationError :errors="recipeIngredientError(i).amount_numeric" />
+          <FormFieldValidationError :errors="recipeIngredientError(i).amount_approx" />
+        </div>
+        <div class="input unit">
+          <input
+            v-model="ingredient.unit"
+            :disabled="saving || ingredient.amount_type !== AMOUNT_TYPE_NUMERIC"
+            :class="{'form-error': !!recipeIngredientError(i).unit.length}"
+            :placeholder="$t('recipe_edit.unit')"
+
+          >
+          <FormFieldValidationError :errors="recipeIngredientError(i).unit" />
+        </div>
+        <div class="input">
+          <IngredientInput
+            v-model="ingredient.ingredient"
+            :disabled="saving"
+            :error="!!recipeIngredientError(i).ingredient.length"
+          />
+          <FormFieldValidationError :errors="recipeIngredientError(i).ingredient" />
+        </div>
+        <div class="input">
+          <input
+            v-model="ingredient.ingredient_extra"
+            :disabled="saving"
+            :class="{'form-error': !!recipeIngredientError(i).ingredient_extra.length}"
+            :placeholder="$t('recipe_edit.ingredient_extra')"
+          >
+          <FormFieldValidationError :errors="recipeIngredientError(i).ingredient_extra" />
+        </div>
+        <div class="optional">
+          <span>{{ $t('recipe_edit.optional') }}</span>
+          <input
+            v-model="ingredient.optional"
+            type="checkbox"
+            :disabled="saving"
+          >
+        </div>
+        <button
+          :disabled="saving"
+          tabindex="-1"
+          class="btn"
+          @click="dirty.ingredients.splice(i, 1)"
         >
-          <td>
-            <div class="input">
-              <input
-                :value="displayAmount(ingredient)"
-                :disabled="saving"
-                :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length || !!recipeIngredientError(i).amount_numeric.length}"
-                @input="updateAmount(ingredient, $event)"
-              >
-            </div>
-            <FormFieldValidationError :errors="recipeIngredientError(i).amount_numeric" />
-            <FormFieldValidationError :errors="recipeIngredientError(i).amount_approx" />
-          </td>
-          <td>
-            <div class="input">
-              <input
-                v-model="ingredient.unit"
-                :disabled="saving || ingredient.amount_type !== AMOUNT_TYPE_NUMERIC"
-                :class="{'form-error': !!recipeIngredientError(i).unit.length}"
-              >
-            </div>
-            <FormFieldValidationError :errors="recipeIngredientError(i).unit" />
-          </td>
-          <td>
-            <div class="input">
-              <IngredientInput
-                v-model="ingredient.ingredient"
-                :disabled="saving"
-                :class="{'form-error': !!recipeIngredientError(i).ingredient.length}"
-              />
-            </div>
-            <FormFieldValidationError :errors="recipeIngredientError(i).ingredient" />
-          </td>
-          <td>
-            <div class="input">
-              <input
-                v-model="ingredient.ingredient_extra"
-                :disabled="saving"
-                :class="{'form-error': !!recipeIngredientError(i).ingredient_extra.length}"
-              >
-            </div>
-            <FormFieldValidationError :errors="recipeIngredientError(i).ingredient_extra" />
-          </td>
-          <td>
-            <div class="input">
-              <input
-                v-model="ingredient.optional"
-                type="checkbox"
-                :disabled="saving"
-                :class="{'form-error': !!recipeIngredientError(i).optional.length}"
-              >
-            </div>
-            <FormFieldValidationError :errors="recipeIngredientError(i).optional" />
-          </td>
-          <td>
-            <button
-              :disabled="saving"
-              tabindex="-1"
-              class="btn btn-right remove"
-              @click="dirty.ingredients.splice(i, 1)"
-            >
-              {{ $t('recipe_edit.remove') }}
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          {{ $t('recipe_edit.remove') }}
+        </button>
+      </div>
+    </div>
     <button
       :disabled="saving"
-      class="btn btn-right submit"
+      class="btn right"
       @click.prevent="addIngredient"
     >
       {{ $t('recipe_edit.add_ingredient') }}
     </button>
     <button
       :disabled="saving"
-      class="btn btn-right submit"
+      class="btn right"
       @click.prevent="removeGroup"
     >
       {{ $t('recipe_edit.remove_group') }}
     </button>
+    <div style="clear:both"></div>
   </div>
 </template>
 
@@ -225,7 +216,7 @@ export default {
       /* And yeah. This is pretty dirty. */
       this.$nextTick(() => {
         if (this.$refs.ingredientsNode) {
-          this.$refs.ingredientsNode[pos].children[0].children[0].children[0].focus()
+          this.$refs.ingredientsNode[pos].children[0].children[0].focus()
         }
       })
     },
@@ -266,17 +257,105 @@ export default {
 @import '@/modules/inputs.scss';
 
 .table {
-  margin-top: 0.5em;
-}
-.table:first-child {
-  margin-top: 0em;
+  background: rgba(184, 203, 214, 0.4);
+  padding: 5px;
+  margin: 10px 0 10px 0;
 }
 
-.table.group {
-  padding: 0.5em;
-  border: solid 1px #ccc;
+/* Description if this is a group */
+.title {
+  margin: 0 0 10px 0;
+}
+
+/* On desktops make grid layouts for header and ingredients */
+.header, .ingredient {
+  display: grid;
+  grid-template-columns:  2fr 1fr 3fr 3fr 1fr 1fr;
+  grid-gap: 2px;
+
   width: 100%;
-  display: inline-block;
-  box-sizing: border-box;
+  margin: 0 0 2px 0;
+}
+
+
+@media screen and (max-width: 500px) {
+   /* Don't display description at the top of the ingredient table on desktops */
+    span {
+      display: none;
+    }
+}
+
+.ingredient {
+  .optional {
+    /* Hide description of optional button on table view */
+    span {
+      display: none;
+    }
+  }
+
+  /* Buttons have the same height as inputs */
+  .btn {
+    margin: 0;
+    height: 30px;
+  }
+
+  /* Collapse view on smartphones */
+  @media screen and (max-width: 500px) {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 0 10px 0;
+    border-bottom: solid 1px #97A7B0;
+    padding-bottom: 5px;
+
+    /* Button goes beside optional div */
+    button {
+      width: calc(50% - 1px);
+      margin: 1px 0 auto 0 !important;
+    }
+
+    .input {
+      margin: 1px auto 1px auto;
+
+      /* Fill one row with unit and amount */
+      &.unit, &.amount {
+        width: calc(50% - 1px);
+      }
+
+      &.unit {
+        margin-right: 0;
+      }
+
+      &.amount {
+        margin-left: 0;
+      }
+    }
+
+    /* Optional's label and button are a flexbox themselve. */
+    .optional {
+      display: flex;
+      justify-content: center;
+      width: calc(50% - 1px);
+
+      /* Show label on collapsed view */
+      span {
+        display: initial;
+      }
+
+      span, input {
+        margin: auto 2px auto 2px;
+      }
+    }
+  }
+}
+
+/* Always fill boxes, since layout is defined as flex or grid */
+.input {
+  width: 100%;
+}
+
+/* Checkboxes are not centered otherwise */
+input[type=checkbox] {
+  width: 14px;
+  height: 14px;
 }
 </style>

@@ -104,7 +104,7 @@ span {
 
   &.fraction {
     font-size: 10px;
-    line-height: 17px;
+    line-height: 15px;
     @media screen and (max-width: 500px) {
       line-height: 22px;
       font-size: 14px;
