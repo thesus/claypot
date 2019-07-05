@@ -35,7 +35,7 @@ from .serializers import (
     RecipeSerializer,
     RecipeListSerializer,
     RecipeReadSerializer,
-    IngredientSynonymSerializer,
+    IngredientUpdateSerializer,
 )
 
 
@@ -87,6 +87,12 @@ class IngredientViewSet(viewsets.ModelViewSet):
     filterset_class = IngredientFilter
     pagination_class = Pagination
 
+
+    def get_serializer_class(self):
+        if self.action == "retrieve" or self.action == "update":
+            return IngredientUpdateSerializer
+        return self.serializer_class
+
     @action(detail=False, methods=["post"])
     def create_many(self, request):
         serializer = IngredientSerializer(data=request.data, many=True)
@@ -106,20 +112,6 @@ class IngredientViewSet(viewsets.ModelViewSet):
             )
             new = list(requested - existing)
             return Response(ManyIngredientSerializer({"ingredients": new}).data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=True, methods=["post", "get"])
-    def synonyms(self, request, pk):
-        instance = self.queryset.get(pk=pk)
-
-        if request.method.lower() == 'get':
-            return Response(IngredientSynonymSerializer(instance).data)
-
-        serializer = IngredientSynonymSerializer(instance, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

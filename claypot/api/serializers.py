@@ -5,6 +5,8 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction, IntegrityError
 from django.utils.decorators import method_decorator
+from django.core.exceptions import ObjectDoesNotExist
+
 from rest_framework import serializers
 from pytz import utc
 
@@ -20,6 +22,7 @@ from claypot.models import (
     RecipeInstruction,
     Unit,
     AbstractIngredient,
+    IngredientTag,
     IngredientSynonym,
 )
 
@@ -407,52 +410,91 @@ class ManySynonymSerializer(serializers.Serializer):
     )
 
 
-class IngredientSynonymSerializer(serializers.ModelSerializer):
-    @transaction.atomic
-    def save(self):
-        ingredient = self.instance
+class SlugCreateRelatedField(serializers.SlugRelatedField):
+    """Takes a model and returns a unsaved model instance if it does'nt exist."""
 
-        existing = set(i.name for i in ingredient.synonyms.all())
-        retrieved = set(self.validated_data["synonyms"])
-
-        new = retrieved - existing
-        delete = existing - retrieved
-
-        IngredientSynonym.objects.filter(name__in=delete).delete()
-
-        ingredients = Ingredient.objects.filter(name__in=new)
-        for synonymous_ingredient in ingredients:
-            ingredient.tags.add(synonymous_ingredient.tags.all())
-
-            AbstractIngredient.objects.filter(ingredient=synonymous_ingredient).update(
-                ingredient=ingredient
-            )
-        ingredients.delete()
-
-        i = 0
-        for synonym in new:
-            i = i + 1
-            try:
-                IngredientSynonym.objects.create(name=synonym, ingredient=ingredient)
-            except IntegrityError:
-                raise serializers.ValidationError(
-                    {"synonyms": {i: ["Integrity Error!"]}}
-                )
+    def __init__(self, *args, **kwargs):
+        self.model = kwargs.pop("model")
+        super().__init__(*args, **kwargs)
 
     def to_internal_value(self, data):
-        serializer = ManySynonymSerializer(data=data)
-        if not serializer.is_valid():
-            raise serializers.ValidationError({"synonyms": sub_serializer.errors})
-        return serializer.validated_data
+        try:
+            return self.get_queryset().get(**{self.slug_field: data})
+        except ObjectDoesNotExist:
+            return self.model(**{self.slug_field: data})
+        except (TypeError, ValueError):
+            self.fail("invalid")
 
-    def to_representation(self, instance):
-        data = OrderedDict()
-        data["name"] = instance.name
-        data["synonyms"] = instance.synonyms.all().values_list("name", flat=True)
 
-        return data
+class IngredientUpdateSerializer(serializers.ModelSerializer):
+    synonyms = SlugCreateRelatedField(
+        many=True,
+        queryset=IngredientSynonym.objects.all(),
+        model=IngredientSynonym,
+        slug_field="name",
+    )
+
+    tags = SlugCreateRelatedField(
+        many=True,
+        queryset=IngredientTag.objects.all(),
+        model=IngredientTag,
+        slug_field="tag",
+    )
+
+    @transaction.atomic
+    def save(self):
+        def get_error(i):
+            return serializers.ValidationError(
+                {"synonyms": {i: ["Already used on another ingredient!"]}}
+            )
+
+        ingredient = self.instance
+
+        # Save new tags
+        for tag in self.validated_data["tags"]:
+            if not tag.pk:
+                tag.save()
+
+        # Set all tags on ingredient
+        ingredient.tags.set(self.validated_data["tags"])
+
+        updated = set()
+        for i, synonym in enumerate(self.validated_data["synonyms"]):
+            # Save new synonyms and add them to new set
+            if not synonym.pk:
+                synonym.ingredient = ingredient
+                try:
+                    synonym.save()
+                except IntegrityError:
+                    raise get_error(i)
+            else:
+                # Synonym needs to be unique to one ingredient
+                if synonym.ingredient != ingredient:
+                    raise get_error(i)
+
+            updated.add(synonym.pk)
+
+        # Delete unmentioned synonyms
+        ingredient.synonyms.exclude(pk__in=updated).delete()
+
+        # Add tags and synonyms from equivalent ingredients
+        ingredients = Ingredient.objects.filter(
+            name__in=[i.name for i in self.validated_data["synonyms"]]
+        )
+        for synonymous_ingredient in ingredients:
+            ingredient.tags.add(*synonymous_ingredient.tags.all())
+            synonymous_ingredient.synonyms.update(ingredient=ingredient)
+
+            # Update ingredients in recipes
+            RecipeIngredient.objects.filter(ingredient=synonymous_ingredient).update(
+                ingredient=ingredient
+            )
+            RecipeIngredientGroupIngredient.objects.filter(
+                ingredient=synonymous_ingredient
+            ).update(ingredient=ingredient)
+        ingredients.delete()
 
     class Meta:
         model = Ingredient
-        fields = ["name", "synonyms"]
+        fields = ["name", "synonyms", "tags"]
         read_only_fields = ["name"]
