@@ -11,8 +11,8 @@
     <table>
       <tbody v-if="ingredients">
         <tr
-          v-for="ingredient in ingredients"
-          :key="ingredient.ingredient"
+          v-for="(ingredient, index) in ingredients"
+          :key="index"
         >
           <td class="amount">
             <span v-if="ingredient.amount_type === AMOUNT_TYPE_NUMERIC && ingredient.unit != ''">
