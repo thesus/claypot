@@ -416,8 +416,8 @@ class ManySynonymSerializer(serializers.Serializer):
 class SlugCreateRelatedField(serializers.SlugRelatedField):
     """Takes a model and returns a unsaved model instance if it does'nt exist."""
 
-    def __init__(self, *args, **kwargs):
-        self.model = kwargs.pop("model")
+    def __init__(self, *args, model, **kwargs):
+        self.model = model
         super().__init__(*args, **kwargs)
 
     def to_internal_value(self, data):
