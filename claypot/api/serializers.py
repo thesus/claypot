@@ -149,8 +149,6 @@ class RecipeIngredientListSerializer(serializers.Serializer):
     ingredients = RecipeIngredientSerializer(many=True)
 
 
-
-
 class RecipeListSerializer(serializers.ModelSerializer):
     thumbnail = serializers.SerializerMethodField()
 
