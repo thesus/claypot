@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="synonym">
     <div
       v-for="(item, index) in dirty"
       :key="index"
@@ -17,11 +17,12 @@
       </button>
     </div>
     <button
-      class="btn"
+      class="btn right"
       @click="dirty.push('')"
     >
       Add
     </button>
+    <div style="clear: both;" />
   </div>
 </template>
 
@@ -75,5 +76,9 @@ export default {
 .input {
   display: flex;
   margin: 2px 0 2px 0;
+}
+
+.synonym {
+  margin: 5px;
 }
 </style>

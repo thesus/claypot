@@ -24,7 +24,7 @@ from django.contrib.postgres.search import (
     TrigramSimilarity,
 )
 
-from claypot.models import Ingredient, Recipe
+from claypot.models import Ingredient, IngredientSynonym, Recipe
 from claypot.images.models import Image
 
 from .serializers import (
@@ -43,6 +43,13 @@ class Pagination(PageNumberPagination):
     page_size = 16
     page_size_query_param = "page_size"
     max_page_size = 100
+
+
+class ReadAllEditAdmin(permissions.BasePermission):
+    message = _("You must be superuser to edit.")
+
+    def has_permission(self, request, view):
+        return (request.method in permissions.SAFE_METHODS) or request.user.is_superuser
 
 
 class ReadAllEditOwn(permissions.BasePermission):
@@ -86,14 +93,18 @@ class IngredientViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
     pagination_class = Pagination
-
+    permission_classes = [ReadAllEditAdmin]
 
     def get_serializer_class(self):
         if self.action == "retrieve" or self.action == "update":
             return IngredientUpdateSerializer
         return self.serializer_class
 
-    @action(detail=False, methods=["post"])
+    @action(
+        detail=False,
+        methods=["post"],
+        permission_classes=(permissions.IsAuthenticated,),
+    )
     def create_many(self, request):
         serializer = IngredientSerializer(data=request.data, many=True)
         if serializer.is_valid():
@@ -102,14 +113,23 @@ class IngredientViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=["post"])
+    @action(
+        detail=False,
+        methods=["post"],
+        permission_classes=(permissions.IsAuthenticated,),
+    )
     def check_new(self, request):
         serializer = ManyIngredientSerializer(data=request.data)
         if serializer.is_valid():
             requested = set(serializer.data["ingredients"])
+
+            # Check in ingredients and synonyms
             existing = set(
-                i.name for i in Ingredient.objects.filter(name__in=requested)
+                Ingredient.objects.filter(name__in=requested)
+                .union(IngredientSynonym.objects.filter(name__in=requested))
+                .values_list("name", flat=True)
             )
+
             new = list(requested - existing)
             return Response(ManyIngredientSerializer({"ingredients": new}).data)
         else:

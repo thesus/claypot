@@ -1,23 +1,28 @@
 <template>
   <div>
     <h1>{{ ingredient.name }}</h1>
-    <h3>synonyms</h3>
     <IngredientSynonymInput
       v-if="ingredient.synonyms"
       v-model="ingredient.synonyms"
     />
 
-    <h3>tags</h3>
-    <ul>
-      <li
-        v-for="(value, index) in ingredient.tags"
-        :key="index"
-      >
-        {{ value }}
-      </li>
-    </ul>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="(value, index) in ingredient.tags"
+          :key="index"
+        >
+          <td>{{ value }}</td>
+        </tr>
+      </tbody>
+    </table>
     <button
-      class="btn"
+      class="btn right"
       @click="submit()"
     >
       Save
@@ -96,4 +101,5 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
+@import '@/modules/table.scss';
 </style>

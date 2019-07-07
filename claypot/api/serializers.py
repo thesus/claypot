@@ -87,7 +87,10 @@ class IngredientField(serializers.RelatedField):
         try:
             return Ingredient.objects.get(name=data)
         except Ingredient.DoesNotExist:
-            raise serializers.ValidationError("Unknown ingredient")
+            try:
+                return IngredientSynonym.objects.get(name=data).ingredient
+            except IngredientSynonym.DoesNotExist:
+                raise serializers.ValidationError("Unknown ingredient")
 
 
 class UnitSerializer(serializers.ModelSerializer):
@@ -144,6 +147,8 @@ class RecipeIngredientListSerializer(serializers.Serializer):
     is_group = serializers.BooleanField()
     title = serializers.CharField(allow_blank=True)
     ingredients = RecipeIngredientSerializer(many=True)
+
+
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
