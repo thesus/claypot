@@ -1,9 +1,14 @@
 <template>
   <div>
+    <span v-if="loading">{{ $t('generic.loading') }}</span>
+    <span v-if="error">{{ error }}</span>
+
     <slot
-      v-show="results"
+      v-if="results"
       :data="results"
     />
+    <span v-else-if="!working">{{ $t('generic.no_data') }}</span>
+
     <Pagination
       v-if="isList"
       :next="next"
@@ -16,6 +21,8 @@
 
 <script>
 import { api } from '@/api'
+
+import { Timer } from '@/utils'
 
 import Pagination from '@/components/Pagination'
 
@@ -39,6 +46,9 @@ export default {
   },
   data() {
     return {
+      loading: false,
+      working: false,
+      error: null,
       page: 1,
       results: null,
       next: null,
@@ -63,31 +73,36 @@ export default {
       this.page = page ? page : 1
     },
     async get () {
+      this.working = true
+      const timer = new Timer(() => { this.loading = true }, 400)
       try {
-        this.loading = true
-
         const r = await api(
           this.endpoint,
           { ...this.filters, page: this.page },
           { method: 'GET' }
         )
-
+        const data = await r.json()
         if (r.ok) {
-          const data = await r.json()
-
-          this.$set(this, 'results', data['results'])
+          if (this.isList && data['results'].length > 0) {
+            this.$set(this, 'results', data['results'])
+          } else {
+            this.results = null
+          }
 
           if (this.isList) {
             this.$set(this, 'next', data['next'])
             this.$set(this, 'previous', data['previous'])
           }
         } else {
-          throw new Error('error occured')
+          throw new Error(data['detail'])
         }
       } catch (err) {
-        // this.error = err.message
-        this.results.length = 0
+        this.$set(this, 'error', err.message)
+
+        this.results = null
       } finally {
+        timer.clear()
+        this.working = false
         this.loading = false
       }
     }

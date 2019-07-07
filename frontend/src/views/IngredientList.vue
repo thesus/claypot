@@ -3,12 +3,25 @@
     <Receiver :endpoint="endpoint">
       <template v-slot:default="props">
         <table>
-          <tr
-            v-for="ingredient in props.data"
-            :key="ingredient.id"
-          >
-            <td>{{ ingredient.name }}</td>
-          </tr>
+          <thead>
+            <tr>
+              <th>Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="ingredient in props.data"
+              :key="ingredient.id"
+            >
+              <td>
+                <router-link
+                  :to="{name: 'ingredient-edit', params: {id: ingredient.id }}"
+                >
+                  {{ ingredient.name }}
+                </router-link>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </template>
     </Receiver>
@@ -34,4 +47,5 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
+@import '@/modules/table.scss';
 </style>
