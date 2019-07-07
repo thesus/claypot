@@ -5,6 +5,8 @@ import Home from '../views/Home.vue'
 import RecipeAdd from '../views/RecipeAdd.vue'
 import RecipeDetail from '../views/RecipeDetail.vue'
 import RecipeEdit from '../views/RecipeEdit.vue'
+import IngredientEdit from '../views/IngredientEdit.vue'
+import IngredientList from '../views/IngredientList.vue'
 
 Vue.use(Router)
 
@@ -49,6 +51,16 @@ export default new Router({
       path: '/recipes/:id/edit',
       name: 'recipe-edit',
       component: RecipeEdit
+    },
+    {
+      path: '/admin/ingredients/:id/edit',
+      name: 'ingredient-edit',
+      component: IngredientEdit
+    },
+    {
+      path: '/admin/ingredients',
+      name: 'ingredient-list',
+      component: IngredientList
     },
     ...accounts
     // {
