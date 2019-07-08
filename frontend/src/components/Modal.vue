@@ -4,10 +4,16 @@
       <div class="wrapper">
         <div class="container">
           <div class="header">
-            <button class="btn right" @click="$emit('close')">Close</button>
             <h2>{{ title }}</h2>
+            <button
+              class="btn"
+              @click="$emit('close')"
+            >
+              Close
+            </button>
           </div>
           <slot />
+          <div style="clear: both;"></div>
         </div>
       </div>
     </div>
@@ -48,7 +54,6 @@ export default {
 
 .container {
   width: 200px;
-  height: 100px;
   margin: 0px auto;
   padding: 4px;
 
@@ -56,12 +61,18 @@ export default {
   background-color: white;
 
   .header {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+
     h2 {
       margin: 0;
+      text-align: left;
     }
 
-    height: 30px;
-    width: 100%;
+    .btn {
+      margin: 0;
+    }
   }
 }
 

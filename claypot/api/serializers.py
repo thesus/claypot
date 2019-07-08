@@ -1,9 +1,13 @@
 from datetime import datetime
+from collections import OrderedDict
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from pytz import utc
 
@@ -18,6 +22,9 @@ from claypot.models import (
     RecipeIngredientGroupIngredient,
     RecipeInstruction,
     Unit,
+    AbstractIngredient,
+    IngredientTag,
+    IngredientSynonym,
 )
 
 from claypot.images.models import Image, ImageFile
@@ -81,7 +88,10 @@ class IngredientField(serializers.RelatedField):
         try:
             return Ingredient.objects.get(name=data)
         except Ingredient.DoesNotExist:
-            raise serializers.ValidationError("Unknown ingredient")
+            try:
+                return IngredientSynonym.objects.get(name=data).ingredient
+            except IngredientSynonym.DoesNotExist:
+                raise serializers.ValidationError("Unknown ingredient")
 
 
 class UnitSerializer(serializers.ModelSerializer):
@@ -396,3 +406,101 @@ class RecipeSerializer(serializers.Serializer):
 
 class RecipeReadSerializer(RecipeSerializer):
     images = ImageRetrieveSerializer(read_only=True, many=True)
+
+
+class ManySynonymSerializer(serializers.Serializer):
+    synonyms = serializers.ListField(
+        child=serializers.CharField(), min_length=0, max_length=100
+    )
+
+
+class SlugCreateRelatedField(serializers.SlugRelatedField):
+    """Takes a model and returns a unsaved model instance if it does'nt exist."""
+
+    def __init__(self, *args, model, **kwargs):
+        self.model = model
+        super().__init__(*args, **kwargs)
+
+    def to_internal_value(self, data):
+        try:
+            return self.get_queryset().get(**{self.slug_field: data})
+        except ObjectDoesNotExist:
+            return self.model(**{self.slug_field: data})
+        except (TypeError, ValueError):
+            self.fail("invalid")
+
+
+class IngredientUpdateSerializer(serializers.ModelSerializer):
+    synonyms = SlugCreateRelatedField(
+        many=True,
+        queryset=IngredientSynonym.objects.all(),
+        model=IngredientSynonym,
+        slug_field="name",
+    )
+
+    tags = SlugCreateRelatedField(
+        many=True,
+        queryset=IngredientTag.objects.all(),
+        model=IngredientTag,
+        slug_field="tag",
+    )
+
+    @transaction.atomic
+    def save(self):
+        def get_error(i):
+            return serializers.ValidationError(
+                {"synonyms": {i: [_("Already used on another ingredient.")]}}
+            )
+
+        ingredient = self.instance
+
+        # Save new tags
+        for tag in self.validated_data["tags"]:
+            if not tag.pk:
+                tag.save()
+
+        # Set all tags on ingredient
+        ingredient.tags.set(self.validated_data["tags"])
+
+        updated = set()
+        for i, synonym in enumerate(self.validated_data["synonyms"]):
+            # Save new synonyms and add them to new set
+            if not synonym.pk:
+                synonym.ingredient = ingredient
+                try:
+                    synonym.save()
+                except IntegrityError:
+                    raise get_error(i)
+            else:
+                # Synonym needs to be unique to one ingredient
+                if synonym.ingredient != ingredient:
+                    raise get_error(i)
+
+            updated.add(synonym.pk)
+
+        # Delete unmentioned synonyms
+        ingredient.synonyms.exclude(pk__in=updated).delete()
+
+        # Add tags and synonyms from equivalent ingredients
+        ingredients = Ingredient.objects.filter(
+            name__in=[i.name for i in self.validated_data["synonyms"]]
+        )
+        for synonymous_ingredient in ingredients:
+            ingredient.tags.add(*synonymous_ingredient.tags.all())
+
+            # Add synonyms from synonymous ingredient to the 'correct' ingredient
+            synonymous_ingredient.synonyms.update(ingredient=ingredient)
+
+            # Update ingredients in recipes
+            RecipeIngredient.objects.filter(ingredient=synonymous_ingredient).update(
+                ingredient=ingredient
+            )
+            RecipeIngredientGroupIngredient.objects.filter(
+                ingredient=synonymous_ingredient
+            ).update(ingredient=ingredient)
+        ingredients.delete()
+
+    class Meta:
+        model = Ingredient
+        fields = ["name", "synonyms", "tags"]
+        read_only_fields = ["name"]

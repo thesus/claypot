@@ -41,7 +41,18 @@ function clone(obj) {
     throw new Error("Unable to copy obj! Its type isn't supported.");
 }
 
+class Timer {
+  constructor (func, time = 200) {
+    this.timer = setTimeout(func, time)
+  }
+
+  clear () {
+    clearTimeout(this.timer)
+  }
+}
+
 export {
   getCookie,
   clone,
+  Timer
 }

@@ -34,16 +34,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-table {
-  width: 100%;
-  text-align: left;
-
-  th {
-    border-bottom: solid 1px #ccc;
-  }
-  td {
-    border-bottom: solid 1px #eee;
-  }
-}
+@import '@/modules/table.scss';
 </style>
 

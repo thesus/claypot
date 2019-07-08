@@ -9,6 +9,7 @@ import RecipeEdit from '../views/RecipeEdit.vue'
 Vue.use(Router)
 
 import accounts from './accounts'
+import admin from './admin'
 
 export default new Router({
   mode: process.env.ROUTER_MODE || 'hash',
@@ -50,7 +51,8 @@ export default new Router({
       name: 'recipe-edit',
       component: RecipeEdit
     },
-    ...accounts
+    ...accounts,
+    ...admin
     // {
     //   path: '/about',
     //   name: 'about',
