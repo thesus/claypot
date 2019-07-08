@@ -2,15 +2,19 @@
     "generic": {
         "loading": "Loading...",
         "loading_error": "Error loading data.",
-        "no_data": "No result"
+        "no_data": "No result",
+        "save": "Save",
+        "remove": "Remove"
     },
     "navbar": {
+        "button": "Menu",
         "home": "Home",
         "my_favorites": "My Favorites",
         "my_recipes": "My Recipes",
         "logout": "Logout",
         "login": "Login",
-        "signup": "Sign Up"
+        "signup": "Sign Up",
+        "admin": "Admin"
     },
     "login": {
         "username": "Username",
@@ -125,5 +129,13 @@
     },
     "thumbnail": {
         "empty": "No thumbnail"
+    },
+    "synonym": {
+        "add": "Add",
+        "no_synonym": "No Syononym added yet.",
+        "synonym": "Synonym"
+    },
+    "ingredient": {
+        "name": "Name"
     }
 }

@@ -98,7 +98,7 @@
       </div>
     </div>
 
-    <div class="save">
+    <div class="options">
       <button
         v-if="canDeleteRecipe"
         :disabled="saving"
@@ -125,7 +125,7 @@
 
       <button
         :disabled="saving"
-        class="btn btn-save"
+        class="btn save"
         @click.prevent="save"
       >
         {{ $t('recipe_edit.save') }}
@@ -495,17 +495,13 @@ export default {
   }
 }
 
-.save {
+.options {
   margin-top: 10px;
   display: flex;
   justify-content: flex-end;
 
   .btn {
     margin-right: 0;
-
-    &.btn-save {
-      padding: 0px 30px 0px 30px !important;
-    }
   }
 }
 </style>

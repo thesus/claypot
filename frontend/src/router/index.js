@@ -5,12 +5,11 @@ import Home from '../views/Home.vue'
 import RecipeAdd from '../views/RecipeAdd.vue'
 import RecipeDetail from '../views/RecipeDetail.vue'
 import RecipeEdit from '../views/RecipeEdit.vue'
-import IngredientEdit from '../views/IngredientEdit.vue'
-import IngredientList from '../views/IngredientList.vue'
 
 Vue.use(Router)
 
 import accounts from './accounts'
+import admin from './admin'
 
 export default new Router({
   mode: process.env.ROUTER_MODE || 'hash',
@@ -52,17 +51,8 @@ export default new Router({
       name: 'recipe-edit',
       component: RecipeEdit
     },
-    {
-      path: '/admin/ingredients/:id/edit',
-      name: 'ingredient-edit',
-      component: IngredientEdit
-    },
-    {
-      path: '/admin/ingredients',
-      name: 'ingredient-list',
-      component: IngredientList
-    },
-    ...accounts
+    ...accounts,
+    ...admin
     // {
     //   path: '/about',
     //   name: 'about',

@@ -1,15 +1,16 @@
 <template>
   <div>
-    <h1>{{ ingredient.name }}</h1>
+    <h3>{{ ingredient.name }}</h3>
     <IngredientSynonymInput
       v-if="ingredient.synonyms"
       v-model="ingredient.synonyms"
+      :errors="errors.synonyms"
     />
 
-    <table>
+    <table v-if="ingredient.tags && ingredient.tags.length > 0">
       <thead>
         <tr>
-          <th>Name</th>
+          <th>{{ $t('ingredient.name') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -22,10 +23,10 @@
       </tbody>
     </table>
     <button
-      class="btn right"
+      class="btn right save"
       @click="submit()"
     >
-      Save
+      {{ $t('generic.save') }}
     </button>
   </div>
 </template>
@@ -42,7 +43,10 @@ export default {
   data () {
     return {
       ingredient: {},
-      locked: false
+      locked: false,
+      errors: {
+        synonyms: {}
+      }
     }
   },
   computed: {
@@ -79,7 +83,7 @@ export default {
       try {
         this.locked = true
         const r = await api(
-          endpoints.fetch_ingredient(this.getId),
+          endpoints.fetch_ingredient(this.ingredientId),
           {
             tags: this.ingredient.tags,
             synonyms: this.ingredient.synonyms
@@ -89,8 +93,14 @@ export default {
           }
         )
 
+        const data = await r.json()
         if (r.ok) {
-          this.ingredient = await r.json()
+          this.ingredient = data
+          this.$router.push({
+            name: 'ingredient-list'
+          })
+        } else {
+          this.errors = data
         }
       } catch (err) {
         console.log(err)
@@ -98,7 +108,7 @@ export default {
         this.locked = false
       }
     }
-  },
+  }
 }
 </script>
 
