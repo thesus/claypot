@@ -100,7 +100,7 @@ export default {
             name: 'ingredient-list'
           })
         } else {
-          this.errors = data
+          this.$set(this, 'errors', data)
         }
       } catch (err) {
         console.log(err)
