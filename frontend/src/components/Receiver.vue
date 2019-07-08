@@ -86,12 +86,10 @@ export default {
         )
         const data = await r.json()
         if (r.ok) {
-          if (this.isList && data['results'].length > 0) {
-            this.$set(this, 'results', data['results'])
-          } else if (this.isList) {
-            this.results = null
+          if (this.isList) {
+            this.$set(this, 'results', data.results.length > 0 ? data.results : null)
           } else {
-            this.results = data
+            this.$set(this, 'results', data)
           }
 
           if (this.isList) {
