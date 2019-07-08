@@ -50,7 +50,7 @@ export default {
     },
     errors: {
       type: Object,
-      default: () => {}
+      default: () => ({})
     }
   },
   data () {
