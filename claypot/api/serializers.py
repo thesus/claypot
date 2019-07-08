@@ -5,8 +5,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction, IntegrityError
 from django.utils.decorators import method_decorator
-from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import gettext_lazy as _
 
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from pytz import utc
 
@@ -448,7 +449,7 @@ class IngredientUpdateSerializer(serializers.ModelSerializer):
     def save(self):
         def get_error(i):
             return serializers.ValidationError(
-                {"synonyms": {i: ["Already used on another ingredient!"]}}
+                {"synonyms": {i: [_("Already used on another ingredient.")]}}
             )
 
         ingredient = self.instance
@@ -486,6 +487,8 @@ class IngredientUpdateSerializer(serializers.ModelSerializer):
         )
         for synonymous_ingredient in ingredients:
             ingredient.tags.add(*synonymous_ingredient.tags.all())
+
+            # Add synonyms from synonymous ingredient to the 'correct' ingredient
             synonymous_ingredient.synonyms.update(ingredient=ingredient)
 
             # Update ingredients in recipes

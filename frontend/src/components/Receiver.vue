@@ -59,8 +59,11 @@ export default {
     page () {
       this.get()
     },
-    filters () {
-      this.get()
+    filters: {
+      handler () {
+        this.get()
+      },
+      deep: true
     }
   },
   mounted () {
@@ -85,8 +88,10 @@ export default {
         if (r.ok) {
           if (this.isList && data['results'].length > 0) {
             this.$set(this, 'results', data['results'])
-          } else {
+          } else if (this.isList) {
             this.results = null
+          } else {
+            this.results = data
           }
 
           if (this.isList) {
@@ -97,7 +102,7 @@ export default {
           throw new Error(data['detail'])
         }
       } catch (err) {
-        this.$set(this, 'error', err.message)
+        this.err = err.message
 
         this.results = null
       } finally {
@@ -108,7 +113,6 @@ export default {
     }
   }
 }
-
 </script>
 
 <style lang="scss" scoped>

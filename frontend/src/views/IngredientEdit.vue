@@ -41,16 +41,17 @@ export default {
   },
   data () {
     return {
-      ingredient: {}
+      ingredient: {},
+      locked: false
     }
   },
   computed: {
-    getId () {
+    ingredientId () {
       return this.$route.params.id
     }
   },
   watch: {
-    getId() {
+    ingredientId() {
       this.get()
     }
   },
@@ -61,7 +62,7 @@ export default {
     async get() {
       try {
         this.loading = true
-        const r = await api(endpoints.fetch_ingredient(this.getId))
+        const r = await api(endpoints.fetch_ingredient(this.ingredientId))
         this.loading = false
 
         if (r.ok) {
@@ -93,6 +94,8 @@ export default {
         }
       } catch (err) {
         console.log(err)
+      } finally {
+        this.locked = false
       }
     }
   },

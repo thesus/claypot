@@ -41,7 +41,7 @@ export default {
   },
   data () {
     return {
-      dirty: []
+      dirty: [...this.value]
     }
   },
   computed: {
@@ -54,18 +54,13 @@ export default {
   },
   watch: {
     value () {
-      this.$set(this, 'dirty', JSON.parse(JSON.stringify(this.value)))
+      this.dirty.splice(0, this.dirty.length, ...this.value)
     },
-    dirty: {
-      handler () {
-        if (!this.isEqual) {
-          this.$emit('input', this.dirty)
-        }
+    dirty () {
+      if (!this.isEqual) {
+        this.$emit('input', [...this.dirty])
       }
     }
-  },
-  mounted () {
-    this.$set(this, 'dirty', JSON.parse(JSON.stringify(this.value)))
   }
 }
 </script>
