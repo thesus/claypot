@@ -23,7 +23,7 @@
         </button>
       </div>
     </div>
-    <span v-else>{{ $t('synonym.no_synonym') }}</span>
+    <span class="info" v-else>{{ $t('synonym.no_synonym') }}</span>
     <button
       class="btn right"
       @click="dirty.push('')"
@@ -102,10 +102,16 @@ export default {
 
 .synonyms {
   padding: 5px;
+  margin: 5px 0 5px 0;
   background: rgba(184, 203, 214, 0.4);
 
   .wrapper {
     width: 100%;
+  }
+
+  .info {
+    margin: 5px;
+    display: block;
   }
 }
 </style>

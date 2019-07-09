@@ -88,7 +88,6 @@ $border_color: #ddd;
   top: 0;
   width: 100%;
   background-color: #56799C;
-  min-height: 40px;
 
   z-index: 1000;
 }
