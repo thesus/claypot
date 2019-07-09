@@ -10,7 +10,7 @@
     <span v-else-if="!working">{{ $t('generic.no_data') }}</span>
 
     <Pagination
-      v-if="isList"
+      v-if="isList && results"
       :next="next"
       :previous="previous"
       @input="updateLink"
@@ -77,7 +77,7 @@ export default {
     },
     async get () {
       this.working = true
-      const timer = new Timer(() => { this.loading = true }, 400)
+      const timer = new Timer(() => { this.loading = true }, 200)
       try {
         const r = await api(
           this.endpoint,
@@ -88,13 +88,11 @@ export default {
         if (r.ok) {
           if (this.isList) {
             this.$set(this, 'results', data.results.length > 0 ? data.results : null)
-          } else {
-            this.$set(this, 'results', data)
-          }
 
-          if (this.isList) {
             this.$set(this, 'next', data['next'])
             this.$set(this, 'previous', data['previous'])
+          } else {
+            this.$set(this, 'results', data)
           }
         } else {
           throw new Error(data['detail'])

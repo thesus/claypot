@@ -1,6 +1,14 @@
 <template>
   <div>
-    <Receiver :endpoint="endpoint">
+    <DebounceInput
+      v-model="search"
+      :placeholder="$t('home.search')"
+      class="search"
+    />
+    <Receiver
+      :endpoint="endpoint"
+      :filters="filters"
+    >
       <template v-slot:default="props">
         <table>
           <thead>
@@ -32,14 +40,22 @@
 import { api, endpoints } from '@/api'
 
 import Receiver from '@/components/Receiver'
+import DebounceInput from '@/components/DebounceInput'
 
 export default {
   components: {
-    Receiver
+    Receiver,
+    DebounceInput
   },
   data () {
     return {
-      endpoint: endpoints.fetch_ingredients()
+      endpoint: endpoints.fetch_ingredients(),
+      search: ''
+    }
+  },
+  computed: {
+    filters () {
+      return this.search != '' ? { name: this.search } : {}
     }
   }
 }
@@ -48,4 +64,8 @@ export default {
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
 @import '@/modules/table.scss';
+
+.search {
+  margin-bottom: 10px;
+}
 </style>
