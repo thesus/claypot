@@ -6,28 +6,55 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('claypot', '0009_ingredientsynonym'),
-    ]
+    dependencies = [("claypot", "0009_ingredientsynonym")]
 
     operations = [
         migrations.CreateModel(
-            name='RecipeRelation',
+            name="RecipeRelation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.IntegerField(choices=[(1, 'Addition'), (2, 'Replacement')])),
-                ('recipe1', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='claypot.Recipe')),
-                ('recipe2', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='claypot.Recipe')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "type",
+                    models.IntegerField(choices=[(1, "Addition"), (2, "Replacement")]),
+                ),
+                (
+                    "recipe1",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="+",
+                        to="claypot.Recipe",
+                    ),
+                ),
+                (
+                    "recipe2",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="+",
+                        to="claypot.Recipe",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Recipe relation',
-                'verbose_name_plural': 'Recipe relations',
-                'unique_together': {('recipe1', 'recipe2', 'type')},
+                "verbose_name": "Recipe relation",
+                "verbose_name_plural": "Recipe relations",
+                "unique_together": {("recipe1", "recipe2", "type")},
             },
         ),
         migrations.AddField(
-            model_name='recipe',
-            name='related_recipes',
-            field=models.ManyToManyField(related_name='_recipe_related_recipes_+', through='claypot.RecipeRelation', to='claypot.Recipe'),
+            model_name="recipe",
+            name="related_recipes",
+            field=models.ManyToManyField(
+                related_name="_recipe_related_recipes_+",
+                through="claypot.RecipeRelation",
+                to="claypot.Recipe",
+            ),
         ),
     ]
