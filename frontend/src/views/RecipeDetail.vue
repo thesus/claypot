@@ -120,6 +120,16 @@
       <template v-slot:options>
         <button class="btn right">+</button>
       </template>
+      <template v-slot:default="props">
+        <RecipeThumbnailView
+          :recipes="props.data"
+          class="recipes"
+        >
+          <template v-slot:toolbelt="props">
+            <button tabindex="-1" class="btn">-</button>
+          </template>
+        </RecipeThumbnailView>
+      </template>
     </RecipeList>
   </article>
   <div v-else>
@@ -133,19 +143,23 @@ import { api, endpoints } from '@/api'
 
 import DurationSpan from '@/components/DurationSpan'
 import ImageGallery from '@/components/ImageGallery'
+import Modal from '@/components/Modal'
 import RecipeStarInput from '@/components/RecipeStarInput'
 import RecipeIngredientTable from '@/components/RecipeIngredientTable'
 import ScaleInput from '@/components/ScaleInput'
 import Modal from '@/components/Modal'
 import RecipeList from '@/components/RecipeList'
+import RecipeThumbnailView from '@/components/RecipeThumbnailView'
 
 export default {
   components: {
     DurationSpan,
     ImageGallery,
+    Modal,
     RecipeIngredientTable,
     RecipeList,
     RecipeStarInput,
+    RecipeThumbnailView,
     ScaleInput,
     Modal
   },

@@ -6,9 +6,7 @@
         class="recipe-container"
     >
       <div class="toolbelt">
-        <slot name="toolbelt">
-          <button class="btn">-</button>
-        </slot>
+        <slot name="toolbelt" v-bind:recipe="recipe"></slot>
       </div>
       <router-link
         :to="to(recipe.id)"
@@ -69,10 +67,19 @@ a {
 }
 
 .toolbelt {
-  display: inline;
+  display: none;
   position: absolute;
   right: 8px;
   top: 8px;
+}
+
+.recipe-container:hover .toolbelt {
+  display: inline;
+
+}
+
+.recipe-container >  a {
+  display: block;
 }
 
 .recipe {

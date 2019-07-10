@@ -16,16 +16,18 @@
       :filters="filters"
     >
       <template v-slot:default="props">
-        <RecipeThumbnailView
-          v-if="getHomeView"
-          :recipes="props.data"
-          class="recipes"
-        />
-        <RecipeTableView
-          v-else
-          :recipes="props.data"
-          class="recipes"
-        />
+        <slot v-bind:get-home-view="getHomeView" v-bind="props">
+          <RecipeThumbnailView
+            v-if="getHomeView"
+            :recipes="props.data"
+            class="recipes"
+          />
+          <RecipeTableView
+            v-else
+            :recipes="props.data"
+            class="recipes"
+          />
+        </slot>
       </template>
     </Receiver>
   </div>
