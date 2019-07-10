@@ -25,6 +25,9 @@ const endpoints = {
   fetch_ingredients () {
     return '/api/ingredients/'
   },
+  fetch_recipe_relation () {
+    return '/api/recipe_relations/'
+  },
   fetch_user (id) {
     return `/accounts/users/${id}/`
   },

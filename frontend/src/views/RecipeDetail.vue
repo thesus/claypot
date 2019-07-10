@@ -115,6 +115,12 @@
         <p>{{ instruction.text }}</p>
       </li>
     </ol>
+
+    <RecipeList :receiver-endpoint="recipeRelationEndpoint" :receiver-transform="transformRecipeRelation">
+      <template v-slot:options>
+        <button class="btn right">+</button>
+      </template>
+    </RecipeList>
   </article>
   <div v-else>
     {{ $t('recipe_detail.no_data') }}
@@ -131,12 +137,14 @@ import RecipeStarInput from '@/components/RecipeStarInput'
 import RecipeIngredientTable from '@/components/RecipeIngredientTable'
 import ScaleInput from '@/components/ScaleInput'
 import Modal from '@/components/Modal'
+import RecipeList from '@/components/RecipeList'
 
 export default {
   components: {
     DurationSpan,
     ImageGallery,
     RecipeIngredientTable,
+    RecipeList,
     RecipeStarInput,
     ScaleInput,
     Modal
@@ -152,6 +160,9 @@ export default {
     }
   },
   computed: {
+    recipeRelationEndpoint () {
+      return endpoints.fetch_recipe_relation()
+    },
     recipeId () {
       return Number(this.$route.params.id)
     },
@@ -191,6 +202,13 @@ export default {
     this.update()
   },
   methods: {
+    transformRecipeRelation (recipeRelations) {
+      if (recipeRelations) {
+        return recipeRelations.map(recipeRelation => recipeRelation.recipe1.id === this.recipeId ? recipeRelation.recipe2 : recipeRelation.recipe1)
+      } else {
+        return recipeRelations
+      }
+    },
     updateStars (result) {
       this.recipe.stars += (result) ? 1 : -1
     },

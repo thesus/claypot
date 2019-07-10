@@ -334,7 +334,7 @@ class ImageViewSet(viewsets.ModelViewSet):
 class RecipeRelationViewSet(viewsets.ModelViewSet):
     queryset = RecipeRelation.objects.all().order_by("id")
     serializer_class = RecipeRelationSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_serializer_class(self):
         if self.action == "create":

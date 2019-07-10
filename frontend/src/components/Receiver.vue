@@ -42,7 +42,11 @@ export default {
     isList: {
       type: Boolean,
       default: true
-    }
+    },
+    transform: {
+      type: Function,
+      default: null,
+    },
   },
   data() {
     return {
@@ -86,13 +90,20 @@ export default {
         )
         const data = await r.json()
         if (r.ok) {
+          let relevantData
           if (this.isList) {
-            this.$set(this, 'results', data.results.length > 0 ? data.results : null)
-
-            this.$set(this, 'next', data['next'])
-            this.$set(this, 'previous', data['previous'])
+            relevantData = data.results.length > 0 ? data.results : null
           } else {
-            this.$set(this, 'results', data)
+            relevantData = data
+          }
+          if (this.transform !== null) {
+            relevantData = this.transform(relevantData)
+          }
+          this.$set(this, 'results', relevantData)
+
+          if (this.isList && data) {
+            this.$set(this, 'next', data.next)
+            this.$set(this, 'previous', data.previous)
           }
         } else {
           throw new Error(data['detail'])

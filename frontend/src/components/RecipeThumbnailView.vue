@@ -1,20 +1,29 @@
 <template>
   <div class="recipes">
-    <router-link
-      v-for="recipe in $props.recipes"
-      :key="recipe.id"
-      :to="to(recipe.id)"
+    <div
+        v-for="recipe in $props.recipes"
+        :key="recipe.id"
+        class="recipe-container"
     >
-      <div class="recipe">
-        <div class="info">
-          {{ recipe.title }}
-        </div>
-        <div class="image">
-          <img v-if="recipe.thumbnail" :src="recipe.thumbnail">
-          <span v-else>{{ $t('thumbnail.empty') }}</span>
-        </div>
+      <div class="toolbelt">
+        <slot name="toolbelt">
+          <button class="btn">-</button>
+        </slot>
       </div>
-    </router-link>
+      <router-link
+        :to="to(recipe.id)"
+      >
+        <div class="recipe">
+          <div class="info">
+            {{ recipe.title }}
+          </div>
+          <div class="image">
+            <img v-if="recipe.thumbnail" :src="recipe.thumbnail">
+            <span v-else>{{ $t('thumbnail.empty') }}</span>
+          </div>
+        </div>
+      </router-link>
+    </div>
   </div>
 </template>
 
@@ -42,6 +51,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/modules/variables.scss';
+@import '@/modules/inputs.scss';
 
 a {
   text-decoration: none;
@@ -52,6 +62,17 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fill, 330px);
   justify-content: space-around;
+}
+
+.recipe-container {
+  position: relative;
+}
+
+.toolbelt {
+  display: inline;
+  position: absolute;
+  right: 8px;
+  top: 8px;
 }
 
 .recipe {

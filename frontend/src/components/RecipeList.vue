@@ -1,15 +1,18 @@
 <template>
   <div>
     <div class="options">
-      <button
-        class="btn right"
-        @click="updateMode"
-      >
-        {{ $t('home.mode') }}
-      </button>
+      <slot name="options">
+        <button
+          class="btn right"
+          @click="updateMode"
+        >
+          {{ $t('home.mode') }}
+        </button>
+      </slot>
     </div>
     <Receiver
-      :endpoint="endpoint"
+      :endpoint="receiverEndpoint"
+      :transform="receiverTransform"
       :filters="filters"
     >
       <template v-slot:default="props">
@@ -50,10 +53,17 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    receiverEndpoint: {
+      type: Object,
+      default: () => endpoints.fetch_recipes(),
+    },
+    receiverTransform: {
+      type: Function,
+      default: null,
+    },
   },
   data () {
     return {
-      endpoint: endpoints.fetch_recipes(),
       mode: true,
     }
   },
