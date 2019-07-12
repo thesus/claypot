@@ -45,6 +45,8 @@ export default {
 
   display: table;
   transition: opacity .3s ease;
+
+  z-index: 2000;
 }
 
 .wrapper {
@@ -55,7 +57,7 @@ export default {
 .container {
   width: 200px;
   margin: 0px auto;
-  padding: 4px;
+  padding: 12px;
 
   transition: all .3s ease;
   background-color: white;
@@ -64,6 +66,7 @@ export default {
     width: 100%;
     display: grid;
     grid-template-columns: 5fr 1fr;
+    margin-bottom: 5px;
 
     h2 {
       margin: 0;
