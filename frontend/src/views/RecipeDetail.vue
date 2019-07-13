@@ -326,7 +326,7 @@ export default {
     border: solid 1px #ccc;
     padding: 0;
     margin: 5px 5px 0px 5px;
-    height: 40vh;
+    height: 250px;
     width: 100%;
     img {
       width: 100%;

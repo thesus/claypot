@@ -49,8 +49,8 @@ a {
 }
 
 .recipes {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 330px);
   justify-content: space-around;
 }
 
@@ -68,8 +68,9 @@ a {
   }
 
   .image {
-    width: 300px;
-    height: 200px;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
 
     img {
       height: 100%;
