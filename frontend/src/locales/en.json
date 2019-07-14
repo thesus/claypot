@@ -93,7 +93,9 @@
         "unknown_user": "@:recipes.unknown_user",
         "edit": "Edit",
         "estimated_work_duration": "Estimated working time",
-        "estimated_waiting_duration": "Estimated cooking/baking time"
+        "estimated_waiting_duration": "Estimated waiting time",
+        "fork_title": "Fork",
+        "fork_confirm": "You are about to fork a recipe. Do you want to continue?"
     },
     "recipe_edit": {
         "loading": "@:generic.loading",

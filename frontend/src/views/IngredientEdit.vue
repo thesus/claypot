@@ -1,12 +1,10 @@
 <template>
   <div>
-    <h3>{{ ingredient.name }}</h3>
     <IngredientSynonymInput
       v-if="ingredient.synonyms"
       v-model="ingredient.synonyms"
       :errors="errors.synonyms"
     />
-
     <table v-if="ingredient.tags && ingredient.tags.length > 0">
       <thead>
         <tr>
@@ -42,7 +40,11 @@ export default {
   },
   data () {
     return {
-      ingredient: {},
+      ingredient: {
+        name: '',
+        synonyms: [],
+        tags: []
+      },
       locked: false,
       errors: {
         synonyms: {}
@@ -85,8 +87,8 @@ export default {
         const r = await api(
           endpoints.fetch_ingredient(this.ingredientId),
           {
-            tags: this.ingredient.tags,
-            synonyms: this.ingredient.synonyms
+            tags: this.ingredient.tags || [],
+            synonyms: this.ingredient.synonyms || []
           },
           {
             method: 'PUT'
@@ -115,4 +117,5 @@ export default {
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
 @import '@/modules/table.scss';
+
 </style>

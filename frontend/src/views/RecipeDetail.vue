@@ -25,14 +25,28 @@
           />
         </div>
 
-        <scale-input v-model="scaling"/>
+        <scale-input v-model="scaling" />
 
         <span
-          class="fork button"
           v-if="isLoggedIn"
-          @click="fork"
+          class="fork button"
+          @click="forkModal = true"
         >{{ $t('recipes.fork') }}
         </span>
+
+        <Modal
+          v-if="forkModal"
+          :title="$t('recipe_detail.fork_title')"
+          @close="forkModal = false"
+        >
+          <span class="fork info">{{ $t('recipe_detail.fork_confirm') }}</span>
+          <button
+            class="btn right"
+            @click="fork"
+          >
+            {{ $t('recipes.fork') }}
+          </button>
+        </Modal>
       </div>
 
       <div class="right">
@@ -72,8 +86,14 @@
       />
 
 
-      <div class="information" v-if="hasEstimatedWorkDuration || hasEstimatedWaitingDuration">
-        <div class="item" v-if="hasEstimatedWorkDuration">
+      <div
+        v-if="hasEstimatedWorkDuration || hasEstimatedWaitingDuration"
+        class="information"
+      >
+        <div
+          v-if="hasEstimatedWorkDuration"
+          class="item"
+        >
           {{ $t('recipe_detail.estimated_work_duration') }}:
           <duration-span :value="recipe.estimated_work_duration" />
         </div>
@@ -102,14 +122,15 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex'
-import {api, endpoints} from '@/api'
+import { mapGetters } from 'vuex'
+import { api, endpoints } from '@/api'
 
 import DurationSpan from '@/components/DurationSpan'
 import ImageGallery from '@/components/ImageGallery'
 import RecipeStarInput from '@/components/RecipeStarInput'
 import RecipeIngredientTable from '@/components/RecipeIngredientTable'
 import ScaleInput from '@/components/ScaleInput'
+import Modal from '@/components/Modal'
 
 export default {
   components: {
@@ -118,9 +139,11 @@ export default {
     RecipeIngredientTable,
     RecipeStarInput,
     ScaleInput,
+    Modal
   },
   data () {
     return {
+      forkModal: false,
       loading: false,
       error: false,
       recipe: {
@@ -218,6 +241,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/modules/inputs.scss';
 @import '@/modules/variables.scss';
 
 .functions {
@@ -278,6 +302,12 @@ export default {
   }
 }
 
+.fork {
+  &.info {
+    display: block;
+  }
+}
+
 .header {
   display: flex;
   flex-wrap: wrap;
@@ -296,7 +326,7 @@ export default {
     border: solid 1px #ccc;
     padding: 0;
     margin: 5px 5px 0px 5px;
-    height: 40vh;
+    height: 250px;
     width: 100%;
     img {
       width: 100%;
@@ -315,7 +345,6 @@ export default {
     order: 2;
     border: solid 1px #B8CBD6;
   }
-
 
   @media screen and (min-width: 780px) {
     .images {
@@ -347,7 +376,6 @@ export default {
     }
   }
 }
-
 
 
 .instructions {
