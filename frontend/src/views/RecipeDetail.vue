@@ -164,7 +164,6 @@ import Modal from '@/components/Modal'
 import RecipeStarInput from '@/components/RecipeStarInput'
 import RecipeIngredientTable from '@/components/RecipeIngredientTable'
 import ScaleInput from '@/components/ScaleInput'
-import Modal from '@/components/Modal'
 import RecipeList from '@/components/RecipeList'
 import RecipeThumbnailView from '@/components/RecipeThumbnailView'
 
