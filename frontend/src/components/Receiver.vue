@@ -7,10 +7,10 @@
       v-if="results"
       :data="results"
     />
-    <span v-else-if="!working">{{ $t('generic.no_data') }}</span>
+    <span v-else-if="!working"><slot name="noData">{{ $t('generic.no_data') }}</slot></span>
 
     <Pagination
-      v-if="isList && results"
+      v-if="showPaginator"
       :next="next"
       :previous="previous"
       @input="updateLink"
@@ -47,6 +47,14 @@ export default {
       type: Function,
       default: null,
     },
+    reloadTrigger: {
+      type: Number,
+      default: 0,
+    },
+    forcePaginator: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -59,6 +67,15 @@ export default {
       previous: null
     }
   },
+  computed: {
+    showPaginator () {
+      if (!this.isList) {
+        return false
+      }
+      // hide paginator on empty result unless it's forced
+      return (this.results && this.results.length > 0) || this.forcePaginator
+    },
+  },
   watch: {
     page () {
       this.get()
@@ -68,7 +85,10 @@ export default {
         this.get()
       },
       deep: true
-    }
+    },
+    reloadTrigger () {
+      this.get()
+    },
   },
   mounted () {
     this.get()
@@ -109,7 +129,7 @@ export default {
           throw new Error(data['detail'])
         }
       } catch (err) {
-        this.err = err.message
+        this.error = err.message
 
         this.results = null
       } finally {

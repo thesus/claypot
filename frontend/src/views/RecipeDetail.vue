@@ -116,19 +116,35 @@
       </li>
     </ol>
 
-    <RecipeList :receiver-endpoint="recipeRelationEndpoint" :receiver-transform="transformRecipeRelation">
+    <!-- Add recipe relation -->
+    <Modal v-if="showAddRecipeRelationDialog" :title="$t('recipe_detail.add_recipe_relation')" @close="closeRecipeRelationDialog">
+      <DebounceInput v-model="recipeRelationSearch" :placeholder="$t('home.search')" class="search"/>
+      <RecipeList v-if="this.recipeRelationSearch.length" :filters="{recipe: this.recipeId, search: recipeRelationSearch}">
+        <template v-slot:default="{data}">
+          <p v-for="item in data" @click="addRecipeRelation(item)">{{ item.title }}</p>
+        </template>
+      </RecipeList>
+    </Modal>
+
+    <!-- Related recipes -->
+    <RecipeList v-if="recipeId" :receiver-endpoint="recipeRelationEndpoint" :filters="recipeRelationFilter" :receiver-transform="transformRecipeRelation" :reload-trigger="reloadTrigger">
       <template v-slot:options>
-        <button class="btn right">+</button>
+        <button v-if="isLoggedIn" class="btn right" @click="openRecipeRelationDialog">+</button>
+        <div v-else></div>
       </template>
       <template v-slot:default="props">
         <RecipeThumbnailView
           :recipes="props.data"
           class="recipes"
         >
-          <template v-slot:toolbelt="props">
-            <button tabindex="-1" class="btn">-</button>
+          <template v-slot:toolbelt="{recipe}">
+            <button v-if="isLoggedIn" tabindex="-1" class="btn recipe-relation-delete" @click="deleteRecipeRelation(recipe)">-</button>
           </template>
         </RecipeThumbnailView>
+      </template>
+
+      <template v-slot:noData>
+        {{ $t('recipe_detail.no_linked_recipes') }}
       </template>
     </RecipeList>
   </article>
@@ -141,6 +157,7 @@
 import { mapGetters } from 'vuex'
 import { api, endpoints } from '@/api'
 
+import DebounceInput from '@/components/DebounceInput'
 import DurationSpan from '@/components/DurationSpan'
 import ImageGallery from '@/components/ImageGallery'
 import Modal from '@/components/Modal'
@@ -153,6 +170,7 @@ import RecipeThumbnailView from '@/components/RecipeThumbnailView'
 
 export default {
   components: {
+    DebounceInput,
     DurationSpan,
     ImageGallery,
     Modal,
@@ -171,11 +189,18 @@ export default {
       recipe: {
       },
       scaling: 1.0,
+      reloadTrigger: 0,
+
+      showAddRecipeRelationDialog: false,
+      recipeRelationSearch: "",
     }
   },
   computed: {
     recipeRelationEndpoint () {
       return endpoints.fetch_recipe_relation()
+    },
+    recipeRelationFilter () {
+      return {recipe: this.recipeId}
     },
     recipeId () {
       return Number(this.$route.params.id)
@@ -208,17 +233,41 @@ export default {
     ]),
   },
   watch: {
-    recipeId() {
-      this.update()
-    }
-  },
-  mounted () {
-    this.update()
+    recipeId: {
+      handler () {
+        this.update()
+      },
+      immediate: true,
+    },
   },
   methods: {
+    openRecipeRelationDialog () {
+      this.showAddRecipeRelationDialog = true
+    },
+    closeRecipeRelationDialog () {
+      this.showAddRecipeRelationDialog = false
+    },
+    async addRecipeRelation (relatedRecipe) {
+      const type = 1  // addition
+      const r = await api(endpoints.fetch_recipe_relation(), {recipe1: this.recipeId, recipe2: relatedRecipe.id, type: type}, {method: 'POST'})
+      if (r.ok) {
+        this.closeRecipeRelationDialog()
+        this.reloadTrigger = this.reloadTrigger + 1
+      } else {
+        // TODO: error handling
+      }
+    },
+    async deleteRecipeRelation (recipe) {
+      const r = await api(endpoints.fetch_recipe_relation(recipe.recipeRelationId), undefined, {method: 'DELETE'})
+      if (r.ok) {
+        this.reloadTrigger = this.reloadTrigger + 1
+      } else {
+        // TODO: error handling
+      }
+    },
     transformRecipeRelation (recipeRelations) {
       if (recipeRelations) {
-        return recipeRelations.map(recipeRelation => recipeRelation.recipe1.id === this.recipeId ? recipeRelation.recipe2 : recipeRelation.recipe1)
+        return recipeRelations.map(recipeRelation => Object.assign({recipeRelationId: recipeRelation.id}, recipeRelation.recipe1.id === this.recipeId ? recipeRelation.recipe2 : recipeRelation.recipe1))
       } else {
         return recipeRelations
       }
@@ -419,5 +468,10 @@ export default {
 article {
   margin: auto;
   max-width: 1000px;
+}
+
+.recipe-relation-delete {
+  /* mobile clickability */
+  min-width: 30px;
 }
 </style>

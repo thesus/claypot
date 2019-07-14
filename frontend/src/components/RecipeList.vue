@@ -14,6 +14,7 @@
       :endpoint="receiverEndpoint"
       :transform="receiverTransform"
       :filters="filters"
+      :reload-trigger="reloadTrigger"
     >
       <template v-slot:default="props">
         <slot v-bind:get-home-view="getHomeView" v-bind="props">
@@ -29,6 +30,7 @@
           />
         </slot>
       </template>
+      <template v-slot:noData><slot name="noData"/></template>
     </Receiver>
   </div>
 </template>
@@ -63,6 +65,10 @@ export default {
       type: Function,
       default: null,
     },
+    reloadTrigger: {
+      type: Number,
+      default: 0,
+    }
   },
   data () {
     return {
@@ -90,7 +96,7 @@ export default {
     showMyRecipes () {
       this.$set(this, 'filters', {is_my_recipe: 2})
     }
-  }
+  },
 }
 </script>
 
