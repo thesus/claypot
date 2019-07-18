@@ -17,7 +17,7 @@
       :reload-trigger="reloadTrigger"
     >
       <template v-slot:default="props">
-        <slot v-bind:get-home-view="getHomeView" v-bind="props">
+        <slot :get-home-view="getHomeView" v-bind="props">
           <RecipeThumbnailView
             v-if="getHomeView"
             :recipes="props.data"
