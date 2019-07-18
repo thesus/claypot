@@ -45,7 +45,7 @@ export default {
     small: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   methods: {
     to (id) {
@@ -72,6 +72,13 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fill, 330px);
   justify-content: center;
+}
+
+.recipes.small {
+  grid-template-columns: repeat(auto-fill, 220px);
+}
+
+.recipe-container {
   position: relative;
   grid-gap: 15px;
 
