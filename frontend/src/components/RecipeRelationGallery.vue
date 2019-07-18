@@ -119,4 +119,15 @@ export default {
   /* mobile clickability */
   min-width: 30px;
 }
+
+p {
+  cursor: pointer;
+  transition: border-color .3s;
+  border: 1px solid;
+  border-color: transparent;
+  box-sizing: border-box;
+}
+p:hover {
+  border-color: #e0e0e0;
+}
 </style>
