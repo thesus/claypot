@@ -22,7 +22,7 @@
       <template v-slot:default="props">
         <RecipeThumbnailView
           :recipes="props.data"
-          class="recipes"
+          small
         >
           <template v-slot:toolbelt="{recipe}">
             <button v-if="isLoggedIn" tabindex="-1" class="btn recipe-relation" @click="deleteRecipeRelation(recipe)">-</button>

@@ -1,5 +1,5 @@
 <template>
-  <div class="recipes">
+  <div class="recipes" :class="{small}">
     <div
         v-for="recipe in $props.recipes"
         :key="recipe.id"
@@ -32,7 +32,11 @@ export default {
     recipes: {
       type: Array,
       default: () => []
-    }
+    },
+    small: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     to (id) {
@@ -60,6 +64,10 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fill, 330px);
   justify-content: space-around;
+}
+
+.recipes.small {
+  grid-template-columns: repeat(auto-fill, 220px);
 }
 
 .recipe-container {
@@ -113,5 +121,9 @@ a {
       display: block;
     }
   }
+}
+.recipes.small .recipe .image {
+  // 220px is the original height. the original width of 330px was reduced to 220px. this results in the same ratio.
+  height: calc(220px*220/330);
 }
 </style>
