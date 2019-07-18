@@ -1,23 +1,51 @@
 <template>
   <div>
     <!-- Add recipe relation -->
-    <Modal v-if="showAddRecipeRelationDialog" :title="$t('recipe_detail.add_recipe_relation')" @close="closeRecipeRelationDialog">
-      <DebounceInput v-model="recipeRelationSearch" :placeholder="$t('home.search')" />
-      <RecipeList v-if="recipeRelationSearch.length" :filters="{recipe: this.recipeId, search: recipeRelationSearch}">
+    <Modal
+      v-if="showAddRecipeRelationDialog"
+      :title="$t('recipe_detail.add_recipe_relation')"
+      @close="closeRecipeRelationDialog"
+    >
+      <DebounceInput
+        v-model="recipeRelationSearch"
+        :placeholder="$t('home.search')"
+      />
+      <RecipeList
+        v-if="recipeRelationSearch.length"
+        :filters="{recipe: recipeId, search: recipeRelationSearch}"
+      >
         <template v-slot:options>
           <div />
         </template>
         <template v-slot:default="{data}">
-          <p v-for="item in data" @click="addRecipeRelation(item)">{{ item.title }}</p>
+          <p
+            v-for="item in data"
+            :key="item.id"
+            @click="addRecipeRelation(item)"
+          >
+            {{ item.title }}
+          </p>
         </template>
       </RecipeList>
     </Modal>
 
     <!-- Related recipes -->
-    <RecipeList v-if="recipeId" :receiver-endpoint="recipeRelationEndpoint" :filters="recipeRelationFilter" :receiver-transform="transformRecipeRelation" :reload-trigger="reloadTrigger">
+    <RecipeList
+      v-if="recipeId"
+      :receiver-endpoint="recipeRelationEndpoint"
+      :filters="recipeRelationFilter"
+      :receiver-transform="transformRecipeRelation"
+      :reload-trigger="reloadTrigger"
+    >
       <template v-slot:options>
-        <button v-if="isLoggedIn" class="btn right recipe-relation" @click="openRecipeRelationDialog">+</button>
-        <div v-else></div>
+        <button
+          v-if="isLoggedIn"
+          class="btn right recipe-relation"
+          @click="openRecipeRelationDialog"
+        >
+          +
+        </button>
+        <div v-else />
       </template>
       <template v-slot:default="props">
         <RecipeThumbnailView
@@ -25,7 +53,14 @@
           class="recipes"
         >
           <template v-slot:toolbelt="{recipe}">
-            <button v-if="isLoggedIn" tabindex="-1" class="btn recipe-relation" @click="deleteRecipeRelation(recipe)">-</button>
+            <button
+              v-if="isLoggedIn"
+              tabindex="-1"
+              class="btn recipe-relation"
+              @click="deleteRecipeRelation(recipe)"
+            >
+              -
+            </button>
           </template>
         </RecipeThumbnailView>
       </template>

@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'duration-span',
+  name: 'DurationSpan',
   props: {
     value: {
       type: String,
