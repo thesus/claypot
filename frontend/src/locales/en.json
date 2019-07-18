@@ -96,7 +96,6 @@
         "estimated_waiting_duration": "Estimated waiting time",
         "fork_title": "Fork",
         "fork_confirm": "You are about to fork a recipe. Do you want to continue?",
-        "estimated_waiting_duration": "Estimated cooking/baking time",
         "add_recipe_relation": "Link recipe",
         "no_linked_recipes": "No linked recipes, yet."
     },
