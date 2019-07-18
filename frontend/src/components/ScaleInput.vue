@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  name: 'scale-input',
+  name: 'ScaleInput',
   data () {
     return {
       denominator: 1,
