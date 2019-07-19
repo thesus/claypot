@@ -17,7 +17,10 @@
       :reload-trigger="reloadTrigger"
     >
       <template v-slot:default="props">
-        <slot :get-home-view="getHomeView" v-bind="props">
+        <slot
+          :get-home-view="getHomeView"
+          v-bind="props"
+        >
           <RecipeThumbnailView
             v-if="getHomeView"
             :recipes="props.data"
@@ -30,7 +33,9 @@
           />
         </slot>
       </template>
-      <template v-slot:noData><slot name="noData"/></template>
+      <template v-slot:noData>
+        <slot name="noData" />
+      </template>
     </Receiver>
   </div>
 </template>

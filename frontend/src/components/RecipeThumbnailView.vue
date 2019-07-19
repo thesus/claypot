@@ -1,12 +1,15 @@
 <template>
   <div class="recipes" :class="{small}">
     <div
-        v-for="recipe in $props.recipes"
-        :key="recipe.id"
-        class="recipe-container"
+      v-for="recipe in $props.recipes"
+      :key="recipe.id"
+      class="recipe-container"
     >
       <div class="toolbelt">
-        <slot name="toolbelt" v-bind:recipe="recipe"></slot>
+        <slot
+          name="toolbelt"
+          :recipe="recipe"
+        />
       </div>
       <router-link
         :to="to(recipe.id)"
@@ -16,7 +19,10 @@
             {{ recipe.title }}
           </div>
           <div class="image">
-            <img v-if="recipe.thumbnail" :src="recipe.thumbnail">
+            <img
+              v-if="recipe.thumbnail"
+              :src="recipe.thumbnail"
+            >
             <span v-else>{{ $t('thumbnail.empty') }}</span>
           </div>
         </div>

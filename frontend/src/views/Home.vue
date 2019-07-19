@@ -1,7 +1,11 @@
 <template>
   <article>
     <div class="header">
-      <DebounceInput v-model="search" :placeholder="$t('home.search')" class="search"/>
+      <DebounceInput
+        v-model="search"
+        :placeholder="$t('home.search')"
+        class="search"
+      />
       <router-link
         v-if="isLoggedIn"
         :to="{name: 'recipe-add'}"
@@ -29,15 +33,15 @@ export default {
     RecipeList,
     DebounceInput
   },
-  data () {
-    return {
-      search: ''
-    }
-  },
   props: {
     filters: {
       type: Object,
       default: () => ({})
+    }
+  },
+  data () {
+    return {
+      search: ''
     }
   },
   computed: {

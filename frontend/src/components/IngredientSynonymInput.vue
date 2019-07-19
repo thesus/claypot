@@ -23,7 +23,10 @@
         </button>
       </div>
     </div>
-    <span class="info" v-else>{{ $t('synonym.no_synonym') }}</span>
+    <span
+      v-else
+      class="info"
+    >{{ $t('synonym.no_synonym') }}</span>
     <button
       class="btn right"
       @click="dirty.push('')"

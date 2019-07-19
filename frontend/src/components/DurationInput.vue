@@ -4,7 +4,7 @@
       :disabled="disabled"
       :value="displayedValue"
       @input="onInput"
-    />
+    >
     <span>
       {{ $t('duration_input.minutes') }}
     </span>
@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  name: 'duration-input',
+  name: 'DurationInput',
   props: {
     value: {
       type: String,
