@@ -11,7 +11,7 @@
 export default {
   props: {
     value: {
-      type: Object,
+      type: [Object, String],
       required: true,
     },
     type: {
