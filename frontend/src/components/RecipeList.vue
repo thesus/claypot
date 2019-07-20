@@ -24,12 +24,12 @@
           <RecipeThumbnailView
             v-if="getHomeView"
             :recipes="props.data"
-            class="recipes"
+            class="p-5"
           />
           <RecipeTableView
             v-else
             :recipes="props.data"
-            class="recipes"
+            class="p-5"
           />
         </slot>
       </template>
@@ -108,7 +108,7 @@ export default {
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
 
-.recipes {
+.p-5 {
   padding: 5px;
 }
 

@@ -39,29 +39,30 @@
       :reload-trigger="reloadTrigger"
     >
       <template v-slot:options>
-        <button
-          v-if="isLoggedIn"
-          class="btn right recipe-relation"
-          @click="openRecipeRelationDialog"
-        >
-          +
-        </button>
+        <template v-if="isLoggedIn">
+          <button
+            class="btn right recipe-relation"
+            @click="openRecipeRelationDialog"
+          >
+            +
+          </button>
+          <button
+            class="btn right recipe-relation"
+            @click="enterRecipeRelationRemoveMode"
+          >
+            -
+          </button>
+        </template>
         <div v-else />
       </template>
       <template v-slot:default="props">
         <RecipeThumbnailView
           :recipes="props.data"
+          :overlay-mode.sync="overlayMode"
           small
         >
-          <template v-slot:toolbelt="{recipe}">
-            <button
-              v-if="isLoggedIn"
-              tabindex="-1"
-              class="btn recipe-relation"
-              @click="deleteRecipeRelation(recipe)"
-            >
-              -
-            </button>
+          <template v-slot:overlay="{recipe}">
+            <button class="btn" tabindex="-1" @click="deleteRecipeRelation(recipe)">Remove</button>
           </template>
         </RecipeThumbnailView>
       </template>
@@ -101,6 +102,7 @@ export default {
       showAddRecipeRelationDialog: false,
       recipeRelationSearch: "",
       reloadTrigger: 0,
+      overlayMode: false,
     }
   },
   computed: {
@@ -132,6 +134,7 @@ export default {
       const r = await api(endpoints.fetch_recipe_relation(recipe.recipeRelationId), undefined, {method: 'DELETE'})
       if (r.ok) {
         this.reloadTrigger = this.reloadTrigger + 1
+        this.overlayMode = false
       } else {
         // TODO: error handling
       }
@@ -146,6 +149,9 @@ export default {
         return recipeRelations
       }
     },
+    enterRecipeRelationRemoveMode () {
+      this.overlayMode = true
+    }
   },
 }
 </script>

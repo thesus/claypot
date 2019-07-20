@@ -1,33 +1,36 @@
 <template>
-  <div class="recipes" :class="{small}">
-    <div
-      v-for="recipe in $props.recipes"
-      :key="recipe.id"
-      class="recipe-container"
-    >
-      <div class="toolbelt">
-        <slot
-          name="toolbelt"
-          :recipe="recipe"
-        />
-      </div>
-      <router-link
-        :to="to(recipe.id)"
+  <div>
+    <div class="recipes":class="{small, 'on-mask': overlayMode}">
+      <div
+        v-for="recipe in $props.recipes"
+        :key="recipe.id"
+        class="recipe-container"
       >
-        <div class="recipe">
-          <div class="info">
-            {{ recipe.title }}
-          </div>
-          <div class="image">
-            <img
-              v-if="recipe.thumbnail"
-              :src="recipe.thumbnail"
-            >
-            <span v-else>{{ $t('thumbnail.empty') }}</span>
-          </div>
+        <div class="overlay">
+          <slot
+            name="overlay"
+            :recipe="recipe"
+          />
         </div>
-      </router-link>
+        <router-link
+          :to="to(recipe.id)"
+        >
+          <div class="recipe">
+            <div class="info">
+              {{ recipe.title }}
+            </div>
+            <div class="image">
+              <img
+                v-if="recipe.thumbnail"
+                :src="recipe.thumbnail"
+              >
+              <span v-else>{{ $t('thumbnail.empty') }}</span>
+            </div>
+          </div>
+        </router-link>
+      </div>
     </div>
+    <div class="mask" :class="{disabled: !overlayMode}" @click="$emit('update:overlayMode', false)"></div>
   </div>
 </template>
 
@@ -40,6 +43,10 @@ export default {
       default: () => []
     },
     small: {
+      type: Boolean,
+      default: false,
+    },
+    overlayMode: {
       type: Boolean,
       default: false,
     },
@@ -70,6 +77,24 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fill, 330px);
   justify-content: space-around;
+  position: relative;
+
+  .overlay {
+    display: none;
+  }
+  &.on-mask .overlay {
+    position: absolute;
+    display: flex;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    z-index: 1003;
+
+    & > button {
+      margin: auto;
+    }
+  }
 }
 
 .recipes.small {
@@ -78,17 +103,6 @@ a {
 
 .recipe-container {
   position: relative;
-}
-
-.toolbelt {
-  display: none;
-  position: absolute;
-  right: 8px;
-  top: 8px;
-}
-
-.recipe-container:hover .toolbelt {
-  display: inline;
 
 }
 
@@ -105,8 +119,6 @@ a {
   .info {
     width: 100%;
     margin-bottom: 3px;
-
-    background-color: white;
   }
 
   .image {
@@ -131,5 +143,23 @@ a {
 .recipes.small .recipe .image {
   // 220px is the original height. the original width of 330px was reduced to 220px. this results in the same ratio.
   height: calc(220px*220/330);
+}
+
+div.mask.disabled {
+  display: none;
+}
+
+div.mask {
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+}
+.on-mask {
+  background-color: white;
+  z-index: 1002;
 }
 </style>
