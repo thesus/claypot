@@ -1,16 +1,17 @@
 <template>
   <div class="scale">
-    <div
-      class="button"
-      @click="decrease"
+    <Modal
+      v-if="modal"
+      :title="$t('scaling.title')"
+      @close="modal = false"
     >
-      -
-    </div>
-    <span v-if="denominatorHidden">{{ numerator }}</span>
-    <span
-      v-else
-      class="fraction"
-    >
+
+    </Modal>
+
+
+    <div class="button" @click="decrease">-</div>
+    <span @click="modal = true" v-if="denominatorHidden">{{ numerator }}</span>
+    <span @click="modal = true" class="fraction" v-else>
       <sup>{{ numerator }}</sup>&frasl;<sub>{{ denominator }}</sub>
     </span>
     <div
@@ -23,13 +24,20 @@
 </template>
 
 <script>
+import Modal from '@/components/Modal'
+
+
 export default {
   name: 'ScaleInput',
+  components: {
+    Modal
+  },
   data () {
     return {
       denominator: 1,
       numerator: 1,
       denominatorHidden: true,
+      modal: false
     }
   },
   computed: {
