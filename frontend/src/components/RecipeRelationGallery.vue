@@ -7,6 +7,7 @@
       @close="closeRecipeRelationDialog"
     >
       <DebounceInput
+        class="search"
         v-model="recipeRelationSearch"
         :placeholder="$t('home.search')"
       />
@@ -149,7 +150,9 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import '@/modules/inputs.scss';
+
 .btn.recipe-relation {
   /* mobile clickability */
   min-width: 30px;
@@ -161,8 +164,9 @@ p {
   border: 1px solid;
   border-color: transparent;
   box-sizing: border-box;
-}
-p:hover {
-  border-color: #e0e0e0;
+
+  &:hover {
+    border-color: #e0e0e0;
+  }
 }
 </style>
