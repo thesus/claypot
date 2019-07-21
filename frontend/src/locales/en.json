@@ -142,5 +142,8 @@
     },
     "ingredient": {
         "name": "Name"
+    },
+    "scaling": {
+        "title": "Scaling"
     }
 }
