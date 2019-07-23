@@ -525,6 +525,20 @@ class RecipeRelationCreateSerializer(serializers.ModelSerializer):
     def save(self):
         recipe1 = self.validated_data["recipe1"]
         recipe2 = self.validated_data["recipe2"]
+
+        if recipe1 == recipe2:
+            return serializers.ValidationError(
+                {
+                    "recipe1": {
+                        i: [
+                            _(
+                                "You may only define relations between different recipes."
+                            )
+                        ]
+                    }
+                }
+            )
+
         return RecipeRelation.objects.filter(
             (Q(recipe1=recipe1) & Q(recipe2=recipe2))
             | (Q(recipe1=recipe2) & Q(recipe2=recipe1))

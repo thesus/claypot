@@ -7,25 +7,35 @@
       @close="closeRecipeRelationDialog"
     >
       <DebounceInput
-        class="search"
         v-model="recipeRelationSearch"
+        class="search"
         :placeholder="$t('home.search')"
       />
       <RecipeList
         v-if="recipeRelationSearch.length"
-        :filters="{recipe: recipeId, search: recipeRelationSearch}"
+        :filters="{search: recipeRelationSearch, exclude: recipeId}"
       >
         <template v-slot:options>
           <div />
         </template>
         <template v-slot:default="{data}">
-          <p
-            v-for="item in data"
-            :key="item.id"
-            @click="addRecipeRelation(item)"
-          >
-            {{ item.title }}
-          </p>
+          <table>
+            <thead>
+              <th>
+                <td>Name</td>
+              </th>
+            </thead>
+            <tbody>
+              <tr
+                v-for="item in data"
+                :key="item.id"
+                class="choice"
+                @click="addRecipeRelation(item)"
+              >
+                <td>{{ item.title }}</td>
+              </tr>
+            </tbody>
+          </table>
         </template>
       </RecipeList>
     </Modal>
@@ -48,9 +58,13 @@
           </button>
           <button
             class="btn right recipe-relation"
-            @click="enterRecipeRelationRemoveMode"
+            @click="toggleRecipeRelationRemoveMode"
           >
-            -
+            <template v-if="!overlayMode">
+              -
+            </template><template v-else>
+              x
+            </template>
           </button>
         </template>
         <div v-else />
@@ -58,11 +72,21 @@
       <template v-slot:default="props">
         <RecipeThumbnailView
           :recipes="props.data"
-          :overlay-mode.sync="overlayMode"
           small
         >
-          <template v-slot:overlay="{recipe}">
-            <button class="btn" tabindex="-1" @click="deleteRecipeRelation(recipe)">Remove</button>
+          <template
+            v-if="overlayMode"
+            v-slot:overlay="{recipe}"
+          >
+            <div class="overlay">
+              <button
+                class="btn remove"
+                tabindex="-1"
+                @click="deleteRecipeRelation(recipe)"
+              >
+                Remove
+              </button>
+            </div>
           </template>
         </RecipeThumbnailView>
       </template>
@@ -149,8 +173,8 @@ export default {
         return recipeRelations
       }
     },
-    enterRecipeRelationRemoveMode () {
-      this.overlayMode = true
+    toggleRecipeRelationRemoveMode () {
+      this.overlayMode = !this.overlayMode
     }
   },
 }
@@ -158,21 +182,46 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
+@import '@/modules/table.scss';
 
-.btn.recipe-relation {
+
+.btn {
   /* mobile clickability */
-  min-width: 30px;
+  &.recipe-relation {
+    min-width: 35px;
+  }
+
+  &.remove {
+    position: absolute;
+    right: 14px;
+    bottom: 14px
+  }
 }
 
-p {
-  cursor: pointer;
-  transition: border-color .3s;
-  border: 1px solid;
-  border-color: transparent;
-  box-sizing: border-box;
+table {
+  border-collapse: collapse;
+  margin: 4px 0 0 0;
 
-  &:hover {
-    border-color: #e0e0e0;
+  tr {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(184, 203, 214, 0.4);
+    }
   }
+
+  td {
+    padding: 2px;
+  }
+}
+
+/* Overlay link with div containing the remove button */
+.overlay {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 1003;
 }
 </style>
