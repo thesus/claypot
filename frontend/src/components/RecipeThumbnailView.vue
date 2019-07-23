@@ -9,12 +9,10 @@
         :key="recipe.id"
         class="recipe-container"
       >
-        <div class="overlay">
-          <slot
-            name="overlay"
-            :recipe="recipe"
-          />
-        </div>
+        <slot
+          name="overlay"
+          :recipe="recipe"
+        />
         <router-link
           :to="to(recipe.id)"
         >
@@ -76,15 +74,6 @@ a {
   grid-template-columns: repeat(auto-fill, 330px);
   justify-content: space-around;
   position: relative;
-
-  .overlay {
-    position: absolute;
-    top: 0px;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-    z-index: 1003;
-  }
 
   &.small {
     grid-template-columns: repeat(auto-fill, 220px);

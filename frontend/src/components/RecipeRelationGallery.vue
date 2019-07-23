@@ -19,13 +19,23 @@
           <div />
         </template>
         <template v-slot:default="{data}">
-          <p
-            v-for="item in data"
-            :key="item.id"
-            @click="addRecipeRelation(item)"
-          >
-            {{ item.title }}
-          </p>
+          <table>
+            <thead>
+              <th>
+                <td>Name</td>
+              </th>
+            </thead>
+            <tbody>
+              <tr
+                v-for="item in data"
+                :key="item.id"
+                class="choice"
+                @click="addRecipeRelation(item)"
+              >
+              <td>{{ item.title }}</td>
+            </tr>
+            </tbody>
+          </table>
         </template>
       </RecipeList>
     </Modal>
@@ -50,7 +60,7 @@
             class="btn right recipe-relation"
             @click="toggleRecipeRelationRemoveMode"
           >
-            <span v-if="!overlayMode">-</span><span v-else>x</span>
+            <template v-if="!overlayMode">-</template><template v-else>x</template>
           </button>
         </template>
         <div v-else />
@@ -64,13 +74,15 @@
             v-if="overlayMode"
             v-slot:overlay="{recipe}"
           >
-            <button
-              class="btn remove"
-              tabindex="-1"
-              @click="deleteRecipeRelation(recipe)"
-            >
-              Remove
-            </button>
+            <div class="overlay">
+              <button
+                class="btn remove"
+                tabindex="-1"
+                @click="deleteRecipeRelation(recipe)"
+              >
+                Remove
+              </button>
+            </div>
           </template>
         </RecipeThumbnailView>
       </template>
@@ -166,11 +178,13 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
+@import '@/modules/table.scss';
+
 
 .btn {
+  /* mobile clickability */
   &.recipe-relation {
-    /* mobile clickability */
-    min-width: 30px;
+    min-width: 35px;
   }
 
   &.remove {
@@ -180,16 +194,30 @@ export default {
   }
 }
 
-p {
-  cursor: pointer;
-  transition: border-color .3s;
-  border: 1px solid;
-  border-color: transparent;
-  box-sizing: border-box;
+table {
+  border-collapse: collapse;
+  margin: 4px 0 0 0;
 
-  &:hover {
-    border-color: #e0e0e0;
+  tr {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(184, 203, 214, 0.4);
+    }
+  }
+
+  td {
+    padding: 2px;
   }
 }
 
+/* Overlay link with div containing the remove button */
+.overlay {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 1003;
+}
 </style>
