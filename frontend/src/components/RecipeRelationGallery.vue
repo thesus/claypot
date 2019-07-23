@@ -7,8 +7,8 @@
       @close="closeRecipeRelationDialog"
     >
       <DebounceInput
-        class="search"
         v-model="recipeRelationSearch"
+        class="search"
         :placeholder="$t('home.search')"
       />
       <RecipeList
@@ -48,9 +48,9 @@
           </button>
           <button
             class="btn right recipe-relation"
-            @click="enterRecipeRelationRemoveMode"
+            @click="toggleRecipeRelationRemoveMode"
           >
-            -
+            <span v-if="!overlayMode">-</span><span v-else>x</span>
           </button>
         </template>
         <div v-else />
@@ -58,11 +58,19 @@
       <template v-slot:default="props">
         <RecipeThumbnailView
           :recipes="props.data"
-          :overlay-mode.sync="overlayMode"
           small
         >
-          <template v-slot:overlay="{recipe}">
-            <button class="btn" tabindex="-1" @click="deleteRecipeRelation(recipe)">Remove</button>
+          <template
+            v-if="overlayMode"
+            v-slot:overlay="{recipe}"
+          >
+            <button
+              class="btn remove"
+              tabindex="-1"
+              @click="deleteRecipeRelation(recipe)"
+            >
+              Remove
+            </button>
           </template>
         </RecipeThumbnailView>
       </template>
@@ -149,8 +157,8 @@ export default {
         return recipeRelations
       }
     },
-    enterRecipeRelationRemoveMode () {
-      this.overlayMode = true
+    toggleRecipeRelationRemoveMode () {
+      this.overlayMode = !this.overlayMode
     }
   },
 }
@@ -159,9 +167,17 @@ export default {
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
 
-.btn.recipe-relation {
-  /* mobile clickability */
-  min-width: 30px;
+.btn {
+  &.recipe-relation {
+    /* mobile clickability */
+    min-width: 30px;
+  }
+
+  &.remove {
+    position: absolute;
+    right: 14px;
+    bottom: 14px
+  }
 }
 
 p {
@@ -175,4 +191,5 @@ p {
     border-color: #e0e0e0;
   }
 }
+
 </style>
