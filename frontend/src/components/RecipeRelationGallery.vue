@@ -60,7 +60,11 @@
             class="btn right recipe-relation"
             @click="toggleRecipeRelationRemoveMode"
           >
-            <template v-if="!overlayMode">-</template><template v-else>x</template>
+            <template v-if="!overlayMode">
+              -
+            </template><template v-else>
+              x
+            </template>
           </button>
         </template>
         <div v-else />
