@@ -13,7 +13,7 @@
       />
       <RecipeList
         v-if="recipeRelationSearch.length"
-        :filters="{recipe: recipeId, search: recipeRelationSearch}"
+        :filters="{search: recipeRelationSearch, exclude: recipeId}"
       >
         <template v-slot:options>
           <div />
@@ -32,8 +32,8 @@
                 class="choice"
                 @click="addRecipeRelation(item)"
               >
-              <td>{{ item.title }}</td>
-            </tr>
+                <td>{{ item.title }}</td>
+              </tr>
             </tbody>
           </table>
         </template>

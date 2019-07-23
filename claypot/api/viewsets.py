@@ -150,6 +150,14 @@ class RecipeFilter(django_filters.FilterSet):
         label="Is my recipe", method="filter_is_my_recipe"
     )
     search = django_filters.CharFilter(label="Search", method="search_filter")
+    exclude = django_filters.AllValuesMultipleFilter(
+        field_name="pk", label="Exclude by id", method="filter_exclude_by_pk"
+    )
+
+    def filter_exclude_by_pk(self, queryset, name, value):
+        if value:
+            return queryset.exclude(pk__in=value)
+        return queryset
 
     def filter_is_starred(self, queryset, name, value):
         if value is True:
