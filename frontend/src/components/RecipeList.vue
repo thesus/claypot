@@ -1,28 +1,40 @@
 <template>
   <div>
     <div class="options">
-      <button
-        class="btn right"
-        @click="updateMode"
-      >
-        {{ $t('home.mode') }}
-      </button>
+      <slot name="options">
+        <button
+          class="btn right"
+          @click="updateMode"
+        >
+          {{ $t('home.mode') }}
+        </button>
+      </slot>
     </div>
     <Receiver
-      :endpoint="endpoint"
+      :endpoint="receiverEndpoint"
+      :transform="receiverTransform"
       :filters="filters"
+      :reload-trigger="reloadTrigger"
     >
       <template v-slot:default="props">
-        <RecipeThumbnailView
-          v-if="getHomeView"
-          :recipes="props.data"
-          class="recipes"
-        />
-        <RecipeTableView
-          v-else
-          :recipes="props.data"
-          class="recipes"
-        />
+        <slot
+          :get-home-view="getHomeView"
+          v-bind="props"
+        >
+          <RecipeThumbnailView
+            v-if="getHomeView"
+            :recipes="props.data"
+            class="p-5"
+          />
+          <RecipeTableView
+            v-else
+            :recipes="props.data"
+            class="p-5"
+          />
+        </slot>
+      </template>
+      <template v-slot:noData>
+        <slot name="noData" />
       </template>
     </Receiver>
   </div>
@@ -50,10 +62,21 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    receiverEndpoint: {
+      type: Object,
+      default: () => endpoints.fetch_recipes(),
+    },
+    receiverTransform: {
+      type: Function,
+      default: null,
+    },
+    reloadTrigger: {
+      type: Number,
+      default: 0,
+    }
   },
   data () {
     return {
-      endpoint: endpoints.fetch_recipes(),
       mode: true,
     }
   },
@@ -78,14 +101,14 @@ export default {
     showMyRecipes () {
       this.$set(this, 'filters', {is_my_recipe: 2})
     }
-  }
+  },
 }
 </script>
 
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
 
-.recipes {
+.p-5 {
   padding: 5px;
 }
 

@@ -89,7 +89,9 @@
         "unknown_user": "@:recipes.unknown_user",
         "edit": "Bearbeiten",
         "estimated_work_duration": "Geschätzte Arbeitszeit",
-        "estimated_waiting_duration": "Geschätzte Koch-/Backzeit"
+        "estimated_waiting_duration": "Geschätzte Koch-/Backzeit",
+        "add_recipe_relation": "Rezept verknüpfen",
+        "no_linked_recipes": "Noch keine verknüpften Rezepte."
     },
     "recipe_edit": {
         "loading": "@:generic.loading",

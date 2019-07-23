@@ -7,7 +7,7 @@ import pytest
 
 from claypot.api import serializers
 
-from claypot.models import Recipe
+from claypot.models import Recipe, RECIPE_RELATION_TYPE_ADDITION
 
 
 @pytest.mark.django_db
@@ -145,3 +145,119 @@ def test_remove_recipe(
         assert response.status_code == status.HTTP_204_NO_CONTENT
     else:
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+@pytest.mark.django_db
+def test_recipe_relations(api_client, recipe_factory, user):
+    recipe1 = recipe_factory(author=user)
+    recipe2 = recipe_factory(author=user)
+    recipe3 = recipe_factory(author=user)
+    api_client.force_login(user)
+
+    url = reverse("api:reciperelation-list")
+    response = api_client.get(url, {"recipe": recipe1.pk})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "count": 0,
+        "next": None,
+        "previous": None,
+        "results": [],
+    }
+
+    url = reverse("api:reciperelation-list")
+    response = api_client.get(url, {"recipe": recipe2.pk})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "count": 0,
+        "next": None,
+        "previous": None,
+        "results": [],
+    }
+
+    url = reverse("api:reciperelation-list")
+    response = api_client.get(url, {"recipe": recipe3.pk})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "count": 0,
+        "next": None,
+        "previous": None,
+        "results": [],
+    }
+
+    url = reverse("api:reciperelation-list")
+    data = {
+        "recipe1": recipe1.pk,
+        "recipe2": recipe2.pk,
+        "type": RECIPE_RELATION_TYPE_ADDITION,
+    }
+    response = api_client.post(url, data)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    url = reverse("api:reciperelation-list")
+    response = api_client.get(url, {"recipe": recipe1.pk})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["count"] == 1
+    assert (
+        (response.json()["results"][0]["recipe1"]["id"] == recipe1.pk)
+        and (response.json()["results"][0]["recipe2"]["id"] == recipe2.pk)
+    ) or (
+        (response.json()["results"][0]["recipe1"]["id"] == recipe2.pk)
+        and (response.json()["results"][0]["recipe2"]["id"] == recipe1.pk)
+    )
+    recipe_relation_id = response.json()["results"][0]["id"]
+
+    url = reverse("api:reciperelation-list")
+    response = api_client.get(url, {"recipe": recipe2.pk})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["count"] == 1
+    assert (
+        (response.json()["results"][0]["recipe1"]["id"] == recipe1.pk)
+        and (response.json()["results"][0]["recipe2"]["id"] == recipe2.pk)
+    ) or (
+        (response.json()["results"][0]["recipe1"]["id"] == recipe2.pk)
+        and (response.json()["results"][0]["recipe2"]["id"] == recipe1.pk)
+    )
+
+    url = reverse("api:reciperelation-list")
+    response = api_client.get(url, {"recipe": recipe3.pk})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "count": 0,
+        "next": None,
+        "previous": None,
+        "results": [],
+    }
+
+    url = reverse("api:reciperelation-detail", kwargs={"pk": recipe_relation_id})
+    response = api_client.delete(url)
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    url = reverse("api:reciperelation-list")
+    response = api_client.get(url, {"recipe": recipe1.pk})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "count": 0,
+        "next": None,
+        "previous": None,
+        "results": [],
+    }
+
+    url = reverse("api:reciperelation-list")
+    response = api_client.get(url, {"recipe": recipe2.pk})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "count": 0,
+        "next": None,
+        "previous": None,
+        "results": [],
+    }
+
+    url = reverse("api:reciperelation-list")
+    response = api_client.get(url, {"recipe": recipe3.pk})
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {
+        "count": 0,
+        "next": None,
+        "previous": None,
+        "results": [],
+    }

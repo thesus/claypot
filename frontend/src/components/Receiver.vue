@@ -7,10 +7,10 @@
       v-if="results"
       :data="results"
     />
-    <span v-else-if="!working">{{ $t('generic.no_data') }}</span>
+    <span v-else-if="!working"><slot name="noData">{{ $t('generic.no_data') }}</slot></span>
 
     <Pagination
-      v-if="isList && results"
+      v-if="showPaginator"
       :next="next"
       :previous="previous"
       @input="updateLink"
@@ -42,7 +42,19 @@ export default {
     isList: {
       type: Boolean,
       default: true
-    }
+    },
+    transform: {
+      type: Function,
+      default: null,
+    },
+    reloadTrigger: {
+      type: Number,
+      default: 0,
+    },
+    forcePaginator: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -55,6 +67,15 @@ export default {
       previous: null
     }
   },
+  computed: {
+    showPaginator () {
+      if (!this.isList) {
+        return false
+      }
+      // hide paginator on empty result unless it's forced
+      return (this.results && this.results.length > 0) || this.forcePaginator
+    },
+  },
   watch: {
     page () {
       this.get()
@@ -64,7 +85,10 @@ export default {
         this.get()
       },
       deep: true
-    }
+    },
+    reloadTrigger () {
+      this.get()
+    },
   },
   mounted () {
     this.get()
@@ -86,19 +110,26 @@ export default {
         )
         const data = await r.json()
         if (r.ok) {
+          let relevantData
           if (this.isList) {
-            this.$set(this, 'results', data.results.length > 0 ? data.results : null)
-
-            this.$set(this, 'next', data['next'])
-            this.$set(this, 'previous', data['previous'])
+            relevantData = data.results.length > 0 ? data.results : null
           } else {
-            this.$set(this, 'results', data)
+            relevantData = data
+          }
+          if (this.transform !== null) {
+            relevantData = this.transform(relevantData)
+          }
+          this.$set(this, 'results', relevantData)
+
+          if (this.isList && data) {
+            this.$set(this, 'next', data.next)
+            this.$set(this, 'previous', data.previous)
           }
         } else {
           throw new Error(data['detail'])
         }
       } catch (err) {
-        this.err = err.message
+        this.error = err.message
 
         this.results = null
       } finally {

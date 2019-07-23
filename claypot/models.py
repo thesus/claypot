@@ -46,6 +46,25 @@ class RecipeManager(models.Manager):
         return self.get(slug=slug)
 
 
+RECIPE_RELATION_TYPE_ADDITION = 1
+RECIPE_RELATION_TYPE_REPLACEMENT = 2
+RECIPE_RELATION_TYPES = (
+    (RECIPE_RELATION_TYPE_ADDITION, ugettext_lazy("Addition")),
+    (RECIPE_RELATION_TYPE_REPLACEMENT, ugettext_lazy("Replacement")),
+)
+
+
+class RecipeRelation(models.Model):
+    recipe1 = models.ForeignKey("Recipe", on_delete=models.CASCADE, related_name="+")
+    recipe2 = models.ForeignKey("Recipe", on_delete=models.CASCADE, related_name="+")
+    type = models.IntegerField(choices=RECIPE_RELATION_TYPES)
+
+    class Meta:
+        verbose_name = ugettext_lazy("Recipe relation")
+        verbose_name_plural = ugettext_lazy("Recipe relations")
+        unique_together = (("recipe1", "recipe2", "type"),)
+
+
 class Recipe(models.Model):
     objects = RecipeManager()
 
@@ -77,6 +96,9 @@ class Recipe(models.Model):
         null=True,
         verbose_name=ugettext_lazy("Estimated waiting time"),
         help_text=ugettext_lazy("Cooking and baking"),
+    )
+    related_recipes = models.ManyToManyField(
+        "self", through=RecipeRelation, symmetrical=False, related_name="+"
     )
 
     def save(self, *args, **kwargs):

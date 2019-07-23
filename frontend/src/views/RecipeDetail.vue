@@ -25,7 +25,7 @@
           />
         </div>
 
-        <scale-input v-model="scaling" />
+        <ScaleInput v-model="scaling" />
 
         <span
           v-if="isLoggedIn"
@@ -53,11 +53,15 @@
         <router-link
           v-if="canEdit"
           :to="{name: 'recipe-edit', params: {id: recipeId}}"
-        >{{ $t('recipe_detail.edit') }}</router-link>
+        >
+          {{ $t('recipe_detail.edit') }}
+        </router-link>
         <router-link
           v-if="recipe.parent_recipe"
           :to="{ name: 'recipe-detail', params: {id: recipe.parent_recipe }}"
-        >{{ $t('recipes.parent') }}</router-link>
+        >
+          {{ $t('recipes.parent') }}
+        </router-link>
         <span>{{ $t('recipe_detail.posted_by', {user: author}) }}</span>
       </div>
     </div>
@@ -95,11 +99,14 @@
           class="item"
         >
           {{ $t('recipe_detail.estimated_work_duration') }}:
-          <duration-span :value="recipe.estimated_work_duration" />
+          <DurationSpan :value="recipe.estimated_work_duration" />
         </div>
-        <div class="item" v-if="hasEstimatedWaitingDuration">
+        <div
+          v-if="hasEstimatedWaitingDuration"
+          class="item"
+        >
           {{ $t('recipe_detail.estimated_waiting_duration') }}:
-          <duration-span :value="recipe.estimated_waiting_duration" />
+          <DurationSpan :value="recipe.estimated_waiting_duration" />
         </div>
       </div>
     </div>
@@ -115,6 +122,8 @@
         <p>{{ instruction.text }}</p>
       </li>
     </ol>
+
+    <RecipeRelationGallery :recipe-id="recipeId" />
   </article>
   <div v-else>
     {{ $t('recipe_detail.no_data') }}
@@ -127,19 +136,21 @@ import { api, endpoints } from '@/api'
 
 import DurationSpan from '@/components/DurationSpan'
 import ImageGallery from '@/components/ImageGallery'
-import RecipeStarInput from '@/components/RecipeStarInput'
-import RecipeIngredientTable from '@/components/RecipeIngredientTable'
-import ScaleInput from '@/components/ScaleInput'
 import Modal from '@/components/Modal'
+import RecipeIngredientTable from '@/components/RecipeIngredientTable'
+import RecipeRelationGallery from '@/components/RecipeRelationGallery'
+import RecipeStarInput from '@/components/RecipeStarInput'
+import ScaleInput from '@/components/ScaleInput'
 
 export default {
   components: {
     DurationSpan,
     ImageGallery,
+    Modal,
     RecipeIngredientTable,
+    RecipeRelationGallery,
     RecipeStarInput,
     ScaleInput,
-    Modal
   },
   data () {
     return {
@@ -183,12 +194,12 @@ export default {
     ]),
   },
   watch: {
-    recipeId() {
-      this.update()
-    }
-  },
-  mounted () {
-    this.update()
+    recipeId: {
+      handler () {
+        this.update()
+      },
+      immediate: true,
+    },
   },
   methods: {
     updateStars (result) {

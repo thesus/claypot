@@ -1,17 +1,30 @@
 <template>
   <div class="scale">
-    <div class="button" @click="decrease">-</div>
+    <div
+      class="button"
+      @click="decrease"
+    >
+      -
+    </div>
     <span v-if="denominatorHidden">{{ numerator }}</span>
-    <span class="fraction" v-else>
+    <span
+      v-else
+      class="fraction"
+    >
       <sup>{{ numerator }}</sup>&frasl;<sub>{{ denominator }}</sub>
     </span>
-    <div class="button" @click="increase">+</div>
+    <div
+      class="button"
+      @click="increase"
+    >
+      +
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'scale-input',
+  name: 'ScaleInput',
   data () {
     return {
       denominator: 1,
@@ -28,6 +41,11 @@ export default {
         return 1.0
       }
     },
+  },
+  watch: {
+    fraction () {
+      this.$emit('input', this.fraction)
+    }
   },
   methods: {
     increase () {
@@ -58,11 +76,6 @@ export default {
         this.numerator = Number(this.numerator) - 1
       }
     },
-  },
-  watch: {
-    fraction () {
-      this.$emit('input', this.fraction)
-    }
   },
 }
 </script>

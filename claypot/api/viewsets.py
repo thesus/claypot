@@ -24,18 +24,20 @@ from django.contrib.postgres.search import (
     TrigramSimilarity,
 )
 
-from claypot.models import Ingredient, IngredientSynonym, Recipe
+from claypot.models import Ingredient, IngredientSynonym, Recipe, RecipeRelation
 from claypot.images.models import Image
 
 from .serializers import (
     ImageCreateSerializer,
     ImageRetrieveSerializer,
     IngredientSerializer,
+    IngredientUpdateSerializer,
     ManyIngredientSerializer,
-    RecipeSerializer,
     RecipeListSerializer,
     RecipeReadSerializer,
-    IngredientUpdateSerializer,
+    RecipeRelationCreateSerializer,
+    RecipeRelationSerializer,
+    RecipeSerializer,
 )
 
 
@@ -148,6 +150,14 @@ class RecipeFilter(django_filters.FilterSet):
         label="Is my recipe", method="filter_is_my_recipe"
     )
     search = django_filters.CharFilter(label="Search", method="search_filter")
+    exclude = django_filters.AllValuesMultipleFilter(
+        field_name="pk", label="Exclude by id", method="filter_exclude_by_pk"
+    )
+
+    def filter_exclude_by_pk(self, queryset, name, value):
+        if value:
+            return queryset.exclude(pk__in=value)
+        return queryset
 
     def filter_is_starred(self, queryset, name, value):
         if value is True:
@@ -327,3 +337,22 @@ class ImageViewSet(viewsets.ModelViewSet):
         instance.save(**serializer.validated_data)
 
         return Response({"id": instance.pk})
+
+
+class RecipeRelationViewSet(viewsets.ModelViewSet):
+    queryset = RecipeRelation.objects.all().order_by("id")
+    serializer_class = RecipeRelationSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return RecipeRelationCreateSerializer
+        else:
+            return RecipeRelationSerializer
+
+    def get_queryset(self):
+        qs = self.queryset
+        recipe = self.request.query_params.get("recipe")
+        if recipe:
+            qs = qs.filter(Q(recipe1_id=int(recipe)) | Q(recipe2_id=int(recipe)))
+        return qs

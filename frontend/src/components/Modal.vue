@@ -13,7 +13,7 @@
             </button>
           </div>
           <slot />
-          <div style="clear: both;"></div>
+          <div style="clear: both;" />
         </div>
       </div>
     </div>

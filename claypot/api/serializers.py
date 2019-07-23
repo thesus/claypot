@@ -4,6 +4,7 @@ from collections import OrderedDict
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction, IntegrityError
+from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
@@ -15,16 +16,18 @@ from django.db.models import prefetch_related_objects
 
 from claypot.models import (
     AMOUNT_TYPES,
+    AbstractIngredient,
     Ingredient,
+    IngredientSynonym,
+    IngredientTag,
+    RECIPE_RELATION_TYPE_REPLACEMENT,
     Recipe,
     RecipeIngredient,
     RecipeIngredientGroup,
     RecipeIngredientGroupIngredient,
     RecipeInstruction,
+    RecipeRelation,
     Unit,
-    AbstractIngredient,
-    IngredientTag,
-    IngredientSynonym,
 )
 
 from claypot.images.models import Image, ImageFile
@@ -504,3 +507,43 @@ class IngredientUpdateSerializer(serializers.ModelSerializer):
         model = Ingredient
         fields = ["name", "synonyms", "tags"]
         read_only_fields = ["name"]
+
+
+class RecipeRelationSerializer(serializers.ModelSerializer):
+    recipe1 = RecipeListSerializer()
+    recipe2 = RecipeListSerializer()
+
+    class Meta:
+        model = RecipeRelation
+        fields = ("id", "recipe1", "recipe2", "type")
+
+
+class RecipeRelationCreateSerializer(serializers.ModelSerializer):
+    recipe1 = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
+    recipe2 = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
+
+    def save(self):
+        recipe1 = self.validated_data["recipe1"]
+        recipe2 = self.validated_data["recipe2"]
+
+        if recipe1 == recipe2:
+            return serializers.ValidationError(
+                {
+                    "recipe1": {
+                        i: [
+                            _(
+                                "You may only define relations between different recipes."
+                            )
+                        ]
+                    }
+                }
+            )
+
+        return RecipeRelation.objects.filter(
+            (Q(recipe1=recipe1) & Q(recipe2=recipe2))
+            | (Q(recipe1=recipe2) & Q(recipe2=recipe1))
+        ).get_or_create(self.validated_data)[0]
+
+    class Meta:
+        model = RecipeRelation
+        fields = ("id", "recipe1", "recipe2", "type")

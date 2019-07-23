@@ -42,7 +42,6 @@
             :disabled="saving || ingredient.amount_type !== AMOUNT_TYPE_NUMERIC"
             :class="{'form-error': !!recipeIngredientError(i).unit.length}"
             :placeholder="$t('recipe_edit.unit')"
-
           >
           <FormFieldValidationError :errors="recipeIngredientError(i).unit" />
         </div>
@@ -95,7 +94,7 @@
     >
       {{ $t('recipe_edit.remove_group') }}
     </button>
-    <div style="clear:both"></div>
+    <div style="clear:both" />
   </div>
 </template>
 

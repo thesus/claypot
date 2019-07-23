@@ -1,20 +1,36 @@
 <template>
-  <div class="recipes">
-    <router-link
-      v-for="recipe in $props.recipes"
-      :key="recipe.id"
-      :to="to(recipe.id)"
+  <div>
+    <div
+      class="recipes"
+      :class="{small}"
     >
-      <div class="recipe">
-        <div class="info">
-          {{ recipe.title }}
-        </div>
-        <div class="image">
-          <img v-if="recipe.thumbnail" :src="recipe.thumbnail">
-          <span v-else>{{ $t('thumbnail.empty') }}</span>
-        </div>
+      <div
+        v-for="recipe in $props.recipes"
+        :key="recipe.id"
+        class="recipe-container"
+      >
+        <slot
+          name="overlay"
+          :recipe="recipe"
+        />
+        <router-link
+          :to="to(recipe.id)"
+        >
+          <div class="recipe">
+            <div class="info">
+              {{ recipe.title }}
+            </div>
+            <div class="image">
+              <img
+                v-if="recipe.thumbnail"
+                :src="recipe.thumbnail"
+              >
+              <span v-else>{{ $t('thumbnail.empty') }}</span>
+            </div>
+          </div>
+        </router-link>
       </div>
-    </router-link>
+    </div>
   </div>
 </template>
 
@@ -25,6 +41,10 @@ export default {
     recipes: {
       type: Array,
       default: () => []
+    },
+    small: {
+      type: Boolean,
+      default: false,
     }
   },
   methods: {
@@ -42,6 +62,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/modules/variables.scss';
+@import '@/modules/inputs.scss';
 
 a {
   text-decoration: none;
@@ -52,6 +73,20 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fill, 330px);
   justify-content: space-around;
+  position: relative;
+
+  &.small {
+    grid-template-columns: repeat(auto-fill, 220px);
+  }
+}
+
+
+.recipe-container {
+  position: relative;
+
+  & > a {
+    display: block;
+  }
 }
 
 .recipe {
@@ -63,8 +98,6 @@ a {
   .info {
     width: 100%;
     margin-bottom: 3px;
-
-    background-color: white;
   }
 
   .image {
@@ -85,5 +118,12 @@ a {
       display: block;
     }
   }
+}
+
+.recipes.small .recipe .image {
+  /* 220px is the original height.T
+  The original width of 330px was reduced to 220px.
+  This results in the same ratio. */
+  height: calc(220px*220/330);
 }
 </style>
