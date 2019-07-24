@@ -1,5 +1,7 @@
 :80 {
-    prometheus
+    prometheus {
+        use_caddy_addr
+    }
 
     root /var/www/html
     proxy /accounts/ claypot:80 {
@@ -14,7 +16,8 @@
 }
 
 :80/media/ {
-    prometheus
-
+    prometheus {
+        use_caddy_addr
+    }
     root /srv/media
 }
