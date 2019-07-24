@@ -10,8 +10,17 @@
         >
       </div>
       <FormFieldValidationError :errors="errors.title" />
+
+      <textarea
+        v-model="recipe_dirty.description"
+        :placeholder="$t('recipes.description')"
+        :disabled="saving"
+        class="description"
+        :class="{'form-error': !!errors.description.length}"
+      />
     </header>
 
+    <FormFieldValidationError :errors="errors.description" />
     <div class="images">
       <ImageUpload
         v-model="recipe_dirty.images"
@@ -221,6 +230,7 @@ export default {
           ingredient_groups: [],
           ingredients: [],
           title: '',
+          description: '',
           estimated_work_duration: null,
           estimated_waiting_duration: null,
         }
@@ -243,6 +253,7 @@ export default {
       saving: false,
       errors: {
         title: [],
+        description: [],
         estimated_work_duration: [],
         estimated_waiting_duration: [],
         ingredients: [],
@@ -297,6 +308,7 @@ export default {
       const r = this.recipe
       this.recipe_dirty = {
         title: r.title,
+        description: r.description,
         estimated_work_duration: r.estimated_work_duration,
         estimated_waiting_duration: r.estimated_waiting_duration,
         instructions: clone(r.instructions || []),
@@ -394,6 +406,7 @@ export default {
 
         const d = {
           title: this.recipe_dirty.title,
+          description: this.recipe_dirty.description,
           estimated_work_duration: this.recipe_dirty.estimated_work_duration,
           estimated_waiting_duration: this.recipe_dirty.estimated_waiting_duration,
           images: this.recipe_dirty.images,
@@ -410,6 +423,7 @@ export default {
           // TODO: Notify user about broken fields?
           const errors = await r.json()
           this.errors.title = errors.title || []
+          this.errors.description = errors.description || []
           this.errors.estimated_work_duration = errors.estimated_work_duration || []
           this.errors.estimated_waiting_duration = errors.estimated_waiting_duration || []
           this.errors.ingredients = errors.ingredients || []
@@ -443,6 +457,11 @@ export default {
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
 @import '@/modules/variables.scss';
+
+.description {
+  margin-top: 5px;
+  min-height: 100px;
+}
 
 .ingredients {
   margin-bottom: 5px;

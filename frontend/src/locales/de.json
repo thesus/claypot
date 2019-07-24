@@ -59,6 +59,7 @@
     },
     "recipes": {
         "title": "Titel",
+        "description": "Beschreibung",
         "amount": "Menge",
         "ingredient": "Zutat",
         "ingredient_extra": "Anmerkung",

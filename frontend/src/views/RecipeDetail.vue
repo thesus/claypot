@@ -66,6 +66,13 @@
       </div>
     </div>
 
+    <p
+      v-if="recipe && recipe.description && recipe.description.length > 0"
+      class="description"
+    >
+      {{ recipe.description }}
+    </p>
+
     <div
       v-if="recipe"
       class="header"
@@ -317,6 +324,12 @@ export default {
   &.info {
     display: block;
   }
+}
+
+.description {
+  margin: 4px 0 0 0;
+  text-align: justify;
+  color: #6a7783;
 }
 
 .header {
