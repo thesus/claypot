@@ -194,6 +194,9 @@ class RecipeSerializer(serializers.Serializer):
         model_field=Recipe._meta.get_field("estimated_waiting_duration"),
         allow_null=True,
     )
+    description = serializers.ModelField(
+        model_field=Recipe._meta.get_field("description")
+    )
 
     images = serializers.PrimaryKeyRelatedField(queryset=Image.objects.all(), many=True)
 
@@ -285,6 +288,7 @@ class RecipeSerializer(serializers.Serializer):
         instance.estimated_waiting_duration = validated_data[
             "estimated_waiting_duration"
         ]
+        instance.description = validated_data["description"]
         instance.save()
 
         # save images
@@ -394,6 +398,7 @@ class RecipeSerializer(serializers.Serializer):
             "stars",
             "estimated_work_duration",
             "estimated_waiting_duration",
+            "description",
         ]
         read_only_fields = [
             "id",

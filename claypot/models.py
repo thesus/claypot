@@ -69,6 +69,8 @@ class Recipe(models.Model):
     objects = RecipeManager()
 
     title = models.CharField(max_length=500, verbose_name=ugettext_lazy("Title"))
+
+    # Only used to load fixtures, otherwise filled with an uuid
     slug = models.SlugField(max_length=200)
 
     author = models.ForeignKey(
@@ -99,6 +101,9 @@ class Recipe(models.Model):
     )
     related_recipes = models.ManyToManyField(
         "self", through=RecipeRelation, symmetrical=False, related_name="+"
+    )
+    description = models.TextField(
+        blank=True, verbose_name=ugettext_lazy("Additional information")
     )
 
     def save(self, *args, **kwargs):
