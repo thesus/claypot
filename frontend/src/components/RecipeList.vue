@@ -13,8 +13,9 @@
     <Receiver
       :endpoint="receiverEndpoint"
       :transform="receiverTransform"
-      :filters="filters"
       :reload-trigger="reloadTrigger"
+      :filters="combinedFilters"
+      @pagination="updatePagination"
     >
       <template v-slot:default="props">
         <slot
@@ -37,6 +38,12 @@
         <slot name="noData" />
       </template>
     </Receiver>
+
+    <Pagination
+      :next="next"
+      :previous="previous"
+      @update="setPage"
+    />
   </div>
 </template>
 
@@ -50,13 +57,18 @@ import RecipeTableView from '@/components/RecipeTableView'
 
 import Receiver from '@/components/Receiver'
 
+import Pagination from '@/components/Pagination'
+import { PaginationMixin } from '@/mixins/pagination'
+
 export default {
   name: 'RecipeList',
   components: {
     RecipeThumbnailView,
     RecipeTableView,
-    Receiver
+    Receiver,
+    Pagination
   },
+  mixins: [PaginationMixin],
   props: {
     filters: {
       type: Object,
@@ -81,7 +93,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getHomeView'])
+    ...mapGetters(['getHomeView']),
   },
   methods: {
     updateMode() {

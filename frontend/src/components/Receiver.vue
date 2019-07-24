@@ -8,13 +8,6 @@
       :data="results"
     />
     <span v-else-if="!working"><slot name="noData">{{ $t('generic.no_data') }}</slot></span>
-
-    <Pagination
-      v-if="showPaginator"
-      :next="next"
-      :previous="previous"
-      @input="updateLink"
-    />
   </div>
 </template>
 
@@ -24,12 +17,7 @@ import { api } from '@/api'
 
 import { Timer } from '@/utils'
 
-import Pagination from '@/components/Pagination'
-
 export default {
-  components: {
-    Pagination
-  },
   props: {
     endpoint: {
       type: Object,
@@ -61,25 +49,23 @@ export default {
       loading: false,
       working: false,
       error: null,
-      page: 1,
       results: null,
+
       next: null,
-      previous: null
+      previous: null,
+      count: 0
     }
   },
   computed: {
-    showPaginator () {
-      if (!this.isList) {
-        return false
+    pagination () {
+      return {
+        count: this.count,
+        next: this.next,
+        previous: this.previous
       }
-      // hide paginator on empty result unless it's forced
-      return (this.results && this.results.length > 0) || this.forcePaginator
-    },
+    }
   },
   watch: {
-    page () {
-      this.get()
-    },
     filters: {
       handler () {
         this.get()
@@ -89,23 +75,23 @@ export default {
     reloadTrigger () {
       this.get()
     },
+    pagination () {
+      this.$emit('pagination', this.pagination)
+    }
   },
   mounted () {
     this.get()
   },
   methods: {
-    updateLink(urlString) {
-      const url = new URL(urlString)
-      let page = url.searchParams.get('page')
-      this.page = page ? page : 1
-    },
     async get () {
       this.working = true
       const timer = new Timer(() => { this.loading = true }, 200)
       try {
+        const page = this.isList ? { page: 1 } : {}
+
         const r = await api(
           this.endpoint,
-          { ...this.filters, page: this.page },
+          { ...page, ...this.filters },
           { method: 'GET' }
         )
         const data = await r.json()
