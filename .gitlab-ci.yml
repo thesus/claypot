@@ -41,7 +41,6 @@ test:frontend:
     - yarn install
   script:
     - node_modules/eslint/bin/eslint.js --ext .js,.vue src
-  allow_failure: yes
   cache:
     key: frontend
     paths:
