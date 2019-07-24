@@ -43,6 +43,7 @@ class UnitFactory(factory.DjangoModelFactory):
 @pytest_factoryboy.register
 class RecipeFactory(factory.DjangoModelFactory):
     title = factory.Faker("sentence")
+    description = factory.Faker("sentence")
     slug = factory.Faker("sentence")
     author = factory.SubFactory(UserFactory)
 

@@ -61,6 +61,7 @@ def test_post_new_recipe(
     src = serializers.RecipeSerializer(instance=recipe).data
     data = {
         "title": src["title"],
+        "description": src["description"],
         "instructions": src["instructions"],
         "ingredients": [i for i in src["ingredients"] if i["is_group"] is not True],
         "images": [],

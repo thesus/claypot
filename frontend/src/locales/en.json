@@ -62,6 +62,7 @@
     },
     "recipes": {
         "title": "Title",
+        "description": "Additional information",
         "amount": "Amount",
         "ingredient": "Ingredient",
         "ingredient_extra": "Note",
