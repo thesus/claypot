@@ -88,7 +88,7 @@ build:caddy:
   before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
-    - docker build --pull -t $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_REF_SLUG -f compose/caddy/Dockerfile .
+    - docker build --pull -t $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_REF_SLUG -f compose/caddy/Dockerfile --build-arg plugins="git,cors,realip,expires,cache" .
     - docker push $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_REF_SLUG
   after_script:
     - docker rmi $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_REF_SLUG

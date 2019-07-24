@@ -14,12 +14,12 @@ RUN cd /code \
 FROM abiosoft/caddy:builder as builder
 
 ARG version="1.0.1"
-ARG plugins="prometheus"
+ARG plugins="git,cors,realip,expires,cache"
 
 # process wrapper
 RUN go get -v github.com/abiosoft/parent
 
-RUN VERSION=${version} PLUGINS=${plugins} ENABLE_TELEMETRY="false" /bin/sh /usr/bin/builder.sh
+RUN VERSION=${version} PLUGINS=${plugins} ENABLE_TELEMETRY=false /bin/sh /usr/bin/builder.sh
 
 #
 # Final stage
@@ -36,12 +36,7 @@ ENV ACME_AGREE="false"
 # Telemetry Stats
 ENV ENABLE_TELEMETRY="false"
 
-RUN apk add --no-cache \
-    ca-certificates \
-    git \
-    mailcap \
-    openssh-client \
-    tzdata
+RUN apk add --no-cache openssh-client git
 
 # install caddy
 COPY --from=builder /install/caddy /usr/bin/caddy
@@ -63,6 +58,5 @@ CMD ["--conf", "/etc/Caddyfile", "--log", "stdout", "--agree=$ACME_AGREE"]
 # -- snip --
 
 ENV ACME_AGREE=true
-
 COPY compose/caddy/Caddyfile /etc/Caddyfile
 COPY --from=js /code/dist/ /var/www/html

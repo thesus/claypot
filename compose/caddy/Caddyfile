@@ -1,8 +1,4 @@
 :80 {
-    prometheus {
-        use_caddy_addr
-    }
-
     root /var/www/html
     proxy /accounts/ claypot:80 {
         header_upstream Host {host}
@@ -16,8 +12,5 @@
 }
 
 :80/media/ {
-    prometheus {
-        use_caddy_addr
-    }
     root /srv/media
 }
