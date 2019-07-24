@@ -1,0 +1,12 @@
+dashboard: 'Metrics'
+    panel_groups:
+        - group: 'Caddy metrics'
+          panels:
+              - type: area-chart
+                title: "Chart Title"
+                y_label: "Y-Axis"
+                metrics:
+                  - id: throughput_caddy
+                    query: 'sum(rate(caddy_http_request_count_total[2m]))'
+                    label: "Throughput"
+                    unit: "req/s"
