@@ -1,7 +1,10 @@
 <template>
   <span>
     <span>
-      <button class="btn" @click="quickDecrease">-</button>
+      <button
+        class="btn"
+        @click="quickDecrease"
+      >-</button>
       <span @click="showModal = true">
         <span v-if="full > 0">{{ full }}</span>
         <span v-if="remainder !== 0">
@@ -10,43 +13,79 @@
           <sub>{{ denominator }}</sub>
         </span>
       </span>
-      <button class="btn" @click="quickIncrease">+</button>
+      <button
+        class="btn"
+        @click="quickIncrease"
+      >+</button>
     </span>
-    <Modal v-if="showModal" @close="showModal = false">
+    <Modal
+      v-if="showModal"
+      @close="showModal = false"
+    >
       <div class="fraction-modal">
         <div class="number-box">
           <div>
-            <button class="btn" @click="increaseMultiplyer">+</button>
+            <button
+              class="btn"
+              @click="increaseMultiplyer"
+            >+</button>
           </div>
           <div>
-            <input class="input full" min="1" :value="multiplyer">
+            <input
+              class="input full"
+              min="1"
+              :value="multiplyer"
+            >
           </div>
           <div>
-            <button class="btn" @click="decreaseMultiplyer">-</button>
+            <button
+              class="btn"
+              @click="decreaseMultiplyer"
+            >-</button>
           </div>
         </div>
         <div class="calc-hint">×</div>
         <div class="fraction">
           <div class="number-box">
             <div>
-              <button class="btn" @click="decreaseNumerator">-</button>
+              <button
+                class="btn"
+                @click="decreaseNumerator"
+              >-</button>
             </div>
             <div>
-              <input class="input" min="1" :value="numerator">
+              <input
+                class="input"
+                min="1"
+                :value="numerator"
+              >
             </div>
             <div>
-              <button class="btn" @click="increaseNumerator">+</button>
+              <button
+                class="btn"
+                @click="increaseNumerator"
+              >+</button>
             </div>
           </div>
           <div class="number-box">
             <div>
-              <button class="btn" @click="decreaseDenominator">-</button>
+              <button
+                class="btn"
+                @click="decreaseDenominator"
+              >-</button>
             </div>
             <div>
-              <input class="input denominator" min="1" :value="denominator">
+              <input
+                class="input denominator"
+                min="1"
+                :value="denominator"
+              >
             </div>
             <div>
-              <button class="btn" @click="increaseDenominator">+</button>
+              <button
+                class="btn"
+                @click="increaseDenominator"
+              >+</button>
             </div>
           </div>
         </div>

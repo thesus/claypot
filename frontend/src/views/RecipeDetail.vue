@@ -147,7 +147,6 @@ import Modal from '@/components/Modal'
 import RecipeIngredientTable from '@/components/RecipeIngredientTable'
 import RecipeRelationGallery from '@/components/RecipeRelationGallery'
 import RecipeStarInput from '@/components/RecipeStarInput'
-import ScaleInput from '@/components/ScaleInput'
 import ScaleInput2 from '@/components/ScaleInput2'
 
 export default {
@@ -158,7 +157,6 @@ export default {
     RecipeIngredientTable,
     RecipeRelationGallery,
     RecipeStarInput,
-    ScaleInput,
     ScaleInput2,
   },
   data () {

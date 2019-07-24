@@ -3,15 +3,14 @@
     <Modal
       v-if="modal"
       :title="$t('scaling.title')"
-      @close="modal = false"
       class="modal"
+      @close="modal = false"
     >
-
       <sup>
         <button
           class="btn"
-          @click="increaseNumerator"
           :disabled="denominator < 2"
+          @click="increaseNumerator"
         >
           +
         </button>
@@ -80,8 +79,16 @@
     </Modal>
 
 
-    <div class="button" @click="decreaseSimple">-</div>
-    <div class="extended" @click="modal = true">
+    <div
+      class="button"
+      @click="decreaseSimple"
+    >
+      -
+    </div>
+    <div
+      class="extended"
+      @click="modal = true"
+    >
       <span
         v-if="!isInteger"
         class="fraction"

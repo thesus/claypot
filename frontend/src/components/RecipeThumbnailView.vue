@@ -2,7 +2,7 @@
   <div>
     <div
       class="recipes"
-      :class="{small}"
+      :class="{small, 'on-mask': overlayMode}"
     >
       <div
         v-for="recipe in $props.recipes"
@@ -31,6 +31,11 @@
         </router-link>
       </div>
     </div>
+    <div
+      class="mask"
+      :class="{disabled: !overlayMode}"
+      @click="$emit('update:overlayMode', false)"
+    />
   </div>
 </template>
 
