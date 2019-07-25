@@ -1,11 +1,11 @@
 <template>
   <span>
-    <span>
+    <span class="pointer">
       <button
         class="btn"
         @click="quickDecrease"
       >-</button>
-      <span @click="showModal = true">
+      <span class="number" @click="showModal = true">
         <span v-if="full > 0">{{ full }}</span>
         <span v-if="remainder !== 0">
           <sup>{{ remainder }}</sup>
@@ -23,7 +23,7 @@
       @close="showModal = false"
     >
       <div class="fraction-modal">
-        <div class="number-box">
+        <div class="number-box has-btns">
           <div>
             <button
               class="btn"
@@ -36,6 +36,7 @@
               min="1"
               :value="multiplyer"
             >
+            <span style="position: relative; bottom: 1.5em;">{{ $t('recipe_detail.portion_count') }}</span>
           </div>
           <div>
             <button
@@ -45,7 +46,7 @@
           </div>
         </div>
         <div class="calc-hint">×</div>
-        <div class="fraction">
+        <div class="fraction has-btns">
           <div class="number-box">
             <div>
               <button
@@ -88,6 +89,7 @@
               >+</button>
             </div>
           </div>
+          <span style="position: relative; bottom: 0.0em;">{{ $t('recipe_detail.portion_size') }}</span>
         </div>
         <div class="calc-hint">={{ resultStr }}</div>
       </div>
@@ -188,13 +190,30 @@ input {
   text-align: center;
 }
 
+.pointer {
+  cursor: pointer;
+  padding-left: 8px;
+  padding-right: 8px;
+
+  .number {
+    display: inline-block;
+    min-width: 1.5em;
+  }
+}
+
 .fraction-modal {
+  width: 50vw;
   display: flex;
   flex-direction: row;
 
+  .has-btns div:nth-child(odd) {
+    /* vertical align of buttons */
+    margin: auto;
+  }
+
   & > .number-box {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
   }
 
   .calc-hint {
@@ -221,11 +240,6 @@ input {
 
       & > div {
         flex: 1;
-
-        &:nth-child(odd) {
-          /* vertical align of buttons */
-          margin: auto;
-        }
       }
     }
 
