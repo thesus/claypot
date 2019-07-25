@@ -2,18 +2,20 @@
   <transition name="modal">
     <div class="mask">
       <div class="wrapper">
-        <div class="container">
-          <div class="header">
-            <h2>{{ title }}</h2>
-            <button
-              class="btn"
-              @click="$emit('close')"
-            >
-              Close
-            </button>
+        <div class="flex">
+          <div class="container">
+            <div class="header">
+              <h2>{{ title }}</h2>
+              <button
+                class="btn"
+                @click="$emit('close')"
+              >
+                Close
+              </button>
+            </div>
+            <slot />
+            <div style="clear: both;" />
           </div>
-          <slot />
-          <div style="clear: both;" />
         </div>
       </div>
     </div>
@@ -48,21 +50,25 @@ export default {
   z-index: 2000;
 }
 
+.flex {
+  display: flex;
+}
+
 .wrapper {
   display: table-cell;
   vertical-align: middle;
 }
 
 .container {
-  width: 200px;
+  min-width: 200px;
   margin: 0px auto;
   padding: 12px;
 
   transition: all .3s ease;
   background-color: white;
 
+
   .header {
-    width: 100%;
     display: grid;
     grid-template-columns: 5fr 1fr;
     margin-bottom: 5px;
