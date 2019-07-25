@@ -103,7 +103,7 @@ class Recipe(models.Model):
         "self", through=RecipeRelation, symmetrical=False, related_name="+"
     )
     description = models.TextField(
-        blank=True, verbose_name=ugettext_lazy("Additional information")
+        null=True, verbose_name=ugettext_lazy("Additional information")
     )
 
     def save(self, *args, **kwargs):

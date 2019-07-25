@@ -72,8 +72,9 @@ a {
 .recipes {
   display: grid;
   grid-template-columns: repeat(auto-fill, 330px);
-  justify-content: space-around;
+  justify-content: center;
   position: relative;
+  grid-gap: 15px;
 
   &.small {
     grid-template-columns: repeat(auto-fill, 220px);
@@ -91,8 +92,6 @@ a {
 
 .recipe {
   padding: 5px;
-  margin: 5px;
-
   border: solid 1px #ccc;
 
   .info {

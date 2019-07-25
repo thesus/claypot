@@ -1,5 +1,6 @@
 from rest_framework.pagination import PageNumberPagination
 
+
 class Pagination(PageNumberPagination):
     page_size = 16
     page_size_query_param = "page_size"
@@ -14,4 +15,3 @@ class Pagination(PageNumberPagination):
         if not self.page.has_previous():
             return None
         return self.page.previous_page_number()
-
