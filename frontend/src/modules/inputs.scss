@@ -49,7 +49,11 @@ textarea {
 
     font-size: 12px;
     font-weight: 650;
-    height: 25px;
+    height: $btn_height;
+
+    /* make buttons at least as wide as they are high, so they can be kind-of used on a mobile device */
+    min-width: $btn_height;
+
     cursor: pointer;
 
     padding: 0 5px 0 5px !important;
