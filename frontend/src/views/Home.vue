@@ -14,7 +14,10 @@
         {{ $t('home.add') }}
       </router-link>
     </div>
-    <RecipeList :filters="allFilters" :simple="false"/>
+    <RecipeList
+      :filters="allFilters"
+      :simple="false"
+    />
   </article>
 </template>
 

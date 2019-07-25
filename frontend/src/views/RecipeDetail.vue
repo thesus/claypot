@@ -53,7 +53,9 @@
         <router-link
           v-if="canEdit"
           :to="{name: 'recipe-edit', params: {id: recipeId}}"
-        >{{ $t('recipe_detail.edit') }}</router-link>
+        >
+          {{ $t('recipe_detail.edit') }}
+        </router-link>
         <router-link
           v-if="recipe.parent_recipe"
           :to="{ name: 'recipe-detail', params: {id: recipe.parent_recipe }}"
