@@ -1,5 +1,19 @@
 /* Handles a few pagination related tasks */
-/* TODO (till): Add description */
+/* The Receiver component emits an 'pagination' event once the page changes.
+ * The number is incorporated in this.filters and can be accessed via
+ * 'combinedFilters'. If the filter changes the page is set back to 1.
+ * This event can be passed to the 'updatePagination' function and
+ * the Pagination component can be setup like in the following example:
+ *
+ * <Pagination
+ *   :next="next"
+ *   :previous="previous"
+ *   @update="setPage"
+ * />
+ *
+ * If the page should be encoded into the url set 'this.simple' via a prop,
+ * computed or data value to false. (defaults to true)
+ */
 
 const PaginationMixin = {
   data () {
