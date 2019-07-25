@@ -10,6 +10,7 @@
         </button>
       </slot>
     </div>
+
     <Receiver
       :endpoint="receiverEndpoint"
       :transform="receiverTransform"

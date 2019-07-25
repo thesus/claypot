@@ -12,7 +12,6 @@ from pytz import utc
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
 
 import django_filters
 
@@ -39,22 +38,6 @@ from .serializers import (
     RecipeRelationSerializer,
     RecipeSerializer,
 )
-
-
-class Pagination(PageNumberPagination):
-    page_size = 1
-    page_size_query_param = "page_size"
-    max_page_size = 100
-
-    def get_next_link(self):
-        if not self.page.has_next():
-            return None
-        return self.page.next_page_number()
-
-    def get_previous_link(self):
-        if not self.page.has_previous():
-            return None
-        return self.page.previous_page_number()
 
 
 class ReadAllEditAdmin(permissions.BasePermission):
@@ -104,7 +87,6 @@ class IngredientViewSet(viewsets.ModelViewSet):
     serializer_class = IngredientSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
-    pagination_class = Pagination
     permission_classes = [ReadAllEditAdmin]
 
     def get_serializer_class(self):
@@ -251,7 +233,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [ReadAllEditOwn]
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    pagination_class = Pagination
 
     def get_serializer_class(self):
         if self.action == "list" and self.request.method.lower() == "get":

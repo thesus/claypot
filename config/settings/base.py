@@ -127,7 +127,7 @@ vars().update(EMAIL_CONFIG)
 # Rest Framework
 REST_FRAMEWORK = {
     "AUTHENTICATION_BACKENDS": ("rest_framework.authentication.SessionAuthentication"),
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "claypot.api.pagination.Pagination",
     "PAGE_SIZE": 30,
     "DEFAULT_RENDERER_CLASSES": (
         "rest_framework.renderers.JSONRenderer",

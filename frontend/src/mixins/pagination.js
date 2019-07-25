@@ -7,7 +7,6 @@ const PaginationMixin = {
       next: null,
       previous: null,
       count: 0,
-      page: 1
     }
   },
   computed: {
@@ -15,6 +14,14 @@ const PaginationMixin = {
       return {
         ...this.filters,
         page: this.page
+      }
+    },
+    page: {
+      get () {
+        return this.$route.query.page || 1
+      },
+      set (value) {
+        this.$router.push({ name: this.$route.name, query: { page: value } })
       }
     }
   },
@@ -34,13 +41,6 @@ const PaginationMixin = {
     },
     setPage (page) {
       this.page = page
-    }
-  }
-}
-
-const UrlPageMixin = {
-  watch: {
-    page () {
     }
   }
 }

@@ -7,7 +7,8 @@
     />
     <Receiver
       :endpoint="endpoint"
-      :filters="filters"
+      :filters="combinedFilters"
+      @pagination="updatePagination"
     >
       <template v-slot:default="props">
         <table>
@@ -33,6 +34,12 @@
         </table>
       </template>
     </Receiver>
+
+    <Pagination
+      :next="next"
+      :previous="previous"
+      @update="setPage"
+    />
   </div>
 </template>
 
@@ -42,11 +49,16 @@ import { api, endpoints } from '@/api'
 import Receiver from '@/components/Receiver'
 import DebounceInput from '@/components/DebounceInput'
 
+import Pagination from '@/components/Pagination'
+import { PaginationMixin } from '@/mixins/pagination'
+
 export default {
   components: {
     Receiver,
-    DebounceInput
+    DebounceInput,
+    Pagination
   },
+  mixins: [PaginationMixin],
   data () {
     return {
       endpoint: endpoints.fetch_ingredients(),
