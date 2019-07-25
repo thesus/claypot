@@ -57,7 +57,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/modules/inputs.scss';
 
 .gallery {
   position: relative;

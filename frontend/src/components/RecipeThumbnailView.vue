@@ -62,7 +62,6 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/modules/variables.scss';
-@import '@/modules/inputs.scss';
 
 a {
   text-decoration: none;

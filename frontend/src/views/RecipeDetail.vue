@@ -259,7 +259,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/modules/inputs.scss';
 @import '@/modules/variables.scss';
 
 .functions {

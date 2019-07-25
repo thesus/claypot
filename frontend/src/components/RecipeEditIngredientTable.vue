@@ -253,7 +253,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/modules/inputs.scss';
 
 .table {
   background: rgba(184, 203, 214, 0.4);
