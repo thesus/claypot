@@ -86,6 +86,10 @@ export default {
     reloadTrigger: {
       type: Number,
       default: 0,
+    },
+    simple: {
+      type: Boolean,
+      default: true
     }
   },
   data () {

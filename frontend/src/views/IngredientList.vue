@@ -62,7 +62,8 @@ export default {
   data () {
     return {
       endpoint: endpoints.fetch_ingredients(),
-      search: ''
+      search: '',
+      simple: false
     }
   },
   computed: {

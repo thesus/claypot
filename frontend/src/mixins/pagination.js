@@ -7,9 +7,13 @@ const PaginationMixin = {
       next: null,
       previous: null,
       count: 0,
+      simplePage: 1
     }
   },
   computed: {
+    simpleMode () {
+      return (this.simple != undefined) ? this.simple : true
+    },
     combinedFilters () {
       return {
         ...this.filters,
@@ -18,10 +22,15 @@ const PaginationMixin = {
     },
     page: {
       get () {
-        return this.$route.query.page || 1
+        return (this.simpleMode ? this.simplePage : this.$route.query.page) || 1
       },
       set (value) {
-        this.$router.push({ name: this.$route.name, query: { page: value } })
+        console.log(this.simpleMode)
+        if (this.simpleMode) {
+          this.simplePage = value
+        } else {
+          this.$router.push({ name: this.$route.name, query: { page: value } })
+        }
       }
     }
   },

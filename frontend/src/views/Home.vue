@@ -14,7 +14,7 @@
         {{ $t('home.add') }}
       </router-link>
     </div>
-    <RecipeList :filters="allFilters" />
+    <RecipeList :filters="allFilters" :simple="false"/>
   </article>
 </template>
 
