@@ -195,7 +195,7 @@ class RecipeSerializer(serializers.Serializer):
         allow_null=True,
     )
     description = serializers.ModelField(
-        model_field=Recipe._meta.get_field("description"), allow_null=True
+        model_field=Recipe._meta.get_field("description")
     )
 
     images = serializers.PrimaryKeyRelatedField(queryset=Image.objects.all(), many=True)

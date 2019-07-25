@@ -246,7 +246,7 @@ export default {
         images: [],
         estimated_work_duration: null,
         estimated_waiting_duration: null,
-        description: null
+        description: ''
       },
       /* Used to pass image data with urls to ImageUpload Component.
          recipe_diry.images is filled by the component and consists only of id's */
