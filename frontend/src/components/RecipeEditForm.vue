@@ -246,6 +246,7 @@ export default {
         images: [],
         estimated_work_duration: null,
         estimated_waiting_duration: null,
+        description: ''
       },
       /* Used to pass image data with urls to ImageUpload Component.
          recipe_diry.images is filled by the component and consists only of id's */
@@ -413,6 +414,7 @@ export default {
           instructions: this.recipe_dirty.instructions.map((instruction, i) => { return {order: i, text: instruction.text}}),
           ingredients: this.recipe_dirty.ingredients,
         }
+
         const r = await api(endpoints.post_recipe(this.recipe.id), d, {method: this.recipe.id ? 'put' : 'post'})
         if (r.ok) {
           this.errors.client_side = ''
@@ -455,7 +457,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/modules/inputs.scss';
 @import '@/modules/variables.scss';
 
 .description {

@@ -149,7 +149,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/modules/inputs.scss';
 
 .wrapper {
   width: 100%;

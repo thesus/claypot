@@ -16,6 +16,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import '@/modules/inputs.scss';
 @import '@/modules/variables.scss';
 
 #app {
@@ -42,5 +43,9 @@ body {
 
 h3, h4, h5, h6 {
     margin: 2px 0 5px 0;
+}
+
+a {
+  display: inline-block;
 }
 </style>

@@ -3,14 +3,14 @@
     <button
       class="btn"
       :disabled="!previous"
-      @click="$emit('input', previous)"
+      @click="$emit('update', previous)"
     >
       {{ $t('home.previous') }}
     </button>
     <button
       class="btn"
       :disabled="!next"
-      @click="$emit('input', next)"
+      @click="$emit('update', next)"
     >
       {{ $t('home.next') }}
     </button>
@@ -22,11 +22,11 @@
 export default {
   props: {
     next: {
-      type: String,
+      type: Number,
       default: null
     },
     previous: {
-      type: String,
+      type: Number,
       default: null
     }
   }
@@ -34,6 +34,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/modules/inputs.scss';
 
 </style>

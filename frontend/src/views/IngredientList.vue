@@ -50,7 +50,8 @@ export default {
   data () {
     return {
       endpoint: endpoints.fetch_ingredients(),
-      search: ''
+      search: '',
+      simple: false
     }
   },
   computed: {
@@ -62,7 +63,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/modules/inputs.scss';
 @import '@/modules/table.scss';
 
 .search {

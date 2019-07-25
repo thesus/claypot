@@ -89,6 +89,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/modules/inputs.scss';
 @import '@/modules/small_form.scss';
 </style>

@@ -148,7 +148,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/modules/inputs.scss';
 
 $thumbnail-size: 100px;
 

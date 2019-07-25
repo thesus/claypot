@@ -14,7 +14,10 @@
         {{ $t('home.add') }}
       </router-link>
     </div>
-    <RecipeList :filters="allFilters" />
+    <RecipeList
+      :filters="allFilters"
+      :simple="false"
+    />
   </article>
 </template>
 
@@ -63,7 +66,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/modules/inputs.scss';
 
 .header {
   margin-bottom: 10px;

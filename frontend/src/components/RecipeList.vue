@@ -10,11 +10,13 @@
         </button>
       </slot>
     </div>
+
     <Receiver
       :endpoint="receiverEndpoint"
       :transform="receiverTransform"
-      :filters="filters"
       :reload-trigger="reloadTrigger"
+      :filters="filters"
+      :has-url-pages="hasUrlPages"
     >
       <template v-slot:default="props">
         <slot
@@ -73,6 +75,10 @@ export default {
     reloadTrigger: {
       type: Number,
       default: 0,
+    },
+    hasUrlPages: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
@@ -81,7 +87,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getHomeView'])
+    ...mapGetters(['getHomeView']),
   },
   methods: {
     updateMode() {
@@ -106,7 +112,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '@/modules/inputs.scss';
 
 .p-5 {
   padding: 5px;
