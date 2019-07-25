@@ -14,6 +14,7 @@
       <RecipeList
         v-if="recipeRelationSearch.length"
         :filters="{search: recipeRelationSearch, exclude: recipeId}"
+        :has-url-pages="false"
       >
         <template v-slot:options>
           <div />
@@ -47,6 +48,7 @@
       :filters="recipeRelationFilter"
       :receiver-transform="transformRecipeRelation"
       :reload-trigger="reloadTrigger"
+      :has-url-pages="false"
     >
       <template v-slot:options>
         <template v-if="isLoggedIn">

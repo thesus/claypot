@@ -7,7 +7,14 @@
       v-if="results"
       :data="results"
     />
+
     <span v-else-if="!working"><slot name="noData">{{ $t('generic.no_data') }}</slot></span>
+
+    <Pagination
+      :next="next"
+      :previous="previous"
+      @update="setPage"
+    />
   </div>
 </template>
 
@@ -17,7 +24,10 @@ import { api } from '@/api'
 
 import { Timer } from '@/utils'
 
+import Pagination from '@/components/Pagination'
+
 export default {
+  components: {Pagination},
   props: {
     endpoint: {
       type: Object,
@@ -39,10 +49,14 @@ export default {
       type: Number,
       default: 0,
     },
-    forcePaginator: {
+    hasPagination: {
       type: Boolean,
-      default: false,
+      default: true
     },
+    hasUrlPages: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
@@ -53,20 +67,46 @@ export default {
 
       next: null,
       previous: null,
-      count: 0
+      count: 0,
+      simplePage: 0
     }
   },
   computed: {
-    pagination () {
+    page: {
+      get () {
+        return (this.hasUrlPages ? this.$route.query.page : this.simplePage) || 1
+      },
+      set (value) {
+        if (this.hasUrlPages) {
+          this.$router.push({
+            name: this.$route.name,
+            params: this.$route.params,
+            query: { ...this.$route.query, page: value }
+          })
+        } else {
+          this.simplePage = value
+        }
+      }
+    },
+    combinedFilters () {
+      const d = this.isList ? { page: this.page } : { }
+
       return {
-        count: this.count,
-        next: this.next,
-        previous: this.previous
+        ...this.filters,
+        ...d
       }
     }
   },
   watch: {
     filters: {
+      handler () {
+        if (this.isList) {
+          this.page = 1
+        }
+      },
+      deep: true
+    },
+    combinedFilters: {
       handler () {
         this.get()
       },
@@ -74,9 +114,6 @@ export default {
     },
     reloadTrigger () {
       this.get()
-    },
-    pagination () {
-      this.$emit('pagination', this.pagination)
     }
   },
   mounted () {
@@ -87,11 +124,10 @@ export default {
       this.working = true
       const timer = new Timer(() => { this.loading = true }, 200)
       try {
-        const page = this.isList ? { page: 1 } : {}
 
         const r = await api(
           this.endpoint,
-          { ...page, ...this.filters },
+          this.combinedFilters,
           { method: 'GET' }
         )
         const data = await r.json()
@@ -123,6 +159,9 @@ export default {
         this.working = false
         this.loading = false
       }
+    },
+    setPage (value) {
+      this.page = value
     }
   }
 }
