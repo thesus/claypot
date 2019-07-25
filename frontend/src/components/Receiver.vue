@@ -11,6 +11,7 @@
     <span v-else-if="!working"><slot name="noData">{{ $t('generic.no_data') }}</slot></span>
 
     <Pagination
+      v-if="hasPagination"
       :next="next"
       :previous="previous"
       @update="setPage"
@@ -37,10 +38,12 @@ export default {
       type: Object,
       default: () => ({})
     },
+    /* Expect multiple results in a nested response */
     isList: {
       type: Boolean,
       default: true
     },
+    /* Function that is applied to data before passing them to slots */
     transform: {
       type: Function,
       default: null,
@@ -49,10 +52,12 @@ export default {
       type: Number,
       default: 0,
     },
+    /* Removes pagination completely */
     hasPagination: {
       type: Boolean,
       default: true
     },
+    /* page is stored in url history */
     hasUrlPages: {
       type: Boolean,
       default: true
@@ -77,6 +82,7 @@ export default {
         return (this.hasUrlPages ? this.$route.query.page : this.simplePage) || 1
       },
       set (value) {
+        /* Store page in url otherwise in 'simplePage' data */
         if (this.hasUrlPages) {
           this.$router.push({
             name: this.$route.name,
@@ -89,6 +95,7 @@ export default {
       }
     },
     combinedFilters () {
+      /* Merge page in filters if list mode is enabled */
       const d = this.isList ? { page: this.page } : { }
 
       return {
@@ -98,6 +105,7 @@ export default {
     }
   },
   watch: {
+    /* Reset the page to one if the filter changes */
     filters: {
       handler () {
         if (this.isList) {
@@ -106,6 +114,7 @@ export default {
       },
       deep: true
     },
+    /* Fetch data after page or filter change */
     combinedFilters: {
       handler () {
         this.get()
@@ -122,6 +131,7 @@ export default {
   methods: {
     async get () {
       this.working = true
+      /* Show loading indicator after 200ms */
       const timer = new Timer(() => { this.loading = true }, 200)
       try {
 
@@ -146,6 +156,7 @@ export default {
           if (this.isList && data) {
             this.$set(this, 'next', data.next)
             this.$set(this, 'previous', data.previous)
+            this.$set(this, 'count', data.count)
           }
         } else {
           throw new Error(data['detail'])
