@@ -141,13 +141,13 @@
 import { mapGetters } from 'vuex'
 import { api, endpoints } from '@/api'
 
-import DurationSpan from '@/components/DurationSpan'
-import ImageGallery from '@/components/ImageGallery'
-import Modal from '@/components/Modal'
-import RecipeIngredientTable from '@/components/RecipeIngredientTable'
-import RecipeRelationGallery from '@/components/RecipeRelationGallery'
-import RecipeStarInput from '@/components/RecipeStarInput'
-import ScaleInput2 from '@/components/ScaleInput2'
+import DurationSpan from '@/components/recipe-detail/DurationSpan'
+import ImageGallery from '@/components/recipe-detail/ImageGallery'
+import Modal from '@/components/utils/Modal'
+import RecipeIngredientTable from '@/components/recipe-detail/RecipeIngredientTable'
+import RecipeRelationGallery from '@/components/recipe-detail/RecipeRelationGallery'
+import RecipeStarInput from '@/components/recipe-detail/RecipeStarInput'
+import ScaleInput2 from '@/components/recipe-detail/ScaleInput2'
 
 export default {
   components: {

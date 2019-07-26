@@ -104,10 +104,10 @@
 import { mapGetters } from 'vuex'
 import { api, endpoints } from '@/api'
 
-import DebounceInput from '@/components/DebounceInput'
-import Modal from '@/components/Modal'
-import RecipeList from '@/components/RecipeList'
-import RecipeThumbnailView from '@/components/RecipeThumbnailView'
+import DebounceInput from '@/components/utils/DebounceInput'
+import Modal from '@/components/utils/Modal'
+import RecipeList from '@/components/utils/RecipeList'
+import RecipeThumbnailView from '@/components/utils/RecipeThumbnailView'
 
 export default {
   name: "RecipeRelationGallery",

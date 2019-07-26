@@ -99,8 +99,8 @@
 </template>
 
 <script>
-import IngredientInput from '@/components/IngredientInput'
-import FormFieldValidationError from '@/components/FormFieldValidationError'
+import IngredientInput from '@/components/utils/IngredientInput'
+import FormFieldValidationError from '@/components/utils/FormFieldValidationError'
 
 export default {
   name: 'RecipeEditIngredientTable',
