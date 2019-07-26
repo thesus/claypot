@@ -2,7 +2,7 @@
   <div>
     <div
       class="recipes"
-      :class="{small, 'on-mask': overlayMode}"
+      :class="{small}"
     >
       <div
         v-for="recipe in $props.recipes"
@@ -31,11 +31,6 @@
         </router-link>
       </div>
     </div>
-    <div
-      class="mask"
-      :class="{disabled: !overlayMode}"
-      @click="$emit('update:overlayMode', false)"
-    />
   </div>
 </template>
 
@@ -77,13 +72,6 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fill, 330px);
   justify-content: center;
-}
-
-.recipes.small {
-  grid-template-columns: repeat(auto-fill, 220px);
-}
-
-.recipe-container {
   position: relative;
   grid-gap: 15px;
 
