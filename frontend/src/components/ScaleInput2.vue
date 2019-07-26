@@ -22,76 +22,62 @@
       v-if="showModal"
       @close="showModal = false"
     >
-      <div class="fraction-modal">
-        <div class="number-box has-btns">
-          <div>
+      <div class="box">
+        <button
+          class="btn increase"
+          @click="increaseMultiplyer"
+        >+</button>
+
+        <input
+          class="input number"
+          min="1"
+          :value="multiplyer"
+        >
+
+        <span class="meals">{{ $t('recipe_detail.portion_count') }}</span>
+
+        <button
+          class="btn decrease"
+          @click="decreaseMultiplyer"
+        >-</button>
+
+        <div class="times">×</div>
+        <div class="fraction">
+          <div class="block nominator">
             <button
-              class="btn"
-              @click="increaseMultiplyer"
+              class="btn decrease"
+              @click="decreaseNumerator"
+            >-</button>
+            <input
+              class="input number"
+              min="1"
+              :value="numerator"
+            >
+            <button
+              class="btn increase"
+              @click="increaseNumerator"
             >+</button>
           </div>
-          <div>
-            <input
-              class="input full"
-              min="1"
-              :value="multiplyer"
-            >
-            <span style="position: relative; bottom: 1.5em;">{{ $t('recipe_detail.portion_count') }}</span>
-          </div>
-          <div>
+          <div class="block">
             <button
-              class="btn"
-              @click="decreaseMultiplyer"
+              class="btn decrease"
+              @click="decreaseDenominator"
             >-</button>
+            <input
+              class="input number"
+              min="1"
+              :value="denominator"
+            >
+            <button
+              class="btn incrDenominator"
+              @click="increaseDenominator"
+            >+</button>
           </div>
         </div>
-        <div class="calc-hint">×</div>
-        <div class="fraction has-btns">
-          <div class="number-box">
-            <div>
-              <button
-                class="btn"
-                @click="decreaseNumerator"
-              >-</button>
-            </div>
-            <div>
-              <input
-                class="input"
-                min="1"
-                :value="numerator"
-              >
-            </div>
-            <div>
-              <button
-                class="btn"
-                @click="increaseNumerator"
-              >+</button>
-            </div>
-          </div>
-          <div class="number-box">
-            <div>
-              <button
-                class="btn"
-                @click="decreaseDenominator"
-              >-</button>
-            </div>
-            <div>
-              <input
-                class="input denominator"
-                min="1"
-                :value="denominator"
-              >
-            </div>
-            <div>
-              <button
-                class="btn"
-                @click="increaseDenominator"
-              >+</button>
-            </div>
-          </div>
-          <span style="position: relative; bottom: 0.0em;">{{ $t('recipe_detail.portion_size') }}</span>
-        </div>
-        <div class="calc-hint">={{ resultStr }}</div>
+
+        <span class="size">{{ $t('recipe_detail.portion_size') }}</span>
+        <span class="equals">=</span>
+        <span class="result">{{ resultStr }}</span>
       </div>
     </Modal>
   </span>
@@ -185,9 +171,11 @@ export default {
 <style lang="scss" scoped>
 @import '@/modules/inputs.scss';
 
-input {
-  /*border: 0px;*/
+.input {
+  border: 0px;
   text-align: center;
+  font-size: 200%;
+  height: 100%;
 }
 
 .pointer {
@@ -201,56 +189,72 @@ input {
   }
 }
 
-.fraction-modal {
-  width: 50vw;
-  display: flex;
-  flex-direction: row;
+.box {
+  display: grid;
+  grid-template-columns: 40px 80px 40px 80px 150px 80px 80px;
+  grid-template-rows: 30% 30% 30% 10%;
+  grid-template-areas:
+    ". . . . fraction . ."
+    "decrease number increase times fraction equals result"
+    ". . . . fraction . ."
+    ". meals . . size . .";
+  place-items: center;
+  font-size: 200%;
 
-  .has-btns div:nth-child(odd) {
-    /* vertical align of buttons */
-    margin: auto;
-  }
+    .increase {
+      grid-area: increase;
+    }
 
-  & > .number-box {
-    display: flex;
-    flex-direction: row;
-  }
+    .decrease {
+      grid-area: decrease;
+    }
 
-  .calc-hint {
-    font-size: 400%;
-    margin: auto;
-    white-space: nowrap;
-  }
+    .number {
+      grid-area: number;
+    }
 
-  .full {
-    height: 100%;
-    font-size: 600%;
-    border: 0px;
-  }
+    .meals {
+      grid-area: meals;
+      font-size: 60%;
+    }
 
-  .fraction {
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-    position: relative;
+    .times {
+      grid-area: times;
+    }
 
-    & > .number-box {
-      display: flex;
-      flex-direction: row;
+    .fraction {
+      grid-area: fraction;
 
-      & > div {
-        flex: 1;
+      display: grid;
+      grid-template-columns: 100%;
+      grid-template-rows: 50% 50%;
+      grid-template-areas:
+        "numerator"
+        "denominator";
+
+      .block {
+        display: grid;
+        grid-template-columns: 20% 60% 20%;
+        grid-template-areas: "decrease number increase";
+        place-items: center;
+
+        &.nominator {
+          border-bottom: solid 1px black;
+        }
       }
     }
 
-    input {
-      height: 100%;
-      font-size: 300%;
-      border-width: 0px;
+    .equals {
+      grid-area: equals;
     }
-    & > div:first-child {
-      border-bottom: 4px solid black;
+
+    .result {
+      grid-area: result;
     }
-  }
+
+    .size {
+      grid-area: size;
+      font-size: 60%;
+    }
 }
 </style>
