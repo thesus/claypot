@@ -39,8 +39,8 @@
 <script>
 import { api, endpoints } from '@/api'
 
-import Receiver from '@/components/Receiver'
-import DebounceInput from '@/components/DebounceInput'
+import Receiver from '@/components/utils/Receiver'
+import DebounceInput from '@/components/utils/DebounceInput'
 
 export default {
   components: {

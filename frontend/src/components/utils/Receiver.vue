@@ -25,7 +25,7 @@ import { api } from '@/api'
 
 import { Timer } from '@/utils'
 
-import Pagination from '@/components/Pagination'
+import Pagination from '@/components/utils/Pagination'
 
 export default {
   components: {Pagination},

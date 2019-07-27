@@ -29,7 +29,7 @@
 
 <script>
 import { api, endpoints } from '@/api'
-import FormFieldValidationError from '@/components/FormFieldValidationError'
+import FormFieldValidationError from '@/components/utils/FormFieldValidationError'
 
 export default {
   components: {

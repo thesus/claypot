@@ -32,7 +32,7 @@
 <script>
 import { api, endpoints } from '@/api'
 
-import IngredientSynonymInput from '@/components/IngredientSynonymInput'
+import IngredientSynonymInput from '@/components/ingredient-edit/IngredientSynonymInput'
 
 export default {
   components: {

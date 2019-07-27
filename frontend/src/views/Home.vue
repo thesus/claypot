@@ -25,8 +25,8 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 
-import RecipeList from '@/components/RecipeList'
-import DebounceInput from '@/components/DebounceInput'
+import RecipeList from '@/components/utils/RecipeList'
+import DebounceInput from '@/components/utils/DebounceInput'
 
 import { api, endpoints } from '@/api'
 

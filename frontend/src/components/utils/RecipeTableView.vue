@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import RecipeLink from '@/components/RecipeLink'
+import RecipeLink from '@/components/utils/RecipeLink'
 
 export default {
   name: 'RecipeTableView',

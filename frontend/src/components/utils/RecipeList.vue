@@ -47,10 +47,10 @@ import { mapGetters } from 'vuex'
 
 import { endpoints } from '@/api'
 
-import RecipeThumbnailView from '@/components/RecipeThumbnailView'
-import RecipeTableView from '@/components/RecipeTableView'
+import RecipeThumbnailView from '@/components/utils/RecipeThumbnailView'
+import RecipeTableView from '@/components/utils/RecipeTableView'
 
-import Receiver from '@/components/Receiver'
+import Receiver from '@/components/utils/Receiver'
 
 export default {
   name: 'RecipeList',
