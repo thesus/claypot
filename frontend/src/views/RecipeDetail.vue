@@ -276,7 +276,7 @@ export default {
     border: solid 1px #ccc;
     display: inline-block;
     white-space: nowrap;
-    margin-right: 5px;
+    margin: 2px 5px 2px 2px;
 
     .countainer, .button {
       padding: 0 5px 0 5px;
@@ -286,12 +286,9 @@ export default {
 
     .button {
       border-left: solid 1px #ccc;
+      margin: 0;
     }
 
-  }
-
-  .scale {
-    margin-right: 5px;
   }
 
   .right {
@@ -320,6 +317,8 @@ export default {
 }
 
 .fork {
+  margin: 2px 5px 2px 2px;
+
   &.info {
     display: block;
   }
