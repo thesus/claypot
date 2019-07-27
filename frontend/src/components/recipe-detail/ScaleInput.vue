@@ -45,9 +45,10 @@
         </button>
 
         <input
+          v-model.number="multiplier"
           class="input number"
           min="1"
-          :value="multiplier"
+          type="number"
         >
 
         <span class="helptext meals">{{ $t('recipe_detail.portion_count') }}</span>
@@ -73,9 +74,10 @@
               -
             </button>
             <input
+              v-model.number="numerator"
               class="input number"
               min="1"
-              :value="numerator"
+              type="number"
             >
             <button
               class="btn increase"
@@ -93,9 +95,10 @@
               -
             </button>
             <input
+              v-model.number="denominator"
               class="input number"
               min="1"
-              :value="denominator"
+              type="number"
             >
             <button
               class="btn incrDenominator"
@@ -370,5 +373,16 @@ export default {
       }
     }
   }
+}
+
+/* Remove step buttons on inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+ -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance:textfield;
 }
 </style>
