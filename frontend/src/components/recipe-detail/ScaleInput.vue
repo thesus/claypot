@@ -3,11 +3,22 @@
     <button
       class="button"
       @click="quickDecrease"
-    >-</button>
+    >
+      -
+    </button>
 
-    <span class="button number" @click="showModal = true">
-      <span class="full" v-if="full > 0">{{ full }}</span>
-      <span class="fraction" v-if="remainder !== 0">
+    <span
+      class="button number"
+      @click="showModal = true"
+    >
+      <span
+        v-if="full > 0"
+        class="full"
+      >{{ full }}</span>
+      <span
+        v-if="remainder !== 0"
+        class="fraction"
+      >
         <sup>{{ remainder }}</sup>
         /
         <sub>{{ denominator }}</sub>
@@ -17,7 +28,9 @@
     <button
       class="button"
       @click="quickIncrease"
-    >+</button>
+    >
+      +
+    </button>
 
     <Modal
       v-if="showModal"
@@ -26,29 +39,39 @@
       <div class="box">
         <button
           class="btn increase"
-          @click="increaseMultiplyer"
-        >+</button>
+          @click="increaseMultiplier"
+        >
+          +
+        </button>
 
         <input
           class="input number"
           min="1"
-          :value="multiplyer"
+          :value="multiplier"
         >
 
         <span class="helptext meals">{{ $t('recipe_detail.portion_count') }}</span>
 
         <button
           class="btn decrease"
-          @click="decreaseMultiplyer"
-        >-</button>
+          :disabled="!canDecreaseMultiplier"
+          @click="decreaseMultiplier"
+        >
+          -
+        </button>
 
-        <div class="times">×</div>
+        <div class="times">
+          ×
+        </div>
         <div class="fraction">
           <div class="block nominator">
             <button
               class="btn decrease"
+              :disabled="!canDecreaseNumerator"
               @click="decreaseNumerator"
-            >-</button>
+            >
+              -
+            </button>
             <input
               class="input number"
               min="1"
@@ -57,13 +80,18 @@
             <button
               class="btn increase"
               @click="increaseNumerator"
-            >+</button>
+            >
+              +
+            </button>
           </div>
           <div class="block">
             <button
               class="btn decrease"
+              :disabled="!canDecreaseDenominator"
               @click="decreaseDenominator"
-            >-</button>
+            >
+              -
+            </button>
             <input
               class="input number"
               min="1"
@@ -72,7 +100,9 @@
             <button
               class="btn incrDenominator"
               @click="increaseDenominator"
-            >+</button>
+            >
+              +
+            </button>
           </div>
         </div>
 
@@ -99,7 +129,7 @@ export default {
   },
   data () {
     return {
-      multiplyer: 1.0,
+      multiplier: 1.0,
       numerator: 1.0,
       denominator: 1.0,
       showModal: false,
@@ -107,17 +137,26 @@ export default {
   },
   computed: {
     full () {
-      return Math.floor(this.multiplyer * this.numerator / this.denominator)
+      return Math.floor(this.multiplier * this.numerator / this.denominator)
     },
     result () {
-      return this.multiplyer * (this.numerator / this.denominator)
+      return this.multiplier * (this.numerator / this.denominator)
     },
     resultStr () {
       return new Intl.NumberFormat("en", { maximumFractionDigits: 2 }).format(this.result)
     },
     remainder () {
-      return (this.multiplyer * this.numerator) % this.denominator
+      return (this.multiplier * this.numerator) % this.denominator
     },
+    canDecreaseDenominator () {
+      return this.denominator >= 2
+    },
+    canDecreaseNumerator () {
+      return this.numerator >= 2
+    },
+    canDecreaseMultiplier () {
+      return this.multiplier >= 2
+    }
   },
   watch: {
     result () {
@@ -137,32 +176,32 @@ export default {
     decreaseDenominator () {
       this.denominator = Math.max(this.denominator - 1, 1)
     },
-    increaseMultiplyer () {
-      this.multiplyer += 1
+    increaseMultiplier () {
+      this.multiplier += 1
     },
-    decreaseMultiplyer () {
-      this.multiplyer = Math.max(this.multiplyer - 1, 1)
+    decreaseMultiplier () {
+      this.multiplier = Math.max(this.multiplier - 1, 1)
     },
     quickIncrease () {
-      if (this.multiplyer === 1) {
+      if (this.multiplier === 1) {
         if (this.denominator <= 1) {
           this.numerator += 1
         } else {
           this.denominator -= 1
         }
       } else {
-        this.multiplyer += 1
+        this.multiplier += 1
       }
     },
     quickDecrease () {
-      if (this.multiplyer === 1) {
+      if (this.multiplier === 1) {
         if (this.numerator > 1) {
           this.numerator -= 1
         } else {
           this.denominator += 1
         }
       } else {
-        this.multiplyer = Math.max(this.multiplyer - 1, 1)
+        this.multiplier = Math.max(this.multiplier - 1, 1)
       }
     },
   },
