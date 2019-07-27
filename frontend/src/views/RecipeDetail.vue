@@ -25,7 +25,7 @@
           />
         </div>
 
-        <ScaleInput2 v-model="scaling" />
+        <ScaleInput v-model="scaling" />
 
         <span
           v-if="isLoggedIn"
@@ -147,7 +147,7 @@ import Modal from '@/components/utils/Modal'
 import RecipeIngredientTable from '@/components/recipe-detail/RecipeIngredientTable'
 import RecipeRelationGallery from '@/components/recipe-detail/RecipeRelationGallery'
 import RecipeStarInput from '@/components/recipe-detail/RecipeStarInput'
-import ScaleInput2 from '@/components/recipe-detail/ScaleInput2'
+import ScaleInput from '@/components/recipe-detail/ScaleInput'
 
 export default {
   components: {
@@ -157,7 +157,7 @@ export default {
     RecipeIngredientTable,
     RecipeRelationGallery,
     RecipeStarInput,
-    ScaleInput2,
+    ScaleInput,
   },
   data () {
     return {
