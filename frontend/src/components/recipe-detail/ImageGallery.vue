@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import ImageFrame from '@/components/ImageFrame'
+import ImageFrame from '@/components/recipe-detail/ImageFrame'
 
 export default {
   components: {

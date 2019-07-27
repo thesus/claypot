@@ -45,7 +45,7 @@ export default {
     small: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   methods: {
     to (id) {

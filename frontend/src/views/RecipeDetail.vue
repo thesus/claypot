@@ -141,13 +141,13 @@
 import { mapGetters } from 'vuex'
 import { api, endpoints } from '@/api'
 
-import DurationSpan from '@/components/DurationSpan'
-import ImageGallery from '@/components/ImageGallery'
-import Modal from '@/components/Modal'
-import RecipeIngredientTable from '@/components/RecipeIngredientTable'
-import RecipeRelationGallery from '@/components/RecipeRelationGallery'
-import RecipeStarInput from '@/components/RecipeStarInput'
-import ScaleInput from '@/components/ScaleInput'
+import DurationSpan from '@/components/recipe-detail/DurationSpan'
+import ImageGallery from '@/components/recipe-detail/ImageGallery'
+import Modal from '@/components/utils/Modal'
+import RecipeIngredientTable from '@/components/recipe-detail/RecipeIngredientTable'
+import RecipeRelationGallery from '@/components/recipe-detail/RecipeRelationGallery'
+import RecipeStarInput from '@/components/recipe-detail/RecipeStarInput'
+import ScaleInput from '@/components/recipe-detail/ScaleInput'
 
 export default {
   components: {
@@ -276,7 +276,7 @@ export default {
     border: solid 1px #ccc;
     display: inline-block;
     white-space: nowrap;
-    margin-right: 5px;
+    margin: 2px 5px 2px 2px;
 
     .countainer, .button {
       padding: 0 5px 0 5px;
@@ -286,12 +286,9 @@ export default {
 
     .button {
       border-left: solid 1px #ccc;
+      margin: 0;
     }
 
-  }
-
-  .scale {
-    margin-right: 5px;
   }
 
   .right {
@@ -320,6 +317,8 @@ export default {
 }
 
 .fork {
+  margin: 2px 5px 2px 2px;
+
   &.info {
     display: block;
   }

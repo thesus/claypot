@@ -31,7 +31,7 @@
 
 <script>
 import { api, endpoints, InvalidRequestError } from '@/api'
-import FormFieldValidationError from '@/components/FormFieldValidationError'
+import FormFieldValidationError from '@/components/utils/FormFieldValidationError'
 
 export default {
   components: {

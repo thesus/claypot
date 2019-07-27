@@ -200,11 +200,11 @@ import Vue from 'vue'
 
 import {api, endpoints} from '@/api'
 import {clone} from '@/utils'
-import DurationInput from '@/components/DurationInput'
-import FormFieldValidationError from '@/components/FormFieldValidationError'
-import RecipeEditIngredientTable from '@/components/RecipeEditIngredientTable'
-import ImageUpload from '@/components/ImageUpload'
-import Modal from '@/components/Modal'
+import DurationInput from '@/components/recipe-edit/DurationInput'
+import FormFieldValidationError from '@/components/utils/FormFieldValidationError'
+import RecipeEditIngredientTable from '@/components/recipe-edit/RecipeEditIngredientTable'
+import ImageUpload from '@/components/recipe-edit/ImageUpload'
+import Modal from '@/components/utils/Modal'
 
 const amount_types = {
   none: 1,

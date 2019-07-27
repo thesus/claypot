@@ -98,7 +98,9 @@
         "fork_title": "Fork",
         "fork_confirm": "You are about to fork a recipe. Do you want to continue?",
         "add_recipe_relation": "Link recipe",
-        "no_linked_recipes": "No linked recipes, yet."
+        "no_linked_recipes": "No linked recipes, yet.",
+        "portion_count": "Portions",
+        "portion_size": "Portion size"
     },
     "recipe_edit": {
         "loading": "@:generic.loading",
@@ -142,5 +144,8 @@
     },
     "ingredient": {
         "name": "Name"
+    },
+    "scaling": {
+        "title": "Scaling"
     }
 }

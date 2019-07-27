@@ -18,7 +18,7 @@
 
 <script>
 import {api, endpoints} from '@/api'
-import RecipeEditForm from '@/components/RecipeEditForm'
+import RecipeEditForm from '@/components/recipe-edit/RecipeEditForm'
 
 export default {
   components: {
