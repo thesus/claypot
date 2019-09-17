@@ -22,6 +22,7 @@ from claypot.models import (
     IngredientTag,
     RECIPE_RELATION_TYPE_REPLACEMENT,
     Recipe,
+    RecipeDraft,
     RecipeIngredient,
     RecipeIngredientGroup,
     RecipeIngredientGroupIngredient,
@@ -552,3 +553,12 @@ class RecipeRelationCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeRelation
         fields = ("id", "recipe1", "recipe2", "type")
+
+
+class RecipeDraftSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RecipeDraft
+        fields = ("id", "recipe", "data")
+
+

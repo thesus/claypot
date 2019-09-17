@@ -23,7 +23,13 @@ from django.contrib.postgres.search import (
     TrigramSimilarity,
 )
 
-from claypot.models import Ingredient, IngredientSynonym, Recipe, RecipeRelation
+from claypot.models import (
+    Ingredient,
+    IngredientSynonym,
+    Recipe,
+    RecipeRelation,
+    RecipeDraft,
+)
 from claypot.images.models import Image
 
 from .serializers import (
@@ -37,6 +43,7 @@ from .serializers import (
     RecipeRelationCreateSerializer,
     RecipeRelationSerializer,
     RecipeSerializer,
+    RecipeDraftSerializer,
 )
 
 
@@ -347,3 +354,9 @@ class RecipeRelationViewSet(viewsets.ModelViewSet):
         if recipe:
             qs = qs.filter(Q(recipe1_id=int(recipe)) | Q(recipe2_id=int(recipe)))
         return qs
+
+
+class RecipeDraftViewSet(viewsets.ModelViewSet):
+    queryset = RecipeDraft.objects.all().order_by("id")
+    serializer_class = RecipeDraftSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]

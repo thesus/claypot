@@ -140,8 +140,10 @@
         {{ $t('recipe_edit.save') }}
       </button>
     </div>
-
-    <div v-if="newIngredientsDecision">
+    <Modal
+      v-if="newIngredientsDecision"
+      @close="newIngredientsDecision(false)"
+    >
       <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
       <ul>
         <li
@@ -155,18 +157,12 @@
         </li>
       </ul>
       <button
-        class="btn"
+        class="btn right"
         @click="newIngredientsDecision(true)"
       >
         {{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}
       </button>
-      <button
-        class="btn"
-        @click="newIngredientsDecision(false)"
-      >
-        {{ $tc('recipes.confirm_new_ingredients.decline', newIngredientsCount, {count: newIngredientsCount}) }}
-      </button>
-    </div>
+    </Modal>
     <div v-if="!newIngredientsDecision && newIngredientsError">
       <ul>
         <li

@@ -8,6 +8,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext, ugettext_lazy
 
+from django.contrib.postgres.fields import JSONField
 
 class UnitManager(models.Manager):
     def get_by_natural_key(self, name):
@@ -346,3 +347,21 @@ class RecipeInstruction(models.Model):
         verbose_name = ugettext_lazy("Recipe instruction")
         verbose_name_plural = ugettext_lazy("Recipe instructions")
         unique_together = ("recipe", "order")
+
+
+class RecipeDraft(models.Model):
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+
+    recipe = models.ForeignKey(
+        "Recipe", on_delete=models.CASCADE, blank=True, null=True
+    )
+
+    data = JSONField()
+
+    class Meta:
+        verbose_name = ugettext_lazy("Recipe draft")
+        verbose_name_plural = ugettext_lazy("Recipe drafts")
+        ordering = ("id",)
