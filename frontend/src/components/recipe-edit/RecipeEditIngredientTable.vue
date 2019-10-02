@@ -70,7 +70,12 @@
             :disabled="saving"
           >
         </div>
+        <!--
+          It is fine to only show the remove button, if the form is not empty.
+          Only if anything is in group, it makes any sense to offer the user such a button.
+        -->
         <button
+          v-if="!isEmpty"
           :disabled="saving"
           tabindex="-1"
           class="btn"
@@ -87,7 +92,13 @@
     >
       {{ $t('recipe_edit.add_ingredient') }}
     </button>
+    <!--
+      We will only show the button that allows removal of the whole group,
+      if the group is already empty. This helps to prevent users from removing
+      a group in error.
+    -->
     <button
+      v-if="isEmpty"
       :disabled="saving"
       class="btn right"
       @click.prevent="removeGroup"
@@ -154,7 +165,12 @@ export default {
             return 'broken'
         }
       }
-    }
+    },
+    isEmpty () {
+      // either there is no ingredient or there is exactly one, that matches the empty object in every respect
+      return this.dirty.ingredients.length === 0 ||
+        (this.dirty.ingredients.length === 1 && Object.entries(this.createEmptyIngredient()).every((([k, v]) => this.dirty.ingredients[0][k] == v)))
+    },
   },
   watch: {
     value () {
