@@ -373,7 +373,7 @@ class RecipeRelationViewSet(viewsets.ModelViewSet):
 
 
 class RecipeDraftViewSet(viewsets.ModelViewSet):
-    queryset = RecipeDraft.objects.filter(recipe=None).order_by("id")
+    queryset = RecipeDraft.objects.all().order_by("id")
     serializer_class = RecipeDraftSerializer
     permission_classes = [ReadOwnEditOwn]
 
@@ -385,6 +385,6 @@ class RecipeDraftViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.action == "list":
-            return self.queryset.filter(author=self.request.user)
+            return self.queryset.filter(recipe=None, author=self.request.user)
         else:
             return super().get_queryset()
