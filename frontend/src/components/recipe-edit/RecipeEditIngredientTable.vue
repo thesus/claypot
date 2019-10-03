@@ -287,10 +287,4 @@ export default {
 .input {
   width: 100%;
 }
-
-/* Checkboxes are not centered otherwise */
-input[type=checkbox] {
-  width: 14px;
-  height: 14px;
-}
 </style>
