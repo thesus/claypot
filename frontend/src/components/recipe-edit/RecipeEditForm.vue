@@ -3,7 +3,7 @@
     <header>
       <select
         v-if="drafts.length"
-        @input="loadDraft($event.target.value)"
+        @input="getDraft($event.target.value)"
       >
         <option
           disabled
@@ -24,7 +24,7 @@
       <button
         v-if="!drafts.length"
         :disabled="!(recipe.draft_id && !draft)"
-        @click="loadDraft(recipe.draft_id)"
+        @click="getDraft(recipe.draft_id)"
       >
         Load Draft
       </button>
@@ -258,6 +258,7 @@ export default {
       drafts: [], /* Draft list for new recipes */
       draft: null, /* Currently selected draft, gets deleted after succesfull save */
       autosave: true, /* Save timer is running */
+      changed: false,
       recipe_dirty: {
         ingredients: [{is_group: false, title: '', ingredients: []}],
         instructions: [this.createEmptyInstruction()],
@@ -335,7 +336,15 @@ export default {
           /* Allow autosave again after 10 seconds */
           setTimeout(() => {
               this.autosave = false
-          }, 10000);
+
+              if (this.changed) {
+                this.saveDraft()
+                this.changed = false
+                this.autosave = true
+              }
+          }, 10000)
+        } else {
+          this.changed = true
         }
       },
       deep: true
@@ -344,7 +353,7 @@ export default {
       handler () {
         if (!this.isExistingRecipe) {
           /* If this is a new recipe load drafts that are not associated with a recipe */
-          this.loadDrafts()
+          this.getDraftList()
         } else {
           this.drafts = []
 
@@ -384,22 +393,24 @@ export default {
     addInstruction () {
       this.recipe_dirty.instructions.push(this.createEmptyInstruction())
     },
-    async loadDrafts () {
+    async getDraftList () {
       const r = await api(
-        endpoints.get_recipe_drafts()
+        endpoints.recipe_draft()
       )
       if (r.ok) {
         this.drafts = (await r.json()).results
       }
     },
-    async loadDraft (id) {
+    async getDraft (id) {
+      /* Set the current draft to the loaded one. */
       this.draft = id
 
       const r = await api(
-        endpoints.get_recipe_draft(id)
+        endpoints.recipe_draft(id)
       )
       if (r.ok) {
-        this.recipe_dirty = (await r.json()).data
+        /* Replace current version with the draft */
+        this.recipe_dirty = Object.assign((await r.json()).data, this.recipe_dirty)
       }
     },
     async saveDraft () {
@@ -410,14 +421,14 @@ export default {
       }
 
       const r = await api(
-        endpoints.post_recipe_draft(this.draft),
+        endpoints.recipe_draft(this.draft),
         { data: this.recipe_dirty, recipe: this.recipe.id },
         { method: this.draft ? 'put' : 'post' }
       )
     },
     async deleteDraft (id) {
       await api(
-        endpoints.get_recipe_draft(id),
+        endpoints.recipe_draft(id),
         null,
         { method: 'delete' }
       )
