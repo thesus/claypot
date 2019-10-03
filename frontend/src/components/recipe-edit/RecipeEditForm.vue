@@ -410,7 +410,7 @@ export default {
       )
       if (r.ok) {
         /* Replace current version with the draft */
-        this.recipe_dirty = Object.assign((await r.json()).data, this.recipe_dirty)
+        this.recipe_dirty = Object.assign(this.recipe_dirty, (await r.json()).data)
       }
     },
     async saveDraft () {
