@@ -9,7 +9,7 @@
 
     <span
       class="button number"
-      @click="showModal = true"
+      @click="doShowModal"
     >
       <span
         v-if="full > 0"
@@ -40,7 +40,10 @@
         class="scaleTo"
         @submit="scaleTo"
       >
-        <select v-model="scaleToIngredient">
+        <select
+          v-model="scaleToIngredient"
+          @change="reverseScaleTo"
+        >
           <optgroup
             v-for="group in scaleToOptions"
             :key="group.key"
@@ -220,6 +223,21 @@ export default {
     },
   },
   methods: {
+    doShowModal () {
+      this.showModal = true
+      let max = null
+      this.scaleToOptions.forEach(i => {
+        i.items.forEach(j => {
+          if (max === null || j.value > max) {
+            max = j.value
+          }
+        })
+      })
+      if (max !== null) {
+        this.scaleToIngredient = max
+        this.reverseScaleTo()
+      }
+    },
     increaseNumerator () {
       this.numerator += 1
       this.reverseScaleTo()
