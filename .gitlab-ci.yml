@@ -9,8 +9,6 @@ variables:
 test:backend:
   image: python:latest
   stage: test
-  needs:
-    - build:claypot
   tags:
     - docker
   variables:
@@ -36,7 +34,6 @@ test:backend:
 test:frontend:
   image: node:10-alpine
   stage: test
-  needs: []
   tags:
     - docker
   before_script:
