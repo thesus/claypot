@@ -365,4 +365,4 @@ class RecipeDraft(models.Model):
         verbose_name = ugettext_lazy("Recipe draft")
         verbose_name_plural = ugettext_lazy("Recipe drafts")
         ordering = ("id",)
-        unique_together = ('author', 'recipe')
+        unique_together = ("author", "recipe")

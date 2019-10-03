@@ -10,23 +10,45 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('claypot', '0011_recipe_description'),
+        ("claypot", "0011_recipe_description"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='RecipeDraft',
+            name="RecipeDraft",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('data', django.contrib.postgres.fields.jsonb.JSONField()),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('recipe', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='claypot.Recipe')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("data", django.contrib.postgres.fields.jsonb.JSONField()),
+                (
+                    "author",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "recipe",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="claypot.Recipe",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Recipe draft',
-                'verbose_name_plural': 'Recipe drafts',
-                'ordering': ('id',),
-                'unique_together': {('author', 'recipe')},
+                "verbose_name": "Recipe draft",
+                "verbose_name_plural": "Recipe drafts",
+                "ordering": ("id",),
+                "unique_together": {("author", "recipe")},
             },
-        ),
+        )
     ]

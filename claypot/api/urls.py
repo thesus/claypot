@@ -7,7 +7,7 @@ from .viewsets import (
     IngredientViewSet,
     RecipeViewSet,
     RecipeRelationViewSet,
-    RecipeDraftViewSet
+    RecipeDraftViewSet,
 )
 
 

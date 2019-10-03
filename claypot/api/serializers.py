@@ -419,8 +419,9 @@ class RecipeSerializer(serializers.Serializer):
             "starred_by",
             "is_starred",
             "stars",
-            "draft"
+            "draft",
         ]
+
 
 class RecipeReadSerializer(RecipeSerializer):
     images = ImageRetrieveSerializer(read_only=True, many=True)
@@ -565,9 +566,7 @@ class RecipeRelationCreateSerializer(serializers.ModelSerializer):
 
 
 class RecipeDraftSerializer(serializers.ModelSerializer):
-    author = serializers.HiddenField(
-        default=serializers.CurrentUserDefault()
-    )
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = RecipeDraft

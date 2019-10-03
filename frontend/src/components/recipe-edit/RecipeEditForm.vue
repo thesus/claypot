@@ -3,8 +3,15 @@
     <header>
       <select
         v-if="drafts.length"
-        @change="loadDraft(value)"
+        @input="loadDraft($event.target.value)"
       >
+        <option
+          disabled
+          selected
+          value
+        >
+          select an option
+        </option>
         <option
           v-for="d in drafts"
           :key="d.id"
@@ -14,7 +21,14 @@
         </option>
       </select>
 
-      <button @click="loadDraft(recipe.draft_id)" :disabled="!(recipe.draft_id && !draft)">Load Draft</button>
+      <button
+        v-if="!drafts.length"
+        :disabled="!(recipe.draft_id && !draft)"
+        @click="loadDraft(recipe.draft_id)"
+      >
+        Load Draft
+      </button>
+
       <div>
         <input
           v-model="recipe_dirty.title"
