@@ -164,7 +164,7 @@
           <input
             type="checkbox"
             :checked="mode === MODE_ADVANCED"
-            @change="mode = mode === MODE_SCALE_TO ? MODE_ADVANCED : MODE_SCALE_TO"
+            @change="toggleMode"
           >
           <span>{{ $t("recipe_detail.scale_to.advanced_mode") }}</span>
         </label>
@@ -376,7 +376,13 @@ export default {
     },
     reverseScaleTo () {
       this.scaleToAmount = this.multiplier * this.numerator / this.denominator * this.scaleToIngredient
-    }
+    },
+    toggleMode () {
+      this.mode = this.mode === MODE_SCALE_TO ? MODE_ADVANCED : MODE_SCALE_TO
+      this.multiplier = 1
+      this.numerator = 1
+      this.denominator = 1
+    },
   },
 }
 </script>
