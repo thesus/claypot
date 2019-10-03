@@ -36,6 +36,35 @@
       v-if="showModal"
       @close="showModal = false"
     >
+      <form
+        class="scaleTo"
+        @submit="scaleTo"
+      >
+        <select v-model="scaleToIngredient">
+          <optgroup
+            v-for="group in scaleToOptions"
+            :key="group.key"
+            :label="group.text"
+          >
+            <option
+              v-for="item in group.items"
+              :key="item.key"
+              :value="item.value"
+            >
+              {{ item.text }}
+            </option>
+          </optgroup>
+        </select>
+        <div>{{ $t("recipe_detail.scale_to.middle_text") }}</div>
+        <input v-model="scaleToAmount">
+        <button
+          class="btn"
+          role="submit"
+        >
+          {{ $t('recipe_detail.scale_to.submit') }}
+        </button>
+      </form>
+
       <div class="box">
         <button
           class="btn increase"
@@ -129,6 +158,10 @@ export default {
       type: Number,
       default: 1.0,
     },
+    recipe: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   data () {
     return {
@@ -136,9 +169,14 @@ export default {
       numerator: 1.0,
       denominator: 1.0,
       showModal: false,
+      scaleToAmount: null,
+      scaleToIngredient: null,
     }
   },
   computed: {
+    AMOUNT_TYPE_NUMERIC () {
+      return 2
+    },
     full () {
       return Math.floor(this.multiplier * this.numerator / this.denominator)
     },
@@ -159,7 +197,20 @@ export default {
     },
     canDecreaseMultiplier () {
       return this.multiplier >= 2
-    }
+    },
+    scaleToOptions () {
+      return this.recipe.ingredients.map((group, c1) => ({
+        text: group.is_group ? group.title : this.$t('recipe_detail.scale_to.ingredient_group'),
+        key: String(c1),
+        items: group.ingredients
+          .filter(i => (i.amount_type == this.AMOUNT_TYPE_NUMERIC && i.unit !== ''))
+          .map((i, c2) => ({
+            text: i.ingredient + " (" + String(i.amount_numeric) + String(i.unit) + ")",
+            value: i.amount_numeric,
+            key: String(c1) + "-" + String(c2),
+          }))
+      }))
+    },
   },
   watch: {
     result () {
@@ -169,21 +220,27 @@ export default {
   methods: {
     increaseNumerator () {
       this.numerator += 1
+      this.reverseScaleTo()
     },
     decreaseNumerator () {
       this.numerator = Math.max(this.numerator - 1, 1)
+      this.reverseScaleTo()
     },
     increaseDenominator () {
       this.denominator += 1
+      this.reverseScaleTo()
     },
     decreaseDenominator () {
       this.denominator = Math.max(this.denominator - 1, 1)
+      this.reverseScaleTo()
     },
     increaseMultiplier () {
       this.multiplier += 1
+      this.reverseScaleTo()
     },
     decreaseMultiplier () {
       this.multiplier = Math.max(this.multiplier - 1, 1)
+      this.reverseScaleTo()
     },
     quickIncrease () {
       if (this.multiplier === 1) {
@@ -195,6 +252,7 @@ export default {
       } else {
         this.multiplier += 1
       }
+      this.reverseScaleTo()
     },
     quickDecrease () {
       if (this.multiplier === 1) {
@@ -206,7 +264,17 @@ export default {
       } else {
         this.multiplier = Math.max(this.multiplier - 1, 1)
       }
+      this.reverseScaleTo()
     },
+    scaleTo () {
+      // TODO: reduce fraction
+      this.multiplier = 1
+      this.numerator = Number(this.scaleToAmount)
+      this.denominator = Number(this.scaleToIngredient)
+    },
+    reverseScaleTo () {
+      this.scaleToAmount = this.multiplier * this.numerator / this.denominator * this.scaleToIngredient
+    }
   },
 }
 </script>
@@ -384,5 +452,10 @@ input::-webkit-inner-spin-button {
 
 input[type=number] {
   -moz-appearance:textfield;
+}
+
+.scaleTo {
+  display: flex;
+  flex-direction: column;
 }
 </style>

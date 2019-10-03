@@ -94,7 +94,12 @@
         "add_recipe_relation": "Rezept verknüpfen",
         "no_linked_recipes": "Noch keine verknüpften Rezepte.",
         "portion_count": "Portionen",
-        "portion_size": "Portionsgröße"
+        "portion_size": "Portionsgröße",
+        "scale_to": {
+            "middle_text": "umrechnen auf",
+            "submit": "Umrechnen",
+            "ingredient_group": "Zutaten"
+        }
     },
     "recipe_edit": {
         "loading": "@:generic.loading",

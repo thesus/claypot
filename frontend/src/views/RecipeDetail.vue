@@ -25,7 +25,10 @@
           />
         </div>
 
-        <ScaleInput v-model="scaling" />
+        <ScaleInput
+          v-model="scaling"
+          :recipe="recipe"
+        />
 
         <span
           v-if="isLoggedIn"

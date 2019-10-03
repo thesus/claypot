@@ -105,7 +105,12 @@
         "add_recipe_relation": "Link recipe",
         "no_linked_recipes": "No linked recipes, yet.",
         "portion_count": "Portions",
-        "portion_size": "Portion size"
+        "portion_size": "Portion size",
+        "scale_to": {
+            "middle_text": "scale to",
+            "submit": "Scale",
+            "ingredient_group": "Ingredients"
+        }
     },
     "recipe_edit": {
         "loading": "@:generic.loading",
