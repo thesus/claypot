@@ -78,7 +78,7 @@ build:claypot:
   after_script:
     - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
-build:caddy:
+build:nginx:
   stage: build
   tags:
     - docker-cli
@@ -87,10 +87,10 @@ build:caddy:
   before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
-    - docker build --pull -t $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_REF_SLUG -f compose/caddy/Dockerfile --build-arg plugins="git,cors,realip,expires,cache" .
-    - docker push $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_REF_SLUG
+    - docker build --pull -t $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG -f compose/nginx/Dockerfile
+    - docker push $CI_REGISTRY_IMAGE/ngix:$CI_COMMIT_REF_SLUG
   after_script:
-    - docker rmi $CI_REGISTRY_IMAGE/caddy:$CI_COMMIT_REF_SLUG
+    - docker rmi $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG
 
 deploy:cooking.cryptec.at:
   stage: deploy

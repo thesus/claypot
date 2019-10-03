@@ -1,13 +1,11 @@
 version: '3'
 
 services:
-  caddy:
-    image: dev.cryptec.at:5000/root/claypot/caddy:${CLAYPOT_VERSION:-master}
+  nginx:
+    image: dev.cryptec.at:5000/root/claypot/nginx:${CLAYPOT_VERSION:-master}
     build:
       context: .
-      dockerfile: compose/caddy/Dockerfile
-      args:
-        plugins: git,filebrowser,cors,realip,expires,cache,prometheus
+      dockerfile: compose/nginx/Dockerfile
     ports:
       - "80:80"
     volumes:
@@ -54,9 +52,10 @@ services:
       <<: *build
     environment:
       <<: *env
-    volumes:
-      <<: *volumes
+    volumes: *volumes
 
 volumes:
   db: {}
   redis-data: {}
+  media: {}
+  images: {}
