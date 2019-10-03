@@ -1,6 +1,18 @@
 <template>
   <article>
     <header>
+      <select v-model="draft" v-if="drafts">
+        <option
+          v-for="d in drafts"
+          :key="d.id"
+          :value="d.id"
+        >
+          {{ d.id }}
+        </option>
+      </select>
+
+      <button @click="saveDraft">draft</button/>
+      <button @click="loadDraft(recipe.draft_id)" :disabled="!recipe.draft_id">load draft</button>
       <div>
         <input
           v-model="recipe_dirty.title"
@@ -140,6 +152,7 @@
         {{ $t('recipe_edit.save') }}
       </button>
     </div>
+
     <Modal
       v-if="newIngredientsDecision"
       @close="newIngredientsDecision(false)"
@@ -163,19 +176,7 @@
         {{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}
       </button>
     </Modal>
-    <div v-if="!newIngredientsDecision && newIngredientsError">
-      <ul>
-        <li
-          v-for="(ingredient, i) in newIngredients"
-          :key="i"
-        >
-          <div>{{ ingredient }}</div>
-          <FormFieldValidationError
-            :errors="(((newIngredientsError || [])[i] || {}).text) || []"
-          />
-        </li>
-      </ul>
-    </div>
+
     <div v-if="errors.client_side">
       {{ errors.client_side }}
     </div>
@@ -222,6 +223,7 @@ export default {
       type: Object,
       default: function () {
         return {
+          id: null,
           images: [],
           ingredient_groups: [],
           ingredients: [],
@@ -229,6 +231,7 @@ export default {
           description: '',
           estimated_work_duration: null,
           estimated_waiting_duration: null,
+          draft_id: null,
         }
       },
     },
@@ -236,6 +239,8 @@ export default {
   data () {
     return {
       deleteModal: false,
+      drafts: [], /* Draft list for new recipes */
+      draft: null, /* Currently selected draft, gets deleted after succesfull save */
       recipe_dirty: {
         ingredients: [{is_group: false, title: '', ingredients: []}],
         instructions: [this.createEmptyInstruction()],
@@ -299,20 +304,36 @@ export default {
     canDeleteRecipe () {
       return this.isExistingRecipe && this.recipe.deletable
     },
+    ingredientList () {
+      return [].concat(...this.recipe_dirty.ingredients.map(group => group.ingredients.map(i => i.ingredient)))
+    }
   },
   watch: {
-    recipe () {
-      const r = this.recipe
-      this.recipe_dirty = {
-        title: r.title,
-        description: r.description,
-        estimated_work_duration: r.estimated_work_duration,
-        estimated_waiting_duration: r.estimated_waiting_duration,
-        instructions: clone(r.instructions || []),
-        ingredients: clone(r.ingredients || []),
-      }
+    draft(value, oldValue) {
+      this.loadDraft(this.draft)
+    },
+    recipe: {
+      handler () {
+        /* If this is a new recipe load drafts that are not associated with a recipe */
+        if (!this.recipe.id) {
+          this.loadDrafts()
+        } else {
+          this.drafts = []
+        }
 
-      this.images = clone(r.images) || []
+        const r = this.recipe
+        this.recipe_dirty = {
+          title: r.title,
+          description: r.description,
+          estimated_work_duration: r.estimated_work_duration,
+          estimated_waiting_duration: r.estimated_waiting_duration,
+          instructions: clone(r.instructions || []),
+          ingredients: clone(r.ingredients || []),
+        }
+
+        this.images = clone(r.images) || []
+      },
+      immediate: true
     }
   },
   methods: {
@@ -328,14 +349,36 @@ export default {
     addInstruction () {
       this.recipe_dirty.instructions.push(this.createEmptyInstruction())
     },
+    async loadDrafts () {
+      const r = await api(
+        endpoints.get_recipe_drafts()
+      )
+      if (r.ok) {
+        this.drafts = (await r.json()).results
+      }
+    },
+    async loadDraft (id) {
+      const r = await api(
+        endpoints.get_recipe_draft(id)
+      )
+      if (r.ok) {
+        this.recipe_dirty = (await r.json()).data
+      }
+    },
+    async saveDraft () {
+        const r = await api(
+          endpoints.post_recipe_draft(this.recipe.draft_id),
+          { data: this.recipe_dirty, recipe: this.recipe.id },
+          { method: this.recipe.draft_id ? 'put' : 'post' }
+        )
+    },
     async save () {
       this.saving = true
       try {
         // Step 1: Check for new ingredients
         {
-          const inquiredIngredients = [].concat(...this.recipe_dirty.ingredients.map(group => group.ingredients.map(i => i.ingredient)))
           const r = await api(endpoints.check_new_ingredients(), {
-            ingredients: inquiredIngredients,
+            ingredients: this.ingredientList,
           })
           if (r.ok) {
             const newIngredients = (await r.json()).ingredients
@@ -344,7 +387,7 @@ export default {
               this.newIngredientsCount = newIngredients.length
               try {
                 const userDecision = await new Promise((resolve) => {
-                  // this will give the user a choice to cancel or continue the process.
+                  // this will give the user a choice to cancel or continue the process. Executed with a call to newIngredientsDecision(true) or newIngredientsDecision(false)
                   this.newIngredientsDecision = resolve
                 })
                 if (userDecision) {
@@ -377,6 +420,7 @@ export default {
             inquiredIngredients.forEach((k, i) => {
               errorsByIngredient[k] = errors.ingredients[String(i)]
             })
+
             this.recipe_dirty.ingredients.forEach((group, groupI) => {
               group.ingredients.forEach((ingredient, ingredientI) => {
                 if (typeof errorsByIngredient[ingredient.ingredient] !== 'undefined') {
@@ -415,6 +459,8 @@ export default {
         if (r.ok) {
           this.errors.client_side = ''
           this.recipe_dirty = await r.json()
+
+
           // TODO: Notify user about success.
           this.$emit('input', this.recipe_dirty)
         } else {

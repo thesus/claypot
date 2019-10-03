@@ -7,6 +7,7 @@ from .viewsets import (
     IngredientViewSet,
     RecipeViewSet,
     RecipeRelationViewSet,
+    RecipeDraftViewSet
 )
 
 
@@ -15,6 +16,7 @@ router.register("images", ImageViewSet)
 router.register("ingredients", IngredientViewSet)
 router.register("recipes", RecipeViewSet)
 router.register("recipe_relations", RecipeRelationViewSet)
+router.register("drafts", RecipeDraftViewSet)
 
 app_name = "api"
 urlpatterns = [

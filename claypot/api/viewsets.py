@@ -44,14 +44,30 @@ from .serializers import (
     RecipeRelationSerializer,
     RecipeSerializer,
     RecipeDraftSerializer,
+    RecipeDraftListSerializer
 )
-
 
 class ReadAllEditAdmin(permissions.BasePermission):
     message = _("You must be superuser to edit.")
 
     def has_permission(self, request, view):
         return (request.method in permissions.SAFE_METHODS) or request.user.is_superuser
+
+class ReadOwnEditOwn(permissions.BasePermission):
+    message = _("You may only read an edit your own data.")
+
+    def has_permission(self, request, view):
+        return (
+            request.user.is_authenticated
+        )
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_superuser or request.user.is_staff:
+            return True
+        elif isinstance(obj, RecipeDraft):
+            if obj.author == request.user:
+                return True
+        return False
 
 
 class ReadAllEditOwn(permissions.BasePermission):
@@ -357,6 +373,18 @@ class RecipeRelationViewSet(viewsets.ModelViewSet):
 
 
 class RecipeDraftViewSet(viewsets.ModelViewSet):
-    queryset = RecipeDraft.objects.all().order_by("id")
+    queryset = RecipeDraft.objects.filter(recipe=None).order_by("id")
     serializer_class = RecipeDraftSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [ReadOwnEditOwn]
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return RecipeDraftListSerializer
+        else:
+            return super().get_serializer_class()
+
+    def get_queryset(self):
+        if self.action == "list":
+            return self.queryset.filter(author=self.request.user)
+        else:
+            return super().get_queryset()

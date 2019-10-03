@@ -10,6 +10,7 @@ from django.utils.translation import ugettext, ugettext_lazy
 
 from django.contrib.postgres.fields import JSONField
 
+
 class UnitManager(models.Manager):
     def get_by_natural_key(self, name):
         return self.get(name=name)
@@ -350,18 +351,18 @@ class RecipeInstruction(models.Model):
 
 
 class RecipeDraft(models.Model):
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+    # Drafts don't have to have a recipe, they can be for new ones too.
     recipe = models.ForeignKey(
-        "Recipe", on_delete=models.CASCADE, blank=True, null=True
+        "Recipe", on_delete=models.CASCADE, blank=True, null=True, related_name="drafts"
     )
 
+    # Recipe data is stored unverified as a json blob in the database.
     data = JSONField()
 
     class Meta:
         verbose_name = ugettext_lazy("Recipe draft")
         verbose_name_plural = ugettext_lazy("Recipe drafts")
         ordering = ("id",)
+        unique_together = ('author', 'recipe')
