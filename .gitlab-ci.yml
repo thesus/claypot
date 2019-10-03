@@ -93,7 +93,7 @@ build:nginx:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
     - docker build --pull -t $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG -f compose/nginx/Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE/ngix:$CI_COMMIT_REF_SLUG
+    - docker push $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG
   after_script:
     - docker rmi $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG
 
