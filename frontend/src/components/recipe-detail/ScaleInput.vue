@@ -11,18 +11,26 @@
       class="button number"
       @click="doShowModal"
     >
-      <span
-        v-if="full > 0"
-        class="full"
-      >{{ full }}</span>
-      <span
-        v-if="remainder !== 0"
-        class="fraction"
-      >
-        <sup>{{ remainder }}</sup>
-        /
-        <sub>{{ denominator }}</sub>
-      </span>
+      <template v-if="mode === MODE_CLOSED || mode === MODE_ADVANCED">
+        <span
+          v-if="full > 0"
+          class="full"
+        >{{ full }}</span>
+        <span
+          v-if="remainder !== 0"
+          class="fraction"
+        >
+          <sup>{{ remainder }}</sup>
+          /
+          <sub>{{ denominator }}</sub>
+        </span>
+      </template>
+      <template v-else>
+        <span>
+          {{ scaleToAmount }}
+          <!-- show ingredient unit and name - unfortunately lost right now -->
+        </span>
+      </template>
     </span>
 
     <button
@@ -37,6 +45,7 @@
       @close="showModal = false"
     >
       <form
+        v-if="mode == MODE_SCALE_TO"
         class="scaleTo"
         @submit="scaleTo"
       >
@@ -68,7 +77,10 @@
         </button>
       </form>
 
-      <div class="box">
+      <div
+        v-if="mode == MODE_ADVANCED"
+        class="box"
+      >
         <button
           class="btn increase"
           @click="increaseMultiplier"
@@ -145,12 +157,38 @@
         <span class="equals">=</span>
         <span class="result">{{ resultStr }}</span>
       </div>
+
+      <!-- toggle between MODE_SCALE_TO and MODE_ADVANCED -->
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            :checked="mode === MODE_ADVANCED"
+            @change="mode = mode === MODE_SCALE_TO ? MODE_ADVANCED : MODE_SCALE_TO"
+          >
+          <span>{{ $t("recipe_detail.scale_to.advanced_mode") }}</span>
+        </label>
+      </div>
+
+      <!-- list a quick summary of all ingredients, scaled by the current multiplier -->
+      <ol class="ingredientList">
+        <li
+          v-for="(item, i) in scaledIngredients"
+          :key="i"
+        >
+          {{ item.amount }}{{ item.unit }}&nbsp;{{ item.ingredient }}<template v-if="i < scaledIngredients.length - 1">,</template>
+        </li>
+      </ol>
     </Modal>
   </div>
 </template>
 
 <script>
 import Modal from '@/components/utils/Modal'
+
+const MODE_CLOSED = "closed"
+const MODE_SCALE_TO = "scale_to"
+const MODE_ADVANCED = "advanced"
 
 export default {
   components: {
@@ -172,14 +210,19 @@ export default {
       numerator: 1.0,
       denominator: 1.0,
       showModal: false,
+      mode: MODE_CLOSED,
       scaleToAmount: null,
       scaleToIngredient: null,
+      formatter: new Intl.NumberFormat(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2}),
     }
   },
   computed: {
     AMOUNT_TYPE_NUMERIC () {
       return 2
     },
+    MODE_ADVANCED: () => MODE_ADVANCED,
+    MODE_CLOSED: () => MODE_CLOSED,
+    MODE_SCALE_TO: () => MODE_SCALE_TO,
     full () {
       return Math.floor(this.multiplier * this.numerator / this.denominator)
     },
@@ -210,11 +253,23 @@ export default {
             .filter(i => (i.amount_type == this.AMOUNT_TYPE_NUMERIC && i.unit !== ''))
             .map((i, c2) => ({
               text: i.ingredient + " (" + String(i.amount_numeric) + String(i.unit) + ")",
+              ingredient: i.ingredient,
+              unit: i.unit,
               value: i.amount_numeric,
               key: String(c1) + "-" + String(c2),
             }))
         }))
         .filter(group => group.items.length > 0)
+    },
+    scaledIngredients () {
+      return Array.concat(
+        ...this.scaleToOptions
+        .map(group => group.items.map(i => ({
+          ingredient: i.ingredient,
+          unit: i.unit,
+          amount: this.formatter.format(this.multiplier * this.numerator / this.denominator * i.value),
+        })))
+      )
     },
   },
   watch: {
@@ -224,18 +279,32 @@ export default {
   },
   methods: {
     doShowModal () {
+      // Show actual modal dialog
       this.showModal = true
-      let max = null
-      this.scaleToOptions.forEach(i => {
-        i.items.forEach(j => {
-          if (max === null || j.value > max) {
-            max = j.value
-          }
+
+      // Iff the modal has never been loaded, we will switch to MODE_SCALE_TO
+      if (this.mode === MODE_CLOSED) {
+        this.mode = MODE_SCALE_TO
+      }
+
+      /*
+       Preselect ingredient with highest numeric amount.
+       This is trying to be helpful by doing what we expect most users
+       to want most of the time.
+      */
+      {
+        let max = null
+        this.scaleToOptions.forEach(i => {
+          i.items.forEach(j => {
+            if (max === null || j.value > max) {
+              max = j.value
+            }
+          })
         })
-      })
-      if (max !== null) {
-        this.scaleToIngredient = max
-        this.reverseScaleTo()
+        if (max !== null) {
+          this.scaleToIngredient = max
+          this.reverseScaleTo()
+        }
       }
     },
     increaseNumerator () {
@@ -263,11 +332,16 @@ export default {
       this.reverseScaleTo()
     },
     quickIncrease () {
-      if (this.multiplier === 1) {
-        if (this.denominator <= 1) {
-          this.numerator += 1
+      if (this.mode === MODE_CLOSED || this.mode === MODE_ADVANCED)
+      {
+        if (this.multiplier === 1) {
+          if (this.denominator <= 1) {
+            this.numerator += 1
+          } else {
+            this.denominator -= 1
+          }
         } else {
-          this.denominator -= 1
+          this.multiplier += 1
         }
       } else {
         this.multiplier += 1
@@ -275,14 +349,22 @@ export default {
       this.reverseScaleTo()
     },
     quickDecrease () {
-      if (this.multiplier === 1) {
-        if (this.numerator > 1) {
-          this.numerator -= 1
+      if (this.mode === MODE_CLOSED || this.mode === MODE_ADVANCED)
+      {
+        if (this.multiplier === 1) {
+          if (this.numerator > 1) {
+            this.numerator -= 1
+          } else {
+            this.denominator += 1
+          }
         } else {
-          this.denominator += 1
+          this.multiplier = Math.max(this.multiplier - 1, 1)
         }
       } else {
-        this.multiplier = Math.max(this.multiplier - 1, 1)
+        // MODE_SCALE_TO
+        if (this.multiplier > 1) {
+          this.multiplier -= 1
+        }
       }
       this.reverseScaleTo()
     },
@@ -477,5 +559,12 @@ input[type=number] {
 .scaleTo {
   display: flex;
   flex-direction: column;
+}
+
+ol.ingredientList {
+  max-width: 66vw;
+  & li {
+    display: inline;
+  }
 }
 </style>

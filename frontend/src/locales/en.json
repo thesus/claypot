@@ -109,7 +109,8 @@
         "scale_to": {
             "middle_text": "scale to",
             "submit": "Scale",
-            "ingredient_group": "Ingredients"
+            "ingredient_group": "Ingredients",
+            "advanced_mode": "Advanced mode"
         }
     },
     "recipe_edit": {

@@ -98,7 +98,8 @@
         "scale_to": {
             "middle_text": "umrechnen auf",
             "submit": "Umrechnen",
-            "ingredient_group": "Zutaten"
+            "ingredient_group": "Zutaten",
+            "advanced_mode": "Erweitert"
         }
     },
     "recipe_edit": {
