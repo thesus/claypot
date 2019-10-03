@@ -257,7 +257,7 @@ class RecipeSerializer(serializers.Serializer):
         return value
 
     def get_draft_id(self, obj):
-        if "request" in self.context:
+        if "request" in self.context and self.context["request"].user.is_authenticated:
             try:
                 return obj.drafts.get(author=self.context["request"].user).pk
             except RecipeDraft.DoesNotExist:
