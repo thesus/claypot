@@ -3,4 +3,4 @@
 gunicorn==19.9.0
 
 # Sentry
-sentry-sdk==0.9.0
+sentry-sdk==0.12.3
