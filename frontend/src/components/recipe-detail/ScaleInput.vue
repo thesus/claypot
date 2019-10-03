@@ -199,17 +199,19 @@ export default {
       return this.multiplier >= 2
     },
     scaleToOptions () {
-      return this.recipe.ingredients.map((group, c1) => ({
-        text: group.is_group ? group.title : this.$t('recipe_detail.scale_to.ingredient_group'),
-        key: String(c1),
-        items: group.ingredients
-          .filter(i => (i.amount_type == this.AMOUNT_TYPE_NUMERIC && i.unit !== ''))
-          .map((i, c2) => ({
-            text: i.ingredient + " (" + String(i.amount_numeric) + String(i.unit) + ")",
-            value: i.amount_numeric,
-            key: String(c1) + "-" + String(c2),
-          }))
-      }))
+      return this.recipe.ingredients
+        .map((group, c1) => ({
+          text: group.is_group ? group.title : this.$t('recipe_detail.scale_to.ingredient_group'),
+          key: String(c1),
+          items: group.ingredients
+            .filter(i => (i.amount_type == this.AMOUNT_TYPE_NUMERIC && i.unit !== ''))
+            .map((i, c2) => ({
+              text: i.ingredient + " (" + String(i.amount_numeric) + String(i.unit) + ")",
+              value: i.amount_numeric,
+              key: String(c1) + "-" + String(c2),
+            }))
+        }))
+        .filter(group => group.items.length > 0)
     },
   },
   watch: {
