@@ -1,33 +1,37 @@
 <template>
   <article>
     <header>
-      <select
-        v-if="drafts.length"
-        @input="getDraft($event.target.value)"
-      >
-        <option
-          disabled
-          selected
-          value
+      <div class="drafts">
+        <select
+          v-if="drafts.length"
+          class="select"
+          @input="getDraft($event.target.value)"
         >
-          select an option
-        </option>
-        <option
-          v-for="d in drafts"
-          :key="d.id"
-          :value="d.id"
-        >
-          {{ d.id }}
-        </option>
-      </select>
+          <option
+            disabled
+            selected
+            value
+          >
+            {{ $t('recipes.draft.multiple') }}
+          </option>
+          <option
+            v-for="d in drafts"
+            :key="d.id"
+            :value="d.id"
+          >
+            {{ d.id }}
+          </option>
+        </select>
 
-      <button
-        v-if="!drafts.length"
-        :disabled="!(recipe.draft_id && !draft)"
-        @click="getDraft(recipe.draft_id)"
-      >
-        Load Draft
-      </button>
+        <button
+          v-else-if="recipe.draft_id"
+          class="btn right"
+          :disabled="!(recipe.draft_id && !draft)"
+          @click="getDraft(recipe.draft_id)"
+        >
+          {{ $t('recipes.draft.single') }}
+        </button>
+      </div>
 
       <div>
         <input
@@ -240,8 +244,7 @@ export default {
       default: function () {
         return {
           id: null,
-          images: [],
-          ingredient_groups: [],
+          maingredient_groups: [],
           ingredients: [],
           title: '',
           description: '',
@@ -259,14 +262,7 @@ export default {
       draft: null, /* Currently selected draft, gets deleted after succesfull save */
       autosave: true, /* Save timer is running */
       changed: false,
-      recipe_dirty: {
-        ingredients: [{is_group: false, title: '', ingredients: []}],
-        instructions: [this.createEmptyInstruction()],
-        images: [],
-        estimated_work_duration: null,
-        estimated_waiting_duration: null,
-        description: ''
-      },
+      ...this.createDefaultRecipeDirty(),
       /* Used to pass image data with urls to ImageUpload Component.
          recipe_diry.images is filled by the component and consists only of id's */
       images: null,
@@ -356,20 +352,17 @@ export default {
           this.getDraftList()
         } else {
           this.drafts = []
-
-          /* Only fill this.recipe_dirty if this.recipe is not null */
-          const r = this.recipe
-          this.recipe_dirty = {
-            title: r.title,
-            description: r.description,
-            estimated_work_duration: r.estimated_work_duration,
-            estimated_waiting_duration: r.estimated_waiting_duration,
-            instructions: clone(r.instructions || []),
-            ingredients: clone(r.ingredients || []),
-          }
-
-          this.images = clone(r.images) || []
         }
+        const r = this.recipe
+        this.recipe_dirty = {
+          title: r.title,
+          description: r.description,
+          estimated_work_duration: r.estimated_work_duration,
+          estimated_waiting_duration: r.estimated_waiting_duration,
+          instructions: clone(r.instructions || []),
+          ingredients: clone(r.ingredients || []),
+        }
+        this.images = clone(r.images) || []
       },
       immediate: true
     }
@@ -390,6 +383,18 @@ export default {
     createEmptyInstruction () {
       return {text: ''}
     },
+    createDefaultRecipeDirty () {
+      return {
+        recipe_dirty: {
+          ingredients: [{is_group: false, title: '', ingredients: []}],
+          instructions: [this.createEmptyInstruction()],
+          images: [],
+          estimated_work_duration: null,
+          estimated_waiting_duration: null,
+          description: ''
+        }
+      }
+    },
     addInstruction () {
       this.recipe_dirty.instructions.push(this.createEmptyInstruction())
     },
@@ -409,8 +414,8 @@ export default {
         endpoints.recipe_draft(id)
       )
       if (r.ok) {
-        /* Replace current version with the draft */
-        this.recipe_dirty = Object.assign(this.recipe_dirty, (await r.json()).data)
+        /* Replace current version with the draft. Merged with the default, in case the saved draft is incomplete. */
+        this.recipe_dirty = { ...this.createDefaultRecipeDirty(), ...(await r.json()).data }
       }
     },
     async saveDraft () {
@@ -637,5 +642,10 @@ export default {
   .btn {
     margin-right: 0;
   }
+}
+
+.drafts {
+  display: inline-block;
+  width: 100%;
 }
 </style>

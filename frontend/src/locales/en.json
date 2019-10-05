@@ -80,7 +80,11 @@
         "unstar": "Unstar",
         "stars": "Not starred | Starred once | Starred {count} times",
         "fork": "Fork",
-        "parent": "Original"
+        "parent": "Original",
+        "draft": {
+            "multiple": "Select a draft",
+            "single": "Load draft"
+        }
     },
     "recipe_detail": {
         "loading": "@:generic.loading",
