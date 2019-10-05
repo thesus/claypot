@@ -361,6 +361,8 @@ class RecipeDraft(models.Model):
     # Recipe data is stored unverified as a json blob in the database.
     data = JSONField()
 
+    date = models.DateTimeField(auto_now=True)
+
     class Meta:
         verbose_name = ugettext_lazy("Recipe draft")
         verbose_name_plural = ugettext_lazy("Recipe drafts")

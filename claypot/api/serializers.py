@@ -574,6 +574,11 @@ class RecipeDraftSerializer(serializers.ModelSerializer):
 
 
 class RecipeDraftListSerializer(serializers.ModelSerializer):
+    title = serializers.SerializerMethodField()
+
     class Meta:
         model = RecipeDraft
-        fields = ("id",)
+        fields = ("id", "date", "title")
+
+    def get_title(self, obj):
+        return obj.data.get("title", None)

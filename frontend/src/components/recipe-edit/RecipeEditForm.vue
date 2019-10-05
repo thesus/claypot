@@ -19,7 +19,7 @@
             :key="d.id"
             :value="d.id"
           >
-            {{ d.id }}
+            {{ getDraftString(d) }}
           </option>
         </select>
 
@@ -411,6 +411,9 @@ export default {
     addInstruction () {
       this.recipe_dirty.instructions.push(this.createEmptyInstruction())
     },
+    getDraftString(draft) {
+      return new Date(draft.date).toLocaleString() + " " + (draft.title || this.$t('recipes.draft.no_title'))
+    },
     async getDraftList () {
       const r = await api(
         endpoints.recipe_draft()
@@ -661,5 +664,9 @@ export default {
 .drafts {
   display: inline-block;
   width: 100%;
+
+  .select {
+    float: right;
+  }
 }
 </style>

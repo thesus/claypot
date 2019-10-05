@@ -83,7 +83,8 @@
         "parent": "Original",
         "draft": {
             "multiple": "Select a draft",
-            "single": "Load draft"
+            "single": "Load draft",
+            "no_title": "No title"
         }
     },
     "recipe_detail": {
