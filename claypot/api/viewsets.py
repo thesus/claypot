@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -385,6 +385,10 @@ class RecipeDraftViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.action == "list":
-            return self.queryset.filter(recipe=None, author=self.request.user)
+            return self.queryset.filter(
+                recipe=None,
+                author=self.request.user,
+                date__gte=datetime.now() - timedelta(days=30),
+            )
         else:
             return super().get_queryset()
