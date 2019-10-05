@@ -506,7 +506,7 @@ export default {
             // TODO: Proper error propagation
             const errors = await r.json()
             const errorsByIngredient = {}
-            inquiredIngredients.forEach((k, i) => {
+            this.ingredientList.forEach((k, i) => {
               errorsByIngredient[k] = errors.ingredients[String(i)]
             })
 
