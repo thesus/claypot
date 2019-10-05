@@ -262,6 +262,10 @@ export default {
       draft: null, /* Currently selected draft, gets deleted after succesfull save */
       autosave: true, /* Save timer is running */
       changed: false,
+      timer: {
+        autosaveDelay: null,
+        autosaveLoop: null
+      },
       ...this.createDefaultRecipeDirty(),
       /* Used to pass image data with urls to ImageUpload Component.
          recipe_diry.images is filled by the component and consists only of id's */
@@ -330,7 +334,7 @@ export default {
           this.saveDraft()
 
           /* Allow autosave again after 10 seconds */
-          setTimeout(() => {
+          this.timer.autosaveLoop = setTimeout(() => {
               this.autosave = false
 
               if (this.changed) {
@@ -369,9 +373,18 @@ export default {
   },
   mounted () {
     /* Enable draft saving after 15 seconds. */
-    setTimeout(() => {
+    this.timer.autosaveDelay = setTimeout(() => {
       this.autosave = false
     }, 15000)
+  },
+  beforeDestroy () {
+    clearTimeout(this.timer.autosaveDelay)
+    clearTimeout(this.timer.autosaveLoop)
+
+    /* Save the state of current draft immediately before closing */
+    if (this.changed && this.draft) {
+      this.saveDraft()
+    }
   },
   methods: {
     addIngredientGroup () {
@@ -536,6 +549,7 @@ export default {
           /* If a draft is created or loaded earlier, delete it after succesfull saving */
           if (this.draft) {
             await this.deleteDraft(this.draft)
+            this.changed = false
           }
 
           // TODO: Notify user about success.
