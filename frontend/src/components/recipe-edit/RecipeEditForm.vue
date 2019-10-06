@@ -1,7 +1,7 @@
 <template>
   <article>
     <header>
-      <div class="drafts">
+      <div class="drafts" v-if="drafts.length || recipe.draft_id">
         <select
           v-if="drafts.length"
           class="select"
@@ -415,23 +415,33 @@ export default {
       return new Date(draft.date).toLocaleString() + " " + (draft.title || this.$t('recipes.draft.no_title'))
     },
     async getDraftList () {
-      const r = await api(
-        endpoints.recipe_draft()
-      )
-      if (r.ok) {
-        this.drafts = (await r.json()).results
+      try {
+        const r = await api(
+          endpoints.recipe_draft()
+        )
+        if (r.ok) {
+          this.drafts = (await r.json()).results
+        }
+      } catch (e) {
+        /* Don't show visual indication */
+        console.log(e)
       }
     },
     async getDraft (id) {
       /* Set the current draft to the loaded one. */
       this.draft = id
 
-      const r = await api(
-        endpoints.recipe_draft(id)
-      )
-      if (r.ok) {
-        /* Replace current version with the draft. Merged with the default, in case the saved draft is incomplete. */
-        this.recipe_dirty = { ...this.createDefaultRecipeDirty(), ...(await r.json()).data }
+      try {
+        const r = await api(
+          endpoints.recipe_draft(id)
+        )
+        if (r.ok) {
+          /* Replace current version with the draft. Merged with the default, in case the saved draft is incomplete. */
+          this.recipe_dirty = { ...this.createDefaultRecipeDirty(), ...(await r.json()).data }
+        }
+      } catch (e) {
+        /* Don't show visual indication */
+        console.log(e)
       }
     },
     async saveDraft () {
@@ -441,11 +451,15 @@ export default {
         this.draft = this.recipe.draft_id
       }
 
-      const r = await api(
-        endpoints.recipe_draft(this.draft),
-        { data: this.recipe_dirty, recipe: this.recipe.id },
-        { method: this.draft ? 'put' : 'post' }
-      )
+      try {
+        const r = await api(
+          endpoints.recipe_draft(this.draft),
+          { data: this.recipe_dirty, recipe: this.recipe.id },
+          { method: this.draft ? 'put' : 'post' }
+        )
+      } catch (e) {
+        console.log(e)
+      }
 
       /* If a new draft is created, set the id for the next save */
       if (!this.draft && r.ok) {
