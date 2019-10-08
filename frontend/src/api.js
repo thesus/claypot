@@ -66,6 +66,9 @@ const endpoints = {
       return '/api/recipes/'
     }
   },
+  recipe_draft (id) {
+    return id ? `/api/drafts/${id}/` : '/api/drafts/'
+  },
   search_ingredients (term) {
     term = encodeURIComponent(term)
     return `/api/ingredients/?name=${term}&page_size=5`

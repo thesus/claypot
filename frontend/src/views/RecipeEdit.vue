@@ -34,7 +34,7 @@ export default {
     return {
       loading: false,
       error: false,
-      recipe: {},
+      recipe: null,
     }
   },
   computed: {

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -23,7 +23,13 @@ from django.contrib.postgres.search import (
     TrigramSimilarity,
 )
 
-from claypot.models import Ingredient, IngredientSynonym, Recipe, RecipeRelation
+from claypot.models import (
+    Ingredient,
+    IngredientSynonym,
+    Recipe,
+    RecipeRelation,
+    RecipeDraft,
+)
 from claypot.images.models import Image
 
 from .serializers import (
@@ -37,6 +43,8 @@ from .serializers import (
     RecipeRelationCreateSerializer,
     RecipeRelationSerializer,
     RecipeSerializer,
+    RecipeDraftSerializer,
+    RecipeDraftListSerializer,
 )
 
 
@@ -45,6 +53,21 @@ class ReadAllEditAdmin(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return (request.method in permissions.SAFE_METHODS) or request.user.is_superuser
+
+
+class ReadOwnEditOwn(permissions.BasePermission):
+    message = _("You may only read an edit your own data.")
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_superuser or request.user.is_staff:
+            return True
+        elif isinstance(obj, RecipeDraft):
+            if obj.author == request.user:
+                return True
+        return False
 
 
 class ReadAllEditOwn(permissions.BasePermission):
@@ -347,3 +370,25 @@ class RecipeRelationViewSet(viewsets.ModelViewSet):
         if recipe:
             qs = qs.filter(Q(recipe1_id=int(recipe)) | Q(recipe2_id=int(recipe)))
         return qs
+
+
+class RecipeDraftViewSet(viewsets.ModelViewSet):
+    queryset = RecipeDraft.objects.all().order_by("id")
+    serializer_class = RecipeDraftSerializer
+    permission_classes = [ReadOwnEditOwn]
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return RecipeDraftListSerializer
+        else:
+            return super().get_serializer_class()
+
+    def get_queryset(self):
+        if self.action == "list":
+            return self.queryset.filter(
+                recipe=None,
+                author=self.request.user,
+                date__gte=datetime.now() - timedelta(days=30),
+            )
+        else:
+            return super().get_queryset()

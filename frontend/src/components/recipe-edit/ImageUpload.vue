@@ -65,18 +65,21 @@ export default {
     },
   },
   watch: {
-    initial () {
-      /* Add already existing images to stock */
-      for (const image of this.initial) {
-        this.images.push({
-          'success': true,
-          'url': image.files[0]['image_file'], // Thumbnail
-          'id': image.id
-        })
-      }
+    initial: {
+      handler() {
+        /* Add already existing images to stock */
+        for (const image of this.initial) {
+          this.images.push({
+            'success': true,
+            'url': image.files[0]['image_file'], // Thumbnail
+            'id': image.id
+          })
+        }
 
-      this.update()
-    },
+        this.update()
+      },
+      immediate: true
+    }
   },
   methods: {
     update () {

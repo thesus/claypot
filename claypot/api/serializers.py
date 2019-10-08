@@ -22,6 +22,7 @@ from claypot.models import (
     IngredientTag,
     RECIPE_RELATION_TYPE_REPLACEMENT,
     Recipe,
+    RecipeDraft,
     RecipeIngredient,
     RecipeIngredientGroup,
     RecipeIngredientGroupIngredient,
@@ -202,6 +203,7 @@ class RecipeSerializer(serializers.Serializer):
 
     instructions = RecipeInstructionSerializer(many=True)
     is_starred = serializers.SerializerMethodField()
+    draft_id = serializers.SerializerMethodField()
     stars = serializers.SerializerMethodField()
     deletable = serializers.SerializerMethodField()
 
@@ -241,6 +243,7 @@ class RecipeSerializer(serializers.Serializer):
             )
 
         data["ingredients"] = ingredients
+
         return data
 
     def to_internal_value(self, data):
@@ -252,6 +255,13 @@ class RecipeSerializer(serializers.Serializer):
             raise serializers.ValidationError({"ingredients": sub_serializer.errors})
         value["ingredients"] = sub_serializer.validated_data
         return value
+
+    def get_draft_id(self, obj):
+        if "request" in self.context and self.context["request"].user.is_authenticated:
+            try:
+                return obj.drafts.get(author=self.context["request"].user).pk
+            except RecipeDraft.DoesNotExist:
+                return None
 
     def get_is_starred(self, obj):
         if "request" in self.context:
@@ -409,6 +419,7 @@ class RecipeSerializer(serializers.Serializer):
             "starred_by",
             "is_starred",
             "stars",
+            "draft",
         ]
 
 
@@ -552,3 +563,22 @@ class RecipeRelationCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecipeRelation
         fields = ("id", "recipe1", "recipe2", "type")
+
+
+class RecipeDraftSerializer(serializers.ModelSerializer):
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = RecipeDraft
+        fields = ("id", "recipe", "data", "author")
+
+
+class RecipeDraftListSerializer(serializers.ModelSerializer):
+    title = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RecipeDraft
+        fields = ("id", "date", "title")
+
+    def get_title(self, obj):
+        return obj.data.get("title", None)

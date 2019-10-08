@@ -1,6 +1,38 @@
 <template>
   <article>
     <header>
+      <div class="drafts" v-if="drafts.length || recipe.draft_id">
+        <select
+          v-if="drafts.length"
+          class="select"
+          @input="getDraft($event.target.value)"
+        >
+          <option
+            disabled
+            selected
+            value
+          >
+            {{ $t('recipes.draft.multiple') }}
+          </option>
+          <option
+            v-for="d in drafts"
+            :key="d.id"
+            :value="d.id"
+          >
+            {{ getDraftString(d) }}
+          </option>
+        </select>
+
+        <button
+          v-else-if="recipe.draft_id"
+          class="btn right"
+          :disabled="!(recipe.draft_id && !draft)"
+          @click="getDraft(recipe.draft_id)"
+        >
+          {{ $t('recipes.draft.single') }}
+        </button>
+      </div>
+
       <div>
         <input
           v-model="recipe_dirty.title"
@@ -141,7 +173,10 @@
       </button>
     </div>
 
-    <div v-if="newIngredientsDecision">
+    <Modal
+      v-if="newIngredientsDecision"
+      @close="newIngredientsDecision(false)"
+    >
       <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
       <ul>
         <li
@@ -155,31 +190,13 @@
         </li>
       </ul>
       <button
-        class="btn"
+        class="btn right"
         @click="newIngredientsDecision(true)"
       >
         {{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}
       </button>
-      <button
-        class="btn"
-        @click="newIngredientsDecision(false)"
-      >
-        {{ $tc('recipes.confirm_new_ingredients.decline', newIngredientsCount, {count: newIngredientsCount}) }}
-      </button>
-    </div>
-    <div v-if="!newIngredientsDecision && newIngredientsError">
-      <ul>
-        <li
-          v-for="(ingredient, i) in newIngredients"
-          :key="i"
-        >
-          <div>{{ ingredient }}</div>
-          <FormFieldValidationError
-            :errors="(((newIngredientsError || [])[i] || {}).text) || []"
-          />
-        </li>
-      </ul>
-    </div>
+    </Modal>
+
     <div v-if="errors.client_side">
       {{ errors.client_side }}
     </div>
@@ -226,13 +243,14 @@ export default {
       type: Object,
       default: function () {
         return {
-          images: [],
+          id: null,
           ingredient_groups: [],
           ingredients: [],
           title: '',
           description: '',
           estimated_work_duration: null,
           estimated_waiting_duration: null,
+          draft_id: null,
         }
       },
     },
@@ -240,14 +258,15 @@ export default {
   data () {
     return {
       deleteModal: false,
-      recipe_dirty: {
-        ingredients: [{is_group: false, title: '', ingredients: []}],
-        instructions: [this.createEmptyInstruction()],
-        images: [],
-        estimated_work_duration: null,
-        estimated_waiting_duration: null,
-        description: ''
+      drafts: [], /* Draft list for new recipes */
+      draft: null, /* Currently selected draft, gets deleted after succesfull save */
+      autosave: true, /* Save timer is running */
+      changed: false,
+      timer: {
+        autosaveDelay: null,
+        autosaveLoop: null
       },
+      ...this.createDefaultRecipeDirty(),
       /* Used to pass image data with urls to ImageUpload Component.
          recipe_diry.images is filled by the component and consists only of id's */
       images: null,
@@ -303,20 +322,74 @@ export default {
     canDeleteRecipe () {
       return this.isExistingRecipe && this.recipe.deletable
     },
+    ingredientList () {
+      return [].concat(...this.recipe_dirty.ingredients.map(group => group.ingredients.map(i => i.ingredient)))
+    }
   },
   watch: {
-    recipe () {
-      const r = this.recipe
-      this.recipe_dirty = {
-        title: r.title,
-        description: r.description,
-        estimated_work_duration: r.estimated_work_duration,
-        estimated_waiting_duration: r.estimated_waiting_duration,
-        instructions: clone(r.instructions || []),
-        ingredients: clone(r.ingredients || []),
-      }
+    recipe_dirty: {
+      /* Desired behaviour:
+         `autosave` is `false` initially and is automatically changed to `true` after 15 seconds.
+         If a change to any part of the recipe happens before that first 15 second interval, no draft will be saved. This is intentional.
+         If a change happens after this first 15 seconds, the recipe will be saved as a draft, but at most once every 10 seconds.
+         Also note: If changes happen in the first 15 seconds, but no changes happen after that, no draft will be saved; this is intentional as well.
+       */
+      handler () {
+        if  (!this.autosave) {
+          this.autosave = true
+          this.saveDraft()
 
-      this.images = clone(r.images) || []
+          /* Allow autosave again after 10 seconds */
+          this.timer.autosaveLoop = setTimeout(() => {
+              this.autosave = false
+
+              if (this.changed) {
+                this.saveDraft()
+                this.changed = false
+                this.autosave = true
+              }
+          }, 10000)
+        } else {
+          this.changed = true
+        }
+      },
+      deep: true
+    },
+    recipe: {
+      handler () {
+        if (!this.isExistingRecipe) {
+          /* If this is a new recipe load drafts that are not associated with a recipe */
+          this.getDraftList()
+        } else {
+          this.drafts = []
+        }
+        const r = this.recipe
+        this.recipe_dirty = {
+          title: r.title,
+          description: r.description,
+          estimated_work_duration: r.estimated_work_duration,
+          estimated_waiting_duration: r.estimated_waiting_duration,
+          instructions: clone(r.instructions || []),
+          ingredients: clone(r.ingredients || []),
+        }
+        this.images = clone(r.images) || []
+      },
+      immediate: true
+    }
+  },
+  mounted () {
+    /* Enable draft saving after 15 seconds. */
+    this.timer.autosaveDelay = setTimeout(() => {
+      this.autosave = false
+    }, 15000)
+  },
+  beforeDestroy () {
+    clearTimeout(this.timer.autosaveDelay)
+    clearTimeout(this.timer.autosaveLoop)
+
+    /* Save the state of current draft immediately before closing */
+    if (this.changed && this.draft) {
+      this.saveDraft()
     }
   },
   methods: {
@@ -329,17 +402,92 @@ export default {
     createEmptyInstruction () {
       return {text: ''}
     },
+    createDefaultRecipeDirty () {
+      return {
+        recipe_dirty: {
+          ingredients: [{is_group: false, title: '', ingredients: []}],
+          instructions: [this.createEmptyInstruction()],
+          images: [],
+          estimated_work_duration: null,
+          estimated_waiting_duration: null,
+          description: ''
+        }
+      }
+    },
     addInstruction () {
       this.recipe_dirty.instructions.push(this.createEmptyInstruction())
     },
+    getDraftString(draft) {
+      return new Date(draft.date).toLocaleString() + " " + (draft.title || this.$t('recipes.draft.no_title'))
+    },
+    async getDraftList () {
+      try {
+        const r = await api(
+          endpoints.recipe_draft()
+        )
+        if (r.ok) {
+          this.drafts = (await r.json()).results
+        }
+      } catch (e) {
+        /* Don't show visual indication */
+        console.log(e)
+      }
+    },
+    async getDraft (id) {
+      /* Set the current draft to the loaded one. */
+      this.draft = id
+
+      try {
+        const r = await api(
+          endpoints.recipe_draft(id)
+        )
+        if (r.ok) {
+          /* Replace current version with the draft. Merged with the default, in case the saved draft is incomplete. */
+          this.recipe_dirty = { ...this.createDefaultRecipeDirty(), ...(await r.json()).data }
+        }
+      } catch (e) {
+        /* Don't show visual indication */
+        console.log(e)
+      }
+    },
+    async saveDraft () {
+      /* If save is called on a existing recipe with a existing draft, overwrite the draft. */
+      /* This disables the 'load draft' button. */
+      if (!this.draft && this.recipe.draft_id) {
+        this.draft = this.recipe.draft_id
+      }
+
+      try {
+        const r = await api(
+          endpoints.recipe_draft(this.draft),
+          { data: this.recipe_dirty, recipe: this.recipe.id },
+          { method: this.draft ? 'put' : 'post' }
+        )
+      } catch (e) {
+        console.log(e)
+      }
+
+      /* If a new draft is created, set the id for the next save */
+      if (!this.draft && r.ok) {
+        this.draft = (await r.json()).id
+      }
+    },
+    async deleteDraft (id) {
+      await api(
+        endpoints.recipe_draft(id),
+        null,
+        { method: 'delete' }
+      )
+    },
     async save () {
+      const draftSavePromise = this.saveDraft()
+
       this.saving = true
       try {
         // Step 1: Check for new ingredients
         {
-          const inquiredIngredients = [].concat(...this.recipe_dirty.ingredients.map(group => group.ingredients.map(i => i.ingredient)))
           const r = await api(endpoints.check_new_ingredients(), {
-            ingredients: inquiredIngredients,
+            ingredients: this.ingredientList,
           })
           if (r.ok) {
             const newIngredients = (await r.json()).ingredients
@@ -348,7 +496,7 @@ export default {
               this.newIngredientsCount = newIngredients.length
               try {
                 const userDecision = await new Promise((resolve) => {
-                  // this will give the user a choice to cancel or continue the process.
+                  // this will give the user a choice to cancel or continue the process. Executed with a call to newIngredientsDecision(true) or newIngredientsDecision(false)
                   this.newIngredientsDecision = resolve
                 })
                 if (userDecision) {
@@ -378,9 +526,10 @@ export default {
             // TODO: Proper error propagation
             const errors = await r.json()
             const errorsByIngredient = {}
-            inquiredIngredients.forEach((k, i) => {
+            this.ingredientList.forEach((k, i) => {
               errorsByIngredient[k] = errors.ingredients[String(i)]
             })
+
             this.recipe_dirty.ingredients.forEach((group, groupI) => {
               group.ingredients.forEach((ingredient, ingredientI) => {
                 if (typeof errorsByIngredient[ingredient.ingredient] !== 'undefined') {
@@ -419,6 +568,16 @@ export default {
         if (r.ok) {
           this.errors.client_side = ''
           this.recipe_dirty = await r.json()
+
+          /* If a draft is created or loaded earlier, delete it after succesfull saving */
+          if (this.draft) {
+            /* Draft must be saved before it can be removed */
+            await draftSavePromise
+
+            await this.deleteDraft(this.draft)
+            this.changed = false
+          }
+
           // TODO: Notify user about success.
           this.$emit('input', this.recipe_dirty)
         } else {
@@ -522,6 +681,15 @@ export default {
 
   .btn {
     margin-right: 0;
+  }
+}
+
+.drafts {
+  display: inline-block;
+  width: 100%;
+
+  .select {
+    float: right;
   }
 }
 </style>
