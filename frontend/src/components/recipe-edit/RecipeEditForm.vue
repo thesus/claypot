@@ -328,6 +328,12 @@ export default {
   },
   watch: {
     recipe_dirty: {
+      /* Desired behaviour:
+         `autosave` is `false` initially and is automatically changed to `true` after 15 seconds.
+         If a change to any part of the recipe happens before that first 15 second interval, no draft will be saved. This is intentional.
+         If a change happens after this first 15 seconds, the recipe will be saved as a draft, but at most once every 10 seconds.
+         Also note: If changes happen in the first 15 seconds, but no changes happen after that, no draft will be saved; this is intentional as well.
+       */
       handler () {
         if  (!this.autosave) {
           this.autosave = true
