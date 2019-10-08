@@ -244,7 +244,7 @@ export default {
       default: function () {
         return {
           id: null,
-          maingredient_groups: [],
+          ingredient_groups: [],
           ingredients: [],
           title: '',
           description: '',
