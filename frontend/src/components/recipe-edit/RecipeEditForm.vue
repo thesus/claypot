@@ -480,7 +480,7 @@ export default {
       )
     },
     async save () {
-      this.saveDraft()
+      const draftSavePromise = this.saveDraft()
 
       this.saving = true
       try {
@@ -571,6 +571,9 @@ export default {
 
           /* If a draft is created or loaded earlier, delete it after succesfull saving */
           if (this.draft) {
+            /* Draft must be saved before it can be removed */
+            await draftSavePromise
+
             await this.deleteDraft(this.draft)
             this.changed = false
           }
