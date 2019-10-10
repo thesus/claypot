@@ -1,11 +1,33 @@
+from pytz import utc
+from datetime import datetime
+
+from rest_framework import permissions
+
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+
+from claypot.models import RecipeDraft, Recipe
+
+
 class ReadAllEditAdmin(permissions.BasePermission):
+    """Allows read acccess to all and restrict write access to admin users."""
+
     message = _("You must be superuser to edit.")
 
     def has_permission(self, request, view):
-        return (request.method in permissions.SAFE_METHODS) or request.user.is_superuser
+        return (
+            (request.method in permissions.SAFE_METHODS)
+            or request.user.is_superuser
+            or request.user.is_staff
+        )
 
 
 class ReadOwnEditOwn(permissions.BasePermission):
+    """Allows read access if the author of the object is the logged in user.
+
+    Used for `claypot.models.RecipeDraft`.
+    """
+
     message = _("You may only read an edit your own data.")
 
     def has_permission(self, request, view):
@@ -21,6 +43,12 @@ class ReadOwnEditOwn(permissions.BasePermission):
 
 
 class ReadAllEditOwn(permissions.BasePermission):
+    """Allow read access to everyone and restrict edit to superuser and author.
+
+    Restricts deleting of models to admins after a grace period
+    specified in the settings. Used for `claypot.models.Recipe`.
+    """
+
     message = _("You may only edit your own recipes.")
 
     def has_permission(self, request, view):
@@ -45,4 +73,3 @@ class ReadAllEditOwn(permissions.BasePermission):
                     return obj.published_on > cut_off
         else:
             return False
-
