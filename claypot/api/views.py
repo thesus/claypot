@@ -7,8 +7,6 @@ from django.views.generic import View
 from rest_framework import generics
 from rest_framework.response import Response
 
-from claypot import __version__
-
 
 class CsrfTokenView(View):
     def get(self, request):

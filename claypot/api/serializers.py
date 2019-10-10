@@ -1,5 +1,4 @@
 from datetime import datetime
-from collections import OrderedDict
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -12,7 +11,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from pytz import utc
 
-from django.db.models import prefetch_related_objects
 
 from claypot.models import (
     AMOUNT_TYPES,

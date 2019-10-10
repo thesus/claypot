@@ -2,7 +2,7 @@ import django_filters
 
 from claypot.models import Ingredient, Recipe
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from django.contrib.postgres.aggregates import StringAgg
 from django.contrib.postgres.search import (
@@ -24,7 +24,7 @@ class IngredientFilter(django_filters.FilterSet):
 class RecipeFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(lookup_expr="icontains")
     author_id = django_filters.ModelChoiceFilter(
-        field_name="author", queryset=User.objects.all()
+        field_name="author", queryset=get_user_model().objects.all()
     )
     is_starred = django_filters.BooleanFilter(
         label="Is starred", method="filter_is_starred"
@@ -43,6 +43,7 @@ class RecipeFilter(django_filters.FilterSet):
         return queryset
 
     def filter_is_starred(self, queryset, name, value):
+        """Show recipes that are starred by the current user."""
         if value is True:
             if self.request.user.pk is not None:
                 return queryset.filter(starred_by__id=self.request.user.pk)
@@ -58,6 +59,7 @@ class RecipeFilter(django_filters.FilterSet):
         return queryset
 
     def filter_is_my_recipe(self, queryset, name, value):
+        """Show recipes that are created by the current user."""
         if value is True:
             if self.request.user.pk is not None:
                 return queryset.filter(author=self.request.user)
@@ -73,11 +75,16 @@ class RecipeFilter(django_filters.FilterSet):
         return queryset
 
     def search_filter(self, queryset, name, value):
+        """Search recipes by various fields and relations.
+
+        The search is conducted on the following fields:
+        - title
+        - instructions
+        - ingredients (group/non group)
+        """
+
         if value:
-            # Build search vector containing the following fields:
-            # - title
-            # - instructions
-            # - ingredients (group/non group)
+            # Build the search vector
             vector = (
                 SearchVector("title", weight="A")
                 + SearchVector(

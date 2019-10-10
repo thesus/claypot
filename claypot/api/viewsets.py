@@ -1,16 +1,13 @@
 from datetime import datetime, timedelta
 
-from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.utils.translation import get_language, get_language_info
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-import django_filters
 from claypot.models import (
     Ingredient,
     IngredientSynonym,
