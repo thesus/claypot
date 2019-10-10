@@ -1,14 +1,12 @@
-from functools import reduce
 import operator
-
 import uuid
+from functools import reduce
 
 from django.conf import settings
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext, ugettext_lazy
-
-from django.contrib.postgres.fields import JSONField
 
 
 class UnitManager(models.Manager):

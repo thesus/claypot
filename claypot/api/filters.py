@@ -1,9 +1,5 @@
 import django_filters
-
-from claypot.models import Ingredient, Recipe
-
 from django.contrib.auth import get_user_model
-
 from django.contrib.postgres.aggregates import StringAgg
 from django.contrib.postgres.search import (
     SearchQuery,
@@ -11,6 +7,8 @@ from django.contrib.postgres.search import (
     SearchVector,
     TrigramSimilarity,
 )
+
+from claypot.models import Ingredient, Recipe
 
 
 class IngredientFilter(django_filters.FilterSet):

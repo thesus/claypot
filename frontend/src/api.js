@@ -33,19 +33,19 @@ const endpoints = {
     }
   },
   fetch_user (id) {
-    return `/accounts/users/${id}/`
+    return `/api/accounts/users/${id}/`
   },
   login () {
-    return '/accounts/login'
+    return '/api/accounts/login/'
   },
   logout () {
-    return '/accounts/logout'
+    return '/api/accounts/logout/'
   },
   password_reset () {
-    return '/accounts/reset'
+    return '/api/accounts/reset/'
   },
   password_reset_confirm () {
-    return '/accounts/confirm'
+    return '/api/accounts/reset_confirm/'
   },
   recipe_star (id) {
     return `/api/recipes/${id}/star/`
@@ -57,7 +57,7 @@ const endpoints = {
     return `/api/recipes/${id}/fork/`
   },
   signup () {
-    return '/accounts/signup'
+    return '/api/accounts/signup/'
   },
   post_recipe (id) {
     if (id) {
