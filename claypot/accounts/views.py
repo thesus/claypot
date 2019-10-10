@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model, login, logout
-from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.encoding import force_text
@@ -90,14 +90,14 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         token = request.GET.get("token")
 
         if not uid or not token:
-            return HttpResponse(_("Signup link is missing get parameters!"))
+            return HttpResponseBadRequest(_("Signup link is missing get parameters!"))
 
         # Decode user id to pk
         try:
             uid = force_text(urlsafe_base64_decode(uid))
             user = get_user_model().objects.get(pk=uid)
         except (get_user_model().DoesNotExist, TypeError, ValueError, OverflowError):
-            return HttpResponse(
+            return HttpResponseBadRequest(
                 _("Signup link is invalid. Did you copy the URL correctly?")
             )
 
@@ -105,10 +105,10 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         # if the token is invalidated due to being too old, a new mail will be sent.
         try:
             if not signup_token_generator.check_token(user, token):
-                return HttpResponse(_("Signup link is invalid!"))
+                return HttpResponseBadRequest(_("Signup link is invalid!"))
         except TimeoutError:
             send_signup_mail(user, request)
-            return HttpResponse(
+            return HttpResponseBadRequest(
                 _("Signup link no longer valid. New email has been sent.")
             )
 

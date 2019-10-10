@@ -16,6 +16,6 @@ class ReadSelf(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if view.action_map.get(request.method.lower(), None) == "retrieve":
             if request.method in permissions.SAFE_METHODS:
-                if isinstance(obj, get_user_model()):
-                    return obj == request.user
+                if isinstance(obj, get_user_model()) and obj == request.user:
+                    return True
         return request.user.is_superuser
