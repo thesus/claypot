@@ -4,7 +4,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import View
-from rest_framework import generics
+from rest_framework import generics, serializers
 from rest_framework.response import Response
 
 
@@ -18,6 +18,7 @@ csrf_token_view = ensure_csrf_cookie(CsrfTokenView.as_view())
 
 class SentryConfigView(generics.GenericAPIView):
     authentication_classes = []
+    serializer_class = serializers.Serializer
 
     @method_decorator(cache_control(max_age=3600))
     def get(self, request):

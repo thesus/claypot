@@ -1,13 +1,12 @@
 from django.conf import settings
-from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.utils.translation import ugettext_lazy as _
 
 from claypot.accounts.tokens import signup_token_generator
-
-from django.utils.translation import ugettext_lazy as _
 
 
 def send_signup_mail(user, request):
