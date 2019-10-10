@@ -5,7 +5,6 @@ from django.conf import settings
 from django.contrib import admin
 
 from claypot.api.viewsets import (
-    ImageViewSet,
     IngredientViewSet,
     RecipeViewSet,
     RecipeRelationViewSet,
@@ -14,26 +13,32 @@ from claypot.api.viewsets import (
 
 from claypot.api.views import SentryConfigView, csrf_token_view
 
+from claypot.images.viewsets import ImageViewSet
+
+from claypot.accounts.views import UserViewSet
+
 router = DefaultRouter()
 
 views = (
-    ("images", ImageViewSet),
+    # api
     ("ingredients", IngredientViewSet),
     ("recipes", RecipeViewSet),
     ("recipe_relations", RecipeRelationViewSet),
     ("drafts", RecipeDraftViewSet),
+    # images
+    ("images", ImageViewSet),
+    # accounts
+    ("accounts", UserViewSet, "accounts"),
 )
 
 for view in views:
     router.register(*view)
 
 urlpatterns = [
-    path("api/", include(router.urls)),
+    path("api/", include((router.urls, 'api'))),
     path("api/sentry", SentryConfigView.as_view(), name="sentry-config"),
     path("api/csrf", csrf_token_view),
-    path("accounts/", include("claypot.accounts.urls")),
     path("admin/", admin.site.urls),
-    path("", include("claypot.urls")),
 ]
 
 if settings.DEBUG:
