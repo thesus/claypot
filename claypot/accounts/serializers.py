@@ -25,11 +25,9 @@ class LoginSerializer(serializers.Serializer):
 
         user = self.authenticate(username=username, password=password)
 
-        if user:
-            if not user.is_active:
-                msg = _("Account is disabled!")
-                raise exceptions.ValidationError(msg)
-        else:
+        # Default authentication backends reject login if user.is_active is False
+        # See https://docs.djangoproject.com/en/2.2/topics/auth/customizing/#authorization-for-inactive-users
+        if not user:
             msg = _("Unable to login with provided credentials.")
             raise exceptions.ValidationError(msg)
 
@@ -88,7 +86,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
         self.form = SetPasswordForm(user=self.user, data=attrs)
 
-        # Check if passwords ae valid
+        # Check if passwords are valid
         if not self.form.is_valid():
             raise exceptions.ValidationError(self.form.errors)
 
