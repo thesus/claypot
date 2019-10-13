@@ -5,8 +5,7 @@ from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import ugettext_lazy as _
-from rest_framework import viewsets, mixins
-
+from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
@@ -25,6 +24,14 @@ from .permissions import ReadSelf
 
 
 class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """Provides actions for account handling.
+
+    - Login/Logout
+    - Password reset
+    - Signup
+    - Query Profile
+    """
+
     serializer_class = UserSerializer
 
     def get_queryset(self):
@@ -38,6 +45,8 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @action(detail=False, methods=["post"], serializer_class=LoginSerializer)
     def login(self, request):
+        """Checks user password and status and performs the login."""
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -49,12 +58,20 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @action(detail=False, methods=["post"], serializer_class=Serializer)
     def logout(self, request):
+        """Logs the current user out."""
+
         logout(request)
 
         return Response({"detail": _("Logged out successfully.")})
 
     @action(detail=False, methods=["post"], serializer_class=PasswordResetSerializer)
     def reset(self, request):
+        """Sends mail to user with a link to the password reset form.
+
+        This method always returns a 200 status code. That prevents
+        guessing of registered email addresss.
+        """
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -66,6 +83,8 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         detail=False, methods=["post"], serializer_class=PasswordResetConfirmSerializer
     )
     def reset_confirm(self, request):
+        """Resets user password and verifies validity of token."""
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -75,6 +94,8 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @action(detail=False, methods=["post"], serializer_class=SignupSerializer)
     def signup(self, request):
+        """Creates user and prepares mail with a singup link."""
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -84,7 +105,7 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @action(detail=False, methods=["get"], serializer_class=Serializer)
     def signup_confirm(self, request):
-        """login"""
+        """Verifies signup link and activates user."""
 
         uid = request.GET.get("uid")
         token = request.GET.get("token")

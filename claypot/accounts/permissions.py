@@ -1,11 +1,11 @@
-from rest_framework import permissions
-
 from django.contrib.auth import get_user_model
-
 from django.utils.translation import ugettext_lazy as _
+from rest_framework import permissions
 
 
 class ReadSelf(permissions.BasePermission):
+    """Permits access to the (user)model instance if the user corresponds to the instance"""
+
     message = _("You may only view your own profile.")
 
     def has_permission(self, request, view):

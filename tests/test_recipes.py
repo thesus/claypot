@@ -268,6 +268,8 @@ def test_recipe_relations(api_client, recipe_factory, user):
 
 @pytest.mark.django_db
 def test_recipe_drafts(api_client, recipe_factory, user):
+    """Tests creating a recipe drafts with and without a recipe."""
+
     recipe = recipe_factory()
 
     data = {"data": {"title": "test"}, "recipe": recipe.pk}

@@ -14,8 +14,7 @@ from claypot.api.viewsets import (
 from claypot.api.views import SentryConfigView, csrf_token_view
 
 from claypot.images.viewsets import ImageViewSet
-
-from claypot.accounts.views import UserViewSet
+from claypot.accounts.viewsets import UserViewSet
 
 router = DefaultRouter()
 
