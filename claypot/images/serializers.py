@@ -1,6 +1,6 @@
-from .models import Image, ImageFile
-
 from rest_framework import serializers
+
+from .models import Image, ImageFile
 
 
 class ImageCreateSerializer(serializers.Serializer):

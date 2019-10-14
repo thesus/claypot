@@ -7,9 +7,10 @@ from django.contrib.postgres.search import (
     SearchVector,
     TrigramSimilarity,
 )
+from django.db.models import Q
+from django.utils.translation import get_language, get_language_info
 
 from claypot.models import Ingredient, Recipe
-from django.utils.translation import get_language, get_language_info
 
 
 class IngredientFilter(django_filters.FilterSet):
