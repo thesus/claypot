@@ -47,6 +47,14 @@ def test_recipe_list(api_client, recipe_factory, user):
 
 
 @pytest.mark.django_db
+def test_search_recipe_list(api_client, recipe_factory, user):
+    recipe = recipe_factory(author=user)
+
+    response = api_client.get(reverse("api:recipe-list") + f"?search={recipe.title}")
+    assert response.data.get("count") == 1
+
+
+@pytest.mark.django_db
 def test_post_new_recipe(
     api_client,
     recipe,
