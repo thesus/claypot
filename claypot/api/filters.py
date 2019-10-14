@@ -9,6 +9,7 @@ from django.contrib.postgres.search import (
 )
 
 from claypot.models import Ingredient, Recipe
+from django.utils.translation import get_language, get_language_info
 
 
 class IngredientFilter(django_filters.FilterSet):
