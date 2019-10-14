@@ -159,11 +159,14 @@ def test_expired_account_link(api_client, django_user_model, mailoutbox):
     response = api_client.get(url)
 
     assert response.status_code == 400
+    # Link should be sent again in an email after clicking on the expired link.
     assert len(mailoutbox) == 2
 
 
 @pytest.mark.django_db
 def test_password_reset(api_client, user, mailoutbox):
+    """Tests resetting of a user password."""
+
     user.email = "user@test.tld"
     user.save()
 
