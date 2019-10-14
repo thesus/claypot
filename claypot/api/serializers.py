@@ -1,26 +1,24 @@
 from datetime import datetime
-from collections import OrderedDict
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.db import transaction, IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import serializers
 from pytz import utc
+from rest_framework import serializers
 
-from django.db.models import prefetch_related_objects
-
+from claypot.images.models import Image, ImageFile
+from claypot.images.serializers import ImageRetrieveSerializer
 from claypot.models import (
     AMOUNT_TYPES,
+    RECIPE_RELATION_TYPE_REPLACEMENT,
     AbstractIngredient,
     Ingredient,
     IngredientSynonym,
     IngredientTag,
-    RECIPE_RELATION_TYPE_REPLACEMENT,
     Recipe,
     RecipeDraft,
     RecipeIngredient,
@@ -31,43 +29,11 @@ from claypot.models import (
     Unit,
 )
 
-from claypot.images.models import Image, ImageFile
-
 
 class OrderedListSerializer(serializers.ListSerializer):
     def to_representation(self, data):
         data = data.order_by("order")
         return super().to_representation(data)
-
-
-class ImageCreateSerializer(serializers.Serializer):
-    image = serializers.ImageField()
-
-
-class ImageFileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ImageFile
-        fields = ["image_file", "height", "width"]
-        read_only_fields = ["image_file", "height", "width"]
-
-
-class ImageRetrieveSerializer(serializers.ModelSerializer):
-    files = ImageFileSerializer(many=True)
-    thumbnail = ImageFileSerializer()
-
-    class Meta:
-        model = Image
-        fields = ["id", "files", "thumbnail"]
-        read_only_fields = ["id", "files"]
-
-
-class ImageThumbnailSerializer(serializers.ModelSerializer):
-    thumbnail = ImageFileSerializer()
-
-    class Meta:
-        model = Image
-        fields = ["thumbnail"]
-        read_only_fields = ["thumbnail"]
 
 
 class ManyIngredientSerializer(serializers.Serializer):

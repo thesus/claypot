@@ -2,9 +2,9 @@ import errno
 import os
 import uuid
 
+import django_rq
 from django.conf import settings
 from django.db import models
-import django_rq
 
 
 class ImageFile(models.Model):

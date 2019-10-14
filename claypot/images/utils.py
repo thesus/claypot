@@ -1,14 +1,12 @@
-from io import BytesIO
 import os.path
+from io import BytesIO
 
+import django_rq
+import PIL.Image
+import PIL.ImageOps
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.base import ContentFile
-
-import PIL.Image
-import PIL.ImageOps
-
-import django_rq
 
 from .models import Image, ImageFile
 

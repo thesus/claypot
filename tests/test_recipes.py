@@ -1,9 +1,11 @@
+import pytest
+
 from datetime import datetime, timedelta
+from pytz import utc
 
 from django.urls import reverse
-from pytz import utc
 from rest_framework import status
-import pytest
+from rest_framework.renderers import JSONRenderer
 
 from claypot.api import serializers
 
@@ -42,6 +44,14 @@ def test_recipe_list(api_client, recipe_factory, user):
         reverse("api:recipe-detail", kwargs={"pk": recipe.pk})
     )
     assert recipe_details.data["is_starred"] is False
+
+
+@pytest.mark.django_db
+def test_search_recipe_list(api_client, recipe_factory, user):
+    recipe = recipe_factory(author=user)
+
+    response = api_client.get(reverse("api:recipe-list") + f"?search={recipe.title}")
+    assert response.data.get("count") == 1
 
 
 @pytest.mark.django_db
@@ -262,3 +272,43 @@ def test_recipe_relations(api_client, recipe_factory, user):
         "previous": None,
         "results": [],
     }
+
+
+@pytest.mark.django_db
+def test_recipe_drafts(api_client, recipe_factory, user):
+    """Tests creating a recipe drafts with and without a recipe."""
+
+    recipe = recipe_factory()
+
+    data = {"data": {"title": "test"}, "recipe": recipe.pk}
+
+    api_client.force_login(user)
+    response = api_client.post(reverse("api:recipedraft-list"), data, format="json")
+
+    # Check if draft is associated with recipe and user
+    assert response.status_code == 201
+    recipe.refresh_from_db()
+    assert recipe.drafts.first().author == user
+
+    response = api_client.get(reverse("api:recipedraft-list"))
+    assert response.status_code == 200
+
+    # Created draft belongs to a recipe and is not shown in the listing
+    assert response.data.get("count") == 0
+
+    # Get detail view of newly created draft
+    response = api_client.get(
+        reverse("api:recipedraft-detail", kwargs={"pk": recipe.drafts.first().pk})
+    )
+    assert response.status_code == 200
+
+    # Create draft without an associated recipe -> should be in the list
+    data["recipe"] = ""
+
+    response = api_client.post(reverse("api:recipedraft-list"), data, format="json")
+    assert response.status_code == 201
+
+    response = api_client.get(reverse("api:recipedraft-list"))
+    assert response.status_code == 200
+    assert response.data.get("count") == 1
+    assert response.data.get("results")[0].get("title") == "test"
