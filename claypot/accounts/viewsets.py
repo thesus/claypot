@@ -2,9 +2,9 @@ from django.contrib.auth import get_user_model, login, logout
 from django.http import HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -115,7 +115,7 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
         # Decode user id to pk
         try:
-            uid = force_text(urlsafe_base64_decode(uid))
+            uid = force_str(urlsafe_base64_decode(uid))
             user = get_user_model().objects.get(pk=uid)
         except (get_user_model().DoesNotExist, TypeError, ValueError, OverflowError):
             return HttpResponseBadRequest(

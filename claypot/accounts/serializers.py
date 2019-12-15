@@ -2,9 +2,9 @@ from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions, serializers
 
 from claypot.accounts.utils import send_signup_mail
@@ -79,7 +79,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
     def validate(self, attrs):
         # Try to get the user from the uid
         try:
-            uid = force_text(urlsafe_base64_decode(attrs["uid"]))
+            uid = force_str(urlsafe_base64_decode(attrs["uid"]))
             self.user = User.objects.get(pk=uid)
         except (User.DoesNotExist, TypeError, ValueError, OverflowError):
             raise exceptions.ValidationError({"uid": ["Invalid value"]})

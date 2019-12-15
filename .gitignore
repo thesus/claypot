@@ -10,6 +10,9 @@ __pycache__
 *.pyc
 .pytest_cache
 
+# Typing
+/.mypy_cache
+
 # Other junk
 .DS_Store
 node_modules
