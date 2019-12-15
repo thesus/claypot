@@ -2,5 +2,4 @@
 -r testing.txt
 
 black
-django-debug-toolbar==2.1
 pre-commit
