@@ -1,13 +1,13 @@
 -r base.txt
 
-django-debug-toolbar==2.0
+django-debug-toolbar==2.1
 
-pytest==5.2.1
+pytest==5.3.2
 pytest-cov==2.8.1
-pytest-django==3.5.1
+pytest-django==3.7.0
 pytest-factoryboy==2.0.3
 pytest-faker==2.0.0
 factory-boy==2.12.0
 pytest-black==0.3.7
 
-fakeredis==1.0.5
+fakeredis==1.1.0
