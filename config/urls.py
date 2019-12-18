@@ -48,6 +48,6 @@ if settings.DEBUG:
 
     urlpatterns += [
         path("", TemplateView.as_view(template_name="index.html")),
-        path("app.js", TemplateView.as_view(template_name="app.js")),
+        path("app.js", TemplateView.as_view(template_name="app.js", content_type='text/javascript')),
         path("__debug__/", include(debug_toolbar.urls)),
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
