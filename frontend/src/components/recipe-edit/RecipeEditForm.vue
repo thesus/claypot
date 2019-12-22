@@ -463,13 +463,13 @@ export default {
           { data: this.recipe_dirty, recipe: this.recipe.id },
           { method: this.draft ? 'put' : 'post' }
         )
+
+        /* If a new draft is created, set the id for the next save */
+        if (!this.draft && r.ok) {
+          this.draft = (await r.json()).id
+        }
       } catch (e) {
         console.log(e)
-      }
-
-      /* If a new draft is created, set the id for the next save */
-      if (!this.draft && r.ok) {
-        this.draft = (await r.json()).id
       }
     },
     async deleteDraft (id) {
