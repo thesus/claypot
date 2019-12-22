@@ -34,7 +34,7 @@ for view in views:
     router.register(*view)
 
 urlpatterns = [
-    path("api/", include((router.urls, 'api'))),
+    path("api/", include((router.urls, "api"))),
     path("api/sentry", SentryConfigView.as_view(), name="sentry-config"),
     path("api/csrf", csrf_token_view),
     path("admin/", admin.site.urls),
@@ -48,6 +48,17 @@ if settings.DEBUG:
 
     urlpatterns += [
         path("", TemplateView.as_view(template_name="index.html")),
-        path("app.js", TemplateView.as_view(template_name="app.js", content_type='text/javascript')),
+        path(
+            "js/app.js",
+            TemplateView.as_view(
+                template_name="app.js", content_type="text/javascript"
+            ),
+        ),
+        path(
+            "js/chunk-vendors.js",
+            TemplateView.as_view(
+                template_name="chunk-vendors.js", content_type="text/javascript"
+            ),
+        ),
         path("__debug__/", include(debug_toolbar.urls)),
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

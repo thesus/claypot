@@ -68,7 +68,7 @@ if DEBUG:
     INSTALLED_APPS += ["debug_toolbar"]
     MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
     INTERNAL_IPS = ["::1", "127.0.0.1"]
-    TEMPLATES[0]["DIRS"] += ["claypot/contrib"]
+    TEMPLATES[0]["DIRS"] += ["claypot/contrib", "claypot/contrib/js"]
 
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -138,7 +138,9 @@ REST_FRAMEWORK = {
 
 # Disable browsable html renderer in production and setup SSL_HEADER for proxy
 if not DEBUG:
-    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = ("rest_framework.renderers.JSONRenderer", )
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = (
+        "rest_framework.renderers.JSONRenderer",
+    )
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
