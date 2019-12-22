@@ -223,6 +223,26 @@ import RecipeEditIngredientTable from '@/components/recipe-edit/RecipeEditIngred
 import ImageUpload from '@/components/recipe-edit/ImageUpload'
 import Modal from '@/components/utils/Modal'
 
+
+function createEmptyIngredientGroup () {
+  return {is_group: true, title: '', ingredients: []}
+}
+
+function createEmptyInstruction () {
+  return {text: ''}
+}
+
+function createDefaultRecipe () {
+  return {
+    ingredients: [{is_group: false, title: '', ingredients: []}],
+    instructions: [createEmptyInstruction()],
+    images: [],
+    estimated_work_duration: null,
+    estimated_waiting_duration: null,
+    description: ''
+  }
+}
+
 const amount_types = {
   none: 1,
   numeric: 2,
@@ -241,18 +261,7 @@ export default {
   props: {
     recipe: {
       type: Object,
-      default: function () {
-        return {
-          id: null,
-          ingredient_groups: [],
-          ingredients: [],
-          title: '',
-          description: '',
-          estimated_work_duration: null,
-          estimated_waiting_duration: null,
-          draft_id: null,
-        }
-      },
+      default: createDefaultRecipe
     },
   },
   data () {
@@ -266,7 +275,7 @@ export default {
         autosaveDelay: null,
         autosaveLoop: null
       },
-      ...this.createDefaultRecipeDirty(),
+      recipe_dirty: createDefaultRecipe(),
       /* Used to pass image data with urls to ImageUpload Component.
          recipe_diry.images is filled by the component and consists only of id's */
       images: null,
@@ -394,28 +403,10 @@ export default {
   },
   methods: {
     addIngredientGroup () {
-      this.recipe_dirty.ingredients.push(this.createEmptyIngredientGroup())
-    },
-    createEmptyIngredientGroup () {
-      return {is_group: true, title: '', ingredients: []}
-    },
-    createEmptyInstruction () {
-      return {text: ''}
-    },
-    createDefaultRecipeDirty () {
-      return {
-        recipe_dirty: {
-          ingredients: [{is_group: false, title: '', ingredients: []}],
-          instructions: [this.createEmptyInstruction()],
-          images: [],
-          estimated_work_duration: null,
-          estimated_waiting_duration: null,
-          description: ''
-        }
-      }
+      this.recipe_dirty.ingredients.push(createEmptyIngredientGroup())
     },
     addInstruction () {
-      this.recipe_dirty.instructions.push(this.createEmptyInstruction())
+      this.recipe_dirty.instructions.push(createEmptyInstruction())
     },
     getDraftString(draft) {
       return new Date(draft.date).toLocaleString() + " " + (draft.title || this.$t('recipes.draft.no_title'))
@@ -443,7 +434,7 @@ export default {
         )
         if (r.ok) {
           /* Replace current version with the draft. Merged with the default, in case the saved draft is incomplete. */
-          this.recipe_dirty = { ...this.createDefaultRecipeDirty(), ...(await r.json()).data }
+          this.recipe_dirty = { ...createDefaultRecipe, ...(await r.json()).data }
         }
       } catch (e) {
         /* Don't show visual indication */
