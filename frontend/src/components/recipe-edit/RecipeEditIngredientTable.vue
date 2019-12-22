@@ -167,7 +167,13 @@ export default {
               return String(ingredient.amount_numeric)
             }
           case this.AMOUNT_TYPE_APPROX:
-            return String(ingredient.amount_approx)
+            if (typeof ingredient.amount_approx === "string") {
+              return ingredient.amount_approx
+            } else if (ingredient.amount_approx === null) {
+              return ""
+            } else {
+              return String(ingredient.amount_approx)
+            }
           default:
             return 'broken'
         }
@@ -262,13 +268,9 @@ export default {
         valueForNumber = valueForNumber.replace(numberRegex, "$1.$2")
       }
       const num = Number(valueForNumber)
-      if (!Number.isNaN(num)) {
+      if ((value !== "") && !Number.isNaN(num)) {
         ingredient.amount_type = this.AMOUNT_TYPE_NUMERIC
-        if (value !== '') {
-          ingredient.amount_numeric = num
-        } else {
-          ingredient.amount_numeric = null
-        }
+        ingredient.amount_numeric = num
         ingredient.amount_approx = value
       } else {
         ingredient.amount_type = this.AMOUNT_TYPE_APPROX
