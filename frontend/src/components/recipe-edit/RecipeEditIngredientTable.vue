@@ -154,13 +154,20 @@ export default {
       return ingredient => {
         switch (ingredient.amount_type) {
           case this.AMOUNT_TYPE_NUMERIC:
-            if (ingredient.amount_numeric !== null) {
-              return ingredient.amount_numeric
-            } else {
+            // There is always the literal string entered by the user in
+            // "amount_approx". To handle cases like when the user entered
+            // "0.", we prefer displaying "amount_approx", because
+            // "amount_numeric" is "0", although the user just entered a dot.
+            if (
+                (typeof ingredient.amount_approx !== "undefined")
+                && (ingredient.amount_approx !== ""))
+            {
               return ingredient.amount_approx
+            } else {
+              return String(ingredient.amount_numeric)
             }
           case this.AMOUNT_TYPE_APPROX:
-            return ingredient.amount_approx
+            return String(ingredient.amount_approx)
           default:
             return 'broken'
         }
@@ -249,8 +256,13 @@ export default {
     },
     updateAmount (ingredient, event) {
       const value = event.target.value
-      const num = Number(value)
-      if ((value === '') || !Number.isNaN(num)) {
+      const numberRegex = /(\d*),(\d*)/
+      let valueForNumber = value
+      if (numberRegex.test(valueForNumber)) {
+        valueForNumber = valueForNumber.replace(numberRegex, "$1.$2")
+      }
+      const num = Number(valueForNumber)
+      if (!Number.isNaN(num)) {
         ingredient.amount_type = this.AMOUNT_TYPE_NUMERIC
         if (value !== '') {
           ingredient.amount_numeric = num
