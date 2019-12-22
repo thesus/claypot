@@ -78,7 +78,7 @@ build:claypot:
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG --pull -f compose/claypot/Dockerfile .
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   after_script:
-    - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    - docker rmi $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG || /bin/true
 
 build:nginx:
   stage: build
@@ -92,7 +92,7 @@ build:nginx:
     - docker build --pull -t $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG -f compose/nginx/Dockerfile .
     - docker push $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG
   after_script:
-    - docker rmi $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG
+    - docker rmi $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG || /bin/true
 
 deploy:cooking.cryptec.at:
   stage: deploy
