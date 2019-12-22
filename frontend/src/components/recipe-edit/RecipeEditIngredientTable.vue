@@ -75,7 +75,6 @@
           Only if anything is in group, it makes any sense to offer the user such a button.
         -->
         <button
-          v-if="!isEmpty"
           :disabled="saving"
           tabindex="-1"
           class="btn"
