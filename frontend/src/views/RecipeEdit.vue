@@ -1,23 +1,25 @@
 <template>
-  <div v-if="loading">
-    {{ $t('recipe_edit.loading') }}
-  </div>
-  <div v-else-if="error">
-    {{ $t('recipe_edit.loading_error') }}
-  </div>
-  <RecipeEditForm
-    v-else-if="recipe"
-    :recipe="recipe"
-    @input="onUpdate"
-    @remove="onRemove"
-  />
-  <div v-else>
-    {{ $t('recipe_edit.no_data') }}
+  <div>
+    <div v-if="loading">
+      {{ $t('recipe_edit.loading') }}
+    </div>
+    <div v-else-if="error">
+      {{ $t('recipe_edit.loading_error') }}
+    </div>
+
+    <RecipeEditForm
+      :id="recipeId"
+      @update="onUpdate"
+      @remove="onRemove"
+
+      @loadingStart="onLoadingStart"
+      @loadingEnd="onLoadingEnd"
+      @error="error = true"
+    />
   </div>
 </template>
 
 <script>
-import {api, endpoints} from '@/api'
 import RecipeEditForm from '@/components/recipe-edit/RecipeEditForm'
 
 export default {
@@ -34,36 +36,16 @@ export default {
     return {
       loading: false,
       error: false,
-      recipe: null,
+      success: false,
+      timer: null
     }
   },
   computed: {
     recipeId () {
-      return this.$route.params.id
+      return this.$route.params.id ? Number.parseInt(this.$route.params.id, 10) : null
     },
-  },
-  mounted () {
-    this.update()
   },
   methods: {
-    async update () {
-      if (!this.recipeId) {
-        return
-      }
-      try {
-        this.loading = true
-        const r = await api(endpoints.fetch_recipe(this.recipeId))
-        this.loading = false
-        if (r.ok) {
-          this.recipe = await r.json()
-        } else {
-          throw new Error("Display some kind of error")
-        }
-      } catch (err) {
-        // TODO: Display some kind of error
-        this.error = true
-      }
-    },
     onUpdate () {
       this.$router.push({
         name: 'recipe-detail',
@@ -75,6 +57,16 @@ export default {
     onRemove () {
       this.$router.push(this.onRemoveRouteTo)
     },
+    onLoadingStart () {
+      this.timer = setTimeout(() => { this.loading = true }, 200)
+    },
+    onLoadingEnd () {
+      clearTimeout(this.timer)
+      this.loading = false
+      if (!this.error) {
+        this.success = true
+      }
+    }
   }
 }
 </script>

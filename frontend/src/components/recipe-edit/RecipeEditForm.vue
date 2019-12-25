@@ -1,5 +1,5 @@
 <template>
-  <article>
+  <article v-if="recipe != null">
     <header>
       <Draft
         ref="drafts"
@@ -8,7 +8,7 @@
       />
       <div>
         <input
-          v-model="recipe_dirty.title"
+          v-model="recipe.title"
           :placeholder="$t('recipes.title')"
           :disabled="saving"
           :class="{'form-error': !!errors.title.length}"
@@ -17,30 +17,30 @@
       <FormFieldValidationError :errors="errors.title" />
 
       <textarea
-        v-model="recipe_dirty.description"
+        v-model="recipe.description"
         :placeholder="$t('recipes.description')"
         :disabled="saving"
         class="description"
         :class="{'form-error': !!errors.description.length}"
       />
     </header>
-
+    <!--
     <FormFieldValidationError :errors="errors.description" />
     <div class="images">
       <ImageUpload
-        v-model="recipe_dirty.images"
-        :initial="images"
+        v-model="recipe.images"
+        :initial="null"
       />
     </div>
-
+    -->
     <div class="ingredients">
       <RecipeEditIngredientTable
-        v-for="(ingredientBatch,i) in recipe_dirty.ingredients"
+        v-for="(ingredientBatch,i) in recipe.ingredients"
         :key="i"
-        v-model="recipe_dirty.ingredients[i]"
+        v-model="recipe.ingredients[i]"
         :recipe-ingredient-error="recipeIngredientError(i)"
         :saving="saving"
-        @remove="recipe_dirty.ingredients.splice(i, 1)"
+        @remove="recipe.ingredients.splice(i, 1)"
       />
       <button
         :disabled="saving"
@@ -52,7 +52,7 @@
     </div>
 
     <div
-      v-for="(instruction, i) in recipe_dirty.instructions"
+      v-for="(instruction, i) in recipe.instructions"
       ref="instructions"
       :key="i"
       class="instruction"
@@ -73,7 +73,7 @@
         :disabled="saving"
         tabindex="-1"
         class="btn remove"
-        @click="recipe_dirty.instructions.splice(i, 1)"
+        @click="recipe.instructions.splice(i, 1)"
       >
         {{ $t('recipe_edit.remove') }}
       </button>
@@ -96,7 +96,7 @@
           {{ $t('recipe_edit.estimated_work_duration') }}
         </label>
         <duration-input
-          v-model="recipe_dirty.estimated_work_duration"
+          v-model="recipe.estimated_work_duration"
           :disabled="saving"
         />
       </div>
@@ -106,7 +106,7 @@
           {{ $t('recipe_edit.estimated_waiting_duration') }}
         </label>
         <duration-input
-          v-model="recipe_dirty.estimated_waiting_duration"
+          v-model="recipe.estimated_waiting_duration"
           :disabled="saving"
         />
       </div>
@@ -210,23 +210,23 @@ export default {
     DurationInput,
     FormFieldValidationError,
     RecipeEditIngredientTable,
-    ImageUpload,
-    Modal
+    // ImageUpload,
+    Modal,
+    Draft
   },
   props: {
-    recipe: {
-      type: Object,
-      default: createDefaultRecipe
-    },
+    id: {
+      type: Number,
+      default: null
+    }
   },
   data () {
     return {
       deleteModal: false,
-      recipe_dirty: createDefaultRecipe(),
-      /* Used to pass image data with urls to ImageUpload Component.
-         recipe_diry.images is filled by the component and consists only of id's */
-      images: null,
       saving: false,
+
+      recipe: null,
+
       errors: {
         title: [],
         description: [],
@@ -238,6 +238,7 @@ export default {
         client_side: '',
         detail: '',
       },
+
       newIngredientsDecision: null,
       newIngredients: [],
       newIngredientsCount: 0,
@@ -279,51 +280,37 @@ export default {
       return this.isExistingRecipe && this.recipe.deletable
     },
     ingredientList () {
-      return [].concat(...this.recipe_dirty.ingredients.map(group => group.ingredients.map(i => i.ingredient)))
+      return [].concat(...this.recipe.ingredients.map(group => group.ingredients.map(i => i.ingredient)))
     }
   },
   watch: {
-    recipe_dirty: {
-      /* Desired behaviour:
-         `autosave` is `false` initially and is automatically changed to `true` after 15 seconds.
-         If a change to any part of the recipe happens before that first 15 second interval, no draft will be saved. This is intentional.
-         If a change happens after this first 15 seconds, the recipe will be saved as a draft, but at most once every 10 seconds.
-         Also note: If changes happen in the first 15 seconds, but no changes happen after that, no draft will be saved; this is intentional as well.
-       */
+    id: {
       handler () {
+        if (this.id != null) {
+          this.loadRecipe()
         } else {
-          this.changed = true
+          this.$set(this, recipe, createDefaultRecipe())
         }
-      },
-      deep: true
-    },
-    recipe: {
-      handler () {
-        const r = this.recipe
-        this.recipe_dirty = {
-          title: r.title,
-          description: r.description,
-          estimated_work_duration: r.estimated_work_duration,
-          estimated_waiting_duration: r.estimated_waiting_duration,
-          instructions: clone(r.instructions || []),
-          ingredients: clone(r.ingredients || []),
-        }
-        this.images = clone(r.images) || []
       },
       immediate: true
     }
   },
   methods: {
+    /**
+    * Replaces the current recipe with the draft.
+    */
+    loadDraft (value) {
+      this.recipe = value
+    },
     addIngredientGroup () {
-      this.recipe_dirty.ingredients.push(createEmptyIngredientGroup())
+      this.recipe.ingredients.push(createEmptyIngredientGroup())
     },
     addInstruction () {
-      this.recipe_dirty.instructions.push(createEmptyInstruction())
-    },
       this.recipe.instructions.push(createEmptyInstruction())
     },
     async save () {
-      const draftSavePromise = this.saveDraft()
+      // Save draft before trying to save the recipe
+      const draftSavePromise = this.$refs.drafts.saveDraft()
 
       this.saving = true
       try {
@@ -373,7 +360,7 @@ export default {
               errorsByIngredient[k] = errors.ingredients[String(i)]
             })
 
-            this.recipe_dirty.ingredients.forEach((group, groupI) => {
+            this.recipe.ingredients.forEach((group, groupI) => {
               group.ingredients.forEach((ingredient, ingredientI) => {
                 if (typeof errorsByIngredient[ingredient.ingredient] !== 'undefined') {
                   const thisError = errorsByIngredient[ingredient.ingredient]
@@ -398,13 +385,13 @@ export default {
         }
 
         const d = {
-          title: this.recipe_dirty.title,
-          description: this.recipe_dirty.description,
-          estimated_work_duration: this.recipe_dirty.estimated_work_duration,
-          estimated_waiting_duration: this.recipe_dirty.estimated_waiting_duration,
-          images: this.recipe_dirty.images,
-          instructions: this.recipe_dirty.instructions.map((instruction, i) => { return {order: i, text: instruction.text}}),
-          ingredients: this.recipe_dirty.ingredients,
+          title: this.recipe.title,
+          description: this.recipe.description,
+          estimated_work_duration: this.recipe.estimated_work_duration,
+          estimated_waiting_duration: this.recipe.estimated_waiting_duration,
+          images: this.recipe.images,
+          instructions: this.recipe.instructions.map((instruction, i) => { return {order: i, text: instruction.text}}),
+          ingredients: this.recipe.ingredients,
         }
 
         const r = await api(endpoints.post_recipe(this.recipe.id), d, {method: this.recipe.id ? 'put' : 'post'})
@@ -450,7 +437,25 @@ export default {
         this.saving = false
       }
     },
-  },
+    async loadRecipe () {
+      try {
+        this.$emit('loadingStart')
+
+        const response = await api(endpoints.fetch_recipe(this.id))
+
+        if (response.ok) {
+          // TODO: fix image handling
+          this.$set(this, 'recipe', await response.json())
+        } else {
+
+        }
+      } catch (error) {
+        this.$emit('error', error)
+      } finally {
+        this.$emit("loadingEnd")
+      }
+    }
+  }
 }
 </script>
 
