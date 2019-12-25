@@ -3,16 +3,19 @@
     enctype="multipart/form-data"
     @submit.prevent="submitImages"
   >
-    <label class="input">
-      <span class="btn">{{ $t('image_upload.upload_button') }}</span>
-      <input
-        ref="input"
-        type="file"
-        multiple
-        accept="image/*"
-        @change="imageChange"
-      >
-    </label>
+    <button
+      class="btn"
+      @click="openInput"
+    >
+      {{ $t('image_upload.upload_button') }}
+    </button>
+    <input
+      ref="input"
+      type="file"
+      multiple
+      accept="image/*"
+      @change="imageChange"
+    >
     <div
       v-if="images"
       class="list"
@@ -85,6 +88,9 @@ export default {
     update () {
       /* Could update with watch but that's more specific. */
       this.$emit('input', this.images.filter(image => image.success === true).map(image => image.id))
+    },
+    openInput () {
+      this.$refs.input.click()
     },
     removeImage (id) {
       this.$delete(this.images, id)

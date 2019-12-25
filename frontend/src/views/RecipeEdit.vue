@@ -46,11 +46,11 @@ export default {
     },
   },
   methods: {
-    onUpdate () {
+    onUpdate (id) {
       this.$router.push({
         name: 'recipe-detail',
         params: {
-          id: this.$route.params.id,
+          id: id,
         },
       })
     },

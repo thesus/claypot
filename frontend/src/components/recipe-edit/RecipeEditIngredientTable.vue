@@ -1,16 +1,16 @@
 <template>
   <div
-    :class="{group: dirty.is_group}"
+    :class="{group: group.is_group}"
     class="table"
   >
     <input
-      v-if="dirty.is_group"
-      v-model="dirty.title"
+      v-if="group.is_group"
+      v-model="group.title"
       placeholder="Ingredient group title"
       class="title"
     >
     <div
-      v-show="dirty.ingredients.length > 0"
+      v-show="group.ingredients.length > 0"
     >
       <div class="header">
         <span>{{ $t('recipe_edit.amount') }}</span>
@@ -21,7 +21,7 @@
         <span>{{ $t('recipe_edit.action') }}</span>
       </div>
       <div
-        v-for="(ingredient, i) in dirty.ingredients"
+        v-for="(ingredient, i) in group.ingredients"
         ref="ingredientsNode"
         :key="i"
         class="ingredient"
@@ -29,9 +29,8 @@
         <div class="input amount">
           <input
             :value="displayAmount(ingredient)"
-            :disabled="saving"
             :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length || !!recipeIngredientError(i).amount_numeric.length}"
-            @input="updateAmount(ingredient, $event)"
+            @input="updateAmount(ingredient, $event.target.value)"
           >
           <FormFieldValidationError :errors="recipeIngredientError(i).amount_numeric" />
           <FormFieldValidationError :errors="recipeIngredientError(i).amount_approx" />
@@ -39,8 +38,8 @@
         <div class="input unit">
           <input
             v-model="ingredient.unit"
-            :disabled="saving || ingredient.amount_type !== AMOUNT_TYPE_NUMERIC"
-            :class="{'form-error': !!recipeIngredientError(i).unit.length}"
+            :disabled="!isNumeric(ingredient.amount_type)"
+            :class="formError(i, 'unit')"
             :placeholder="$t('recipe_edit.unit')"
           >
           <FormFieldValidationError :errors="recipeIngredientError(i).unit" />
@@ -48,16 +47,14 @@
         <div class="input">
           <IngredientInput
             v-model="ingredient.ingredient"
-            :disabled="saving"
-            :error="!!recipeIngredientError(i).ingredient.length"
+            :class="formError(i, 'ingredient')"
           />
           <FormFieldValidationError :errors="recipeIngredientError(i).ingredient" />
         </div>
         <div class="input">
           <input
             v-model="ingredient.ingredient_extra"
-            :disabled="saving"
-            :class="{'form-error': !!recipeIngredientError(i).ingredient_extra.length}"
+            :class="formError(i, 'ingredient_extra')"
             :placeholder="$t('recipe_edit.ingredient_extra')"
           >
           <FormFieldValidationError :errors="recipeIngredientError(i).ingredient_extra" />
@@ -67,7 +64,6 @@
           <input
             v-model="ingredient.optional"
             type="checkbox"
-            :disabled="saving"
           >
         </div>
         <!--
@@ -75,34 +71,19 @@
           Only if anything is in group, it makes any sense to offer the user such a button.
         -->
         <button
-          :disabled="saving"
           tabindex="-1"
           class="btn"
-          @click="dirty.ingredients.splice(i, 1)"
+          @click="group.ingredients.splice(i, 1)"
         >
           {{ $t('recipe_edit.remove') }}
         </button>
       </div>
     </div>
     <button
-      :disabled="saving"
       class="btn right"
       @click.prevent="addIngredient"
     >
       {{ $t('recipe_edit.add_ingredient') }}
-    </button>
-    <!--
-      We will only show the button that allows removal of the whole group,
-      if the group is already empty. This helps to prevent users from removing
-      a group in error.
-    -->
-    <button
-      v-if="isEmpty"
-      :disabled="saving"
-      class="btn right"
-      @click.prevent="removeGroup"
-    >
-      {{ $t('recipe_edit.remove_group') }}
     </button>
     <div style="clear:both" />
   </div>
@@ -111,6 +92,7 @@
 <script>
 import IngredientInput from '@/components/utils/IngredientInput'
 import FormFieldValidationError from '@/components/utils/FormFieldValidationError'
+import { createEmptyIngredient, AMOUNT_TYPE_NUMERIC, AMOUNT_TYPE_APPROX } from '@/components/recipe-edit/utils'
 
 export default {
   name: 'RecipeEditIngredientTable',
@@ -119,165 +101,77 @@ export default {
     IngredientInput,
   },
   props: {
-    value: {
+    group: {
       type: Object,
-      default: function () {
-        return {}
-      },
+      required: true
     },
     recipeIngredientError: {
       type: Function,
       default: function () {
         return function () {}
       }
-    },
-    saving: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data () {
-    return {
-      dirty: {
-        is_group: false,
-        title: '',
-        ingredients: [],
-      },
-      AMOUNT_TYPE_NONE: 1,
-      AMOUNT_TYPE_NUMERIC: 2,
-      AMOUNT_TYPE_APPROX: 3,
     }
   },
   computed: {
     displayAmount () {
       return ingredient => {
         switch (ingredient.amount_type) {
-          case this.AMOUNT_TYPE_NUMERIC:
-            // There is always the literal string entered by the user in
-            // "amount_approx". To handle cases like when the user entered
-            // "0.", we prefer displaying "amount_approx", because
-            // "amount_numeric" is "0", although the user just entered a dot.
-            if (
-                (typeof ingredient.amount_approx !== "undefined")
-                && (ingredient.amount_approx !== ""))
-            {
-              return ingredient.amount_approx
-            } else {
-              return String(ingredient.amount_numeric)
-            }
-          case this.AMOUNT_TYPE_APPROX:
-            if (typeof ingredient.amount_approx === "string") {
-              return ingredient.amount_approx
-            } else if (ingredient.amount_approx === null) {
-              return ""
-            } else {
-              return String(ingredient.amount_approx)
-            }
+          case AMOUNT_TYPE_NUMERIC:
+            return ingredient.amount_numeric
+          case AMOUNT_TYPE_APPROX:
+            return ingredient.amount_approx
           default:
             return 'broken'
         }
       }
     },
     isEmpty () {
-      // either there is no ingredient or there is exactly one, that matches the empty object in every respect
-      return this.dirty.ingredients.length === 0 ||
-        (this.dirty.ingredients.length === 1 && Object.entries(this.createEmptyIngredient()).every((([k, v]) => this.dirty.ingredients[0][k] == v)))
-    },
+      return !this.group.ingredients.length
+    }
   },
   watch: {
-    value () {
-      this.updateDirty()
-    },
-    dirty: {
-      handler () {
-        const equalIngredients = function (i1, i2) {
-          const fields = [
-            'ingredient',
-            'ingredient_extra',
-            'optional',
-            'amount_type',
-            'amount_numeric',
-            'amount_approx',
-            'unit',
-          ]
-          return fields.map(name => (i1[name] === i2[name])).every(i => i)
-        }
-
-        const changed = (
-          (this.dirty.is_group !== this.value.is_group) ||
-          (this.dirty.title !== this.value.title) ||
-          (this.dirty.ingredients.some((ingredient, i) => !equalIngredients(this.value.ingredients[i] || {}, ingredient))) ||
-          (this.value.ingredients.some((ingredient, i) => !equalIngredients(this.dirty.ingredients[i] || {}, ingredient)))
-        )
-        if (changed) {
-          this.$emit('input', {
-            is_group: this.dirty.is_group,
-            title: this.dirty.title,
-            ingredients: this.dirty.ingredients.map(i => Object.assign({}, i)),
-          })
-        }
-      },
-      deep: true,
-    },
-  },
-  mounted () {
-    this.updateDirty()
+    isEmpty () {
+      // The group can't exist if there are no ingredients, therefore it's sufficient to wait for a change.
+      this.$emit('remove')
+    }
   },
   methods: {
-    createEmptyIngredient () {
+    isNumeric (amount_type) {
+      return amount_type === AMOUNT_TYPE_NUMERIC
+    },
+    formError (index, key) {
       return {
-        ingredient: '',
-        ingredient_extra: '',
-        optional: false,
-        amount_type: this.AMOUNT_TYPE_NUMERIC,
-        amount_approx: '',
-        amount_numeric: 0,
-        unit: '',
+        'form-error': !!this.recipeIngredientError(index)[key].length
       }
     },
     addIngredient () {
-      this.dirty.ingredients.push(this.createEmptyIngredient())
+      this.group.ingredients.push(createEmptyIngredient())
 
-      const pos = this.dirty.ingredients.length - 1
-      /* Select the first field in the input after it was created */
-      /* And yeah. This is pretty dirty. */
+      const pos = this.group.ingredients.length - 1
+      // Select the first field in the input after it was created
+      // And yeah. This is pretty dirty.
       this.$nextTick(() => {
         if (this.$refs.ingredientsNode) {
           this.$refs.ingredientsNode[pos].children[0].children[0].focus()
         }
       })
     },
-    updateDirty () {
-      this.dirty.is_group = this.value.is_group
-      this.dirty.title = this.value.title
-      this.dirty.ingredients.splice(0)
-      this.dirty.ingredients.push(...this.value.ingredients.map(i => Object.assign({}, i)))
-      if (this.dirty.ingredients.length === 0) {
-        this.addIngredient()
-      }
-    },
-    removeGroup () {
-      this.$emit('remove', {})
-    },
-    updateAmount (ingredient, event) {
-      const value = event.target.value
+    updateAmount (ingredient, value) {
       const numberRegex = /(\d*),(\d*)/
-      let valueForNumber = value
-      if (numberRegex.test(valueForNumber)) {
-        valueForNumber = valueForNumber.replace(numberRegex, "$1.$2")
+      let possibleNumber = value;
+
+      if (numberRegex.test(possibleNumber)) {
+        possibleNumber = possibleNumber.replace(numberRegex, "$1.$2")
       }
-      const num = Number(valueForNumber)
-      if ((value !== "") && !Number.isNaN(num)) {
-        ingredient.amount_type = this.AMOUNT_TYPE_NUMERIC
-        ingredient.amount_numeric = num
-        ingredient.amount_approx = value
-      } else {
-        ingredient.amount_type = this.AMOUNT_TYPE_APPROX
-        ingredient.amount_numeric = null
-        ingredient.amount_approx = value
-      }
+
+      const number = Number(possibleNumber)
+      const isApprox = Number.isNaN(number)
+
+      ingredient.amount_type = isApprox ? AMOUNT_TYPE_APPROX : AMOUNT_TYPE_NUMERIC
+      ingredient.amount_approx = isApprox ? value : null
+      ingredient.amount_numeric = isApprox ? null : number
     }
-  },
+  }
 }
 </script>
 

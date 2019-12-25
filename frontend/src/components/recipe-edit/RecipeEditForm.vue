@@ -1,181 +1,169 @@
 <template>
   <article v-if="recipe != null">
-    <header>
+    <fieldset :disabled="saving">
       <Draft
         ref="drafts"
         :recipe="recipe"
         @draftLoad="loadDraft"
       />
-      <div>
-        <input
-          v-model="recipe.title"
-          :placeholder="$t('recipes.title')"
-          :disabled="saving"
-          :class="{'form-error': !!errors.title.length}"
-        >
-      </div>
+
+      <input
+        v-model="recipe.title"
+        :placeholder="$t('recipes.title')"
+        :class="formError('title')"
+      >
       <FormFieldValidationError :errors="errors.title" />
 
       <textarea
         v-model="recipe.description"
         :placeholder="$t('recipes.description')"
-        :disabled="saving"
         class="description"
-        :class="{'form-error': !!errors.description.length}"
+        :class="formError('description')"
       />
-    </header>
-    <FormFieldValidationError :errors="errors.description" />
+      <FormFieldValidationError :errors="errors.description" />
 
-    <div class="images">
-      <ImageUpload
-        v-model="recipe.images"
-        :initial="imagesInitial"
-      />
-    </div>
-
-    <div class="ingredients">
-      <RecipeEditIngredientTable
-        v-for="(ingredientBatch,i) in recipe.ingredients"
-        :key="i"
-        v-model="recipe.ingredients[i]"
-        :recipe-ingredient-error="recipeIngredientError(i)"
-        :saving="saving"
-        @remove="recipe.ingredients.splice(i, 1)"
-      />
-      <button
-        :disabled="saving"
-        class="btn right"
-        @click.prevent="addIngredientGroup"
-      >
-        {{ $t('recipe_edit.add_group') }}
-      </button>
-    </div>
-
-    <div
-      v-for="(instruction, i) in recipe.instructions"
-      ref="instructions"
-      :key="i"
-      class="instruction"
-    >
-      <div class="text">
-        <textarea
-          v-model="instruction.text"
-          :placeholder="$t('recipes.instructions')"
-          :disabled="saving"
-          class="small"
-        />
-        <FormFieldValidationError
-          :errors="recipeInstructionError(i).text"
-          :saving="saving"
-        />
-      </div>
-      <button
-        :disabled="saving"
-        tabindex="-1"
-        class="btn remove"
-        @click="recipe.instructions.splice(i, 1)"
-      >
-        {{ $t('recipe_edit.remove') }}
-      </button>
-    </div>
-    <div
-      class="addInstruction"
-    >
-      <button
-        :disabled="saving"
-        class="btn right"
-        @click.prevent="addInstruction"
-      >
-        {{ $t('recipe_edit.add_instruction') }}
-      </button>
-    </div>
-
-    <div class="estimation">
-      <div class="column">
-        <label>
-          {{ $t('recipe_edit.estimated_work_duration') }}
-        </label>
-        <duration-input
-          v-model="recipe.estimated_work_duration"
-          :disabled="saving"
+      <div class="images">
+        <ImageUpload
+          v-model="recipe.images"
+          :initial="imagesInitial"
         />
       </div>
 
-      <div class="column">
-        <label>
-          {{ $t('recipe_edit.estimated_waiting_duration') }}
-        </label>
-        <duration-input
-          v-model="recipe.estimated_waiting_duration"
-          :disabled="saving"
+      <div class="ingredients">
+        <RecipeEditIngredientTable
+          v-for="(group, i) in recipe.ingredients"
+          :key="i"
+          :group.sync="recipe.ingredients[i]"
+          :recipe-ingredient-error="recipeIngredientError(i)"
+          @remove="recipe.ingredients.splice(i, 1)"
         />
-      </div>
-    </div>
 
-    <div class="options">
-      <button
-        v-if="canDeleteRecipe"
-        :disabled="saving"
-        class="btn"
-        style="float: left;"
-        @click.prevent="deleteModal = true"
-      >
-        {{ $t('recipe_edit.delete') }}
-      </button>
-
-      <Modal
-        v-if="deleteModal"
-        :title="$t('recipe_edit.delete_title')"
-        @close="deleteModal = false"
-      >
-        <span>{{ $t('recipe_edit.delete_confirm') }}</span>
         <button
           class="btn right"
-          @click.prevent="deleteRecipe"
+          @click.prevent="addIngredientGroup"
+        >
+          {{ $t('recipe_edit.add_group') }}
+        </button>
+      </div>
+
+      <div
+        v-for="(instruction, i) in recipe.instructions"
+        :key="i"
+        class="instruction"
+      >
+        <div class="text">
+          <textarea
+            v-model="instruction.text"
+            :placeholder="$t('recipes.instructions')"
+            class="small"
+          />
+          <FormFieldValidationError
+            :errors="recipeInstructionError(i).text"
+          />
+        </div>
+        <button
+          tabindex="-1"
+          class="btn remove"
+          @click="recipe.instructions.splice(i, 1)"
+        >
+          {{ $t('recipe_edit.remove') }}
+        </button>
+      </div>
+
+      <div
+        class="addInstruction"
+      >
+        <button
+          class="btn right"
+          @click.prevent="addInstruction"
+        >
+          {{ $t('recipe_edit.add_instruction') }}
+        </button>
+      </div>
+
+      <div class="estimation">
+        <div class="column">
+          <label>
+            {{ $t('recipe_edit.estimated_work_duration') }}
+          </label>
+          <duration-input
+            v-model="recipe.estimated_work_duration"
+          />
+        </div>
+
+        <div class="column">
+          <label>
+            {{ $t('recipe_edit.estimated_waiting_duration') }}
+          </label>
+          <duration-input
+            v-model="recipe.estimated_waiting_duration"
+          />
+        </div>
+      </div>
+
+      <div class="options">
+        <button
+          v-if="canDeleteRecipe"
+          class="btn"
+          style="float: left;"
+          @click.prevent="deleteModal = true"
         >
           {{ $t('recipe_edit.delete') }}
         </button>
+
+        <Modal
+          v-if="deleteModal"
+          :title="$t('recipe_edit.delete_title')"
+          @close="deleteModal = false"
+        >
+          <span>{{ $t('recipe_edit.delete_confirm') }}</span>
+          <button
+            class="btn right"
+            @click.prevent="deleteRecipe"
+          >
+            {{ $t('recipe_edit.delete') }}
+          </button>
+        </Modal>
+
+        <button
+          class="btn save"
+          @click.prevent="save"
+        >
+          {{ $t('recipe_edit.save') }}
+        </button>
+      </div>
+
+      <Modal
+        v-if="newIngredientsDecision"
+        @close="newIngredientsDecision(false)"
+      >
+        <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
+        <ul>
+          <li
+            v-for="(ingredient, i) in newIngredients"
+            :key="i"
+          >
+            <div>{{ ingredient }}</div>
+            <FormFieldValidationError
+              :errors="(((newIngredientsError || [])[i] || {}).text) || []"
+            />
+          </li>
+        </ul>
+        <button
+          class="btn right"
+          @click="newIngredientsDecision(true)"
+        >
+          {{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}
+        </button>
       </Modal>
 
-      <button
-        :disabled="saving"
-        class="btn save"
-        @click.prevent="save"
-      >
-        {{ $t('recipe_edit.save') }}
-      </button>
-    </div>
-
-    <Modal
-      v-if="newIngredientsDecision"
-      @close="newIngredientsDecision(false)"
-    >
-      <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
-      <ul>
-        <li
-          v-for="(ingredient, i) in newIngredients"
-          :key="i"
-        >
-          <div>{{ ingredient }}</div>
-          <FormFieldValidationError
-            :errors="(((newIngredientsError || [])[i] || {}).text) || []"
-          />
-        </li>
-      </ul>
-      <button
-        class="btn right"
-        @click="newIngredientsDecision(true)"
-      >
-        {{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}
-      </button>
-    </Modal>
-
-    <div v-if="errors.client_side">
-      {{ errors.client_side }}
-    </div>
-    <div v-if="errors.detail">
-      {{ errors.detail }}
-    </div>
+      <div v-if="errors.client_side">
+        {{ errors.client_side }}
+      </div>
+      <div v-if="errors.detail">
+        {{ errors.detail }}
+      </div>
+    </fieldset>
 
     <footer>
       <p v-if="recipe.id">
@@ -234,6 +222,7 @@ export default {
         ingredients: [],
         ingredient_groups: [],
         instructions: [],
+
         client_side: '',
         detail: '',
       },
@@ -295,6 +284,11 @@ export default {
     }
   },
   methods: {
+    formError (key) {
+      return {
+        'form-error': !!this.errors[key].length
+      }
+    },
     /**
     * Replaces the current recipe with the draft.
     */
@@ -404,7 +398,7 @@ export default {
         this.$refs.drafts.deleteDraft()
 
         // Close page on success
-        this.$emit('update')
+        this.$emit('update', this.recipe.id)
         } else {
           // TODO: Notify user about broken fields?
           const errors = await r.json()

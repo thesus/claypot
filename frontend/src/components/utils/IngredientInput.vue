@@ -19,8 +19,6 @@
     </div>
     <input
       v-model="dirtyValue"
-      :disabled="disabled"
-      :class="{'form-error': error}"
       :placeholder="$t('recipe_edit.ingredient')"
       @focus="onFocus()"
       @blur="onBlur()"
@@ -41,14 +39,6 @@ export default {
     value: {
       type: String,
       default: '',
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    error: {
-      type: Boolean,
-      default: false
     }
   },
   data () {
