@@ -1,38 +1,11 @@
 <template>
   <article>
     <header>
-      <div class="drafts" v-if="drafts.length || recipe.draft_id">
-        <select
-          v-if="drafts.length"
-          class="select"
-          @input="getDraft($event.target.value)"
-        >
-          <option
-            disabled
-            selected
-            value
-          >
-            {{ $t('recipes.draft.multiple') }}
-          </option>
-          <option
-            v-for="d in drafts"
-            :key="d.id"
-            :value="d.id"
-          >
-            {{ getDraftString(d) }}
-          </option>
-        </select>
-
-        <button
-          v-else-if="recipe.draft_id"
-          class="btn right"
-          :disabled="!(recipe.draft_id && !draft)"
-          @click="getDraft(recipe.draft_id)"
-        >
-          {{ $t('recipes.draft.single') }}
-        </button>
-      </div>
-
+      <Draft
+        ref="drafts"
+        :recipe="recipe"
+        @draftLoad="loadDraft"
+      />
       <div>
         <input
           v-model="recipe_dirty.title"
@@ -223,26 +196,8 @@ import RecipeEditIngredientTable from '@/components/recipe-edit/RecipeEditIngred
 import ImageUpload from '@/components/recipe-edit/ImageUpload'
 import Modal from '@/components/utils/Modal'
 
-
-function createEmptyIngredientGroup () {
-  return {is_group: true, title: '', ingredients: []}
-}
-
-function createEmptyInstruction () {
-  return {text: ''}
-}
-
-function createDefaultRecipe () {
-  return {
-    ingredients: [{is_group: false, title: '', ingredients: []}],
-    instructions: [createEmptyInstruction()],
-    images: [],
-    estimated_work_duration: null,
-    estimated_waiting_duration: null,
-    description: ''
-  }
-}
-
+import Draft from '@/components/recipe-edit/Draft'
+import { createDefaultRecipe } from '@/components/recipe-edit/utils'
 const amount_types = {
   none: 1,
   numeric: 2,
@@ -267,14 +222,6 @@ export default {
   data () {
     return {
       deleteModal: false,
-      drafts: [], /* Draft list for new recipes */
-      draft: null, /* Currently selected draft, gets deleted after succesfull save */
-      autosave: true, /* Save timer is running */
-      changed: false,
-      timer: {
-        autosaveDelay: null,
-        autosaveLoop: null
-      },
       recipe_dirty: createDefaultRecipe(),
       /* Used to pass image data with urls to ImageUpload Component.
          recipe_diry.images is filled by the component and consists only of id's */
@@ -344,20 +291,6 @@ export default {
          Also note: If changes happen in the first 15 seconds, but no changes happen after that, no draft will be saved; this is intentional as well.
        */
       handler () {
-        if  (!this.autosave) {
-          this.autosave = true
-          this.saveDraft()
-
-          /* Allow autosave again after 10 seconds */
-          this.timer.autosaveLoop = setTimeout(() => {
-              this.autosave = false
-
-              if (this.changed) {
-                this.saveDraft()
-                this.changed = false
-                this.autosave = true
-              }
-          }, 10000)
         } else {
           this.changed = true
         }
@@ -366,12 +299,6 @@ export default {
     },
     recipe: {
       handler () {
-        if (!this.isExistingRecipe) {
-          /* If this is a new recipe load drafts that are not associated with a recipe */
-          this.getDraftList()
-        } else {
-          this.drafts = []
-        }
         const r = this.recipe
         this.recipe_dirty = {
           title: r.title,
@@ -386,21 +313,6 @@ export default {
       immediate: true
     }
   },
-  mounted () {
-    /* Enable draft saving after 15 seconds. */
-    this.timer.autosaveDelay = setTimeout(() => {
-      this.autosave = false
-    }, 15000)
-  },
-  beforeDestroy () {
-    clearTimeout(this.timer.autosaveDelay)
-    clearTimeout(this.timer.autosaveLoop)
-
-    /* Save the state of current draft immediately before closing */
-    if (this.changed && this.draft) {
-      this.saveDraft()
-    }
-  },
   methods: {
     addIngredientGroup () {
       this.recipe_dirty.ingredients.push(createEmptyIngredientGroup())
@@ -408,67 +320,7 @@ export default {
     addInstruction () {
       this.recipe_dirty.instructions.push(createEmptyInstruction())
     },
-    getDraftString(draft) {
-      return new Date(draft.date).toLocaleString() + " " + (draft.title || this.$t('recipes.draft.no_title'))
-    },
-    async getDraftList () {
-      try {
-        const r = await api(
-          endpoints.recipe_draft()
-        )
-        if (r.ok) {
-          this.drafts = (await r.json()).results
-        }
-      } catch (e) {
-        /* Don't show visual indication */
-        console.log(e)
-      }
-    },
-    async getDraft (id) {
-      /* Set the current draft to the loaded one. */
-      this.draft = id
-
-      try {
-        const r = await api(
-          endpoints.recipe_draft(id)
-        )
-        if (r.ok) {
-          /* Replace current version with the draft. Merged with the default, in case the saved draft is incomplete. */
-          this.recipe_dirty = { ...createDefaultRecipe, ...(await r.json()).data }
-        }
-      } catch (e) {
-        /* Don't show visual indication */
-        console.log(e)
-      }
-    },
-    async saveDraft () {
-      /* If save is called on a existing recipe with a existing draft, overwrite the draft. */
-      /* This disables the 'load draft' button. */
-      if (!this.draft && this.recipe.draft_id) {
-        this.draft = this.recipe.draft_id
-      }
-
-      try {
-        const r = await api(
-          endpoints.recipe_draft(this.draft),
-          { data: this.recipe_dirty, recipe: this.recipe.id },
-          { method: this.draft ? 'put' : 'post' }
-        )
-
-        /* If a new draft is created, set the id for the next save */
-        if (!this.draft && r.ok) {
-          this.draft = (await r.json()).id
-        }
-      } catch (e) {
-        console.log(e)
-      }
-    },
-    async deleteDraft (id) {
-      await api(
-        endpoints.recipe_draft(id),
-        null,
-        { method: 'delete' }
-      )
+      this.recipe.instructions.push(createEmptyInstruction())
     },
     async save () {
       const draftSavePromise = this.saveDraft()
@@ -558,19 +410,15 @@ export default {
         const r = await api(endpoints.post_recipe(this.recipe.id), d, {method: this.recipe.id ? 'put' : 'post'})
         if (r.ok) {
           this.errors.client_side = ''
-          this.recipe_dirty = await r.json()
+          this.recipe = await r.json()
 
-          /* If a draft is created or loaded earlier, delete it after succesfull saving */
-          if (this.draft) {
-            /* Draft must be saved before it can be removed */
-            await draftSavePromise
+          // If a draft is created or loaded earlier, delete it after succesfull saving
+        // Draft must be saved before it can be removed
+        await draftSavePromise
+        this.$refs.drafts.deleteDraft()
 
-            await this.deleteDraft(this.draft)
-            this.changed = false
-          }
-
-          // TODO: Notify user about success.
-          this.$emit('input', this.recipe_dirty)
+        // Close page on success
+        this.$emit('update')
         } else {
           // TODO: Notify user about broken fields?
           const errors = await r.json()
@@ -672,15 +520,6 @@ export default {
 
   .btn {
     margin-right: 0;
-  }
-}
-
-.drafts {
-  display: inline-block;
-  width: 100%;
-
-  .select {
-    float: right;
   }
 }
 </style>
