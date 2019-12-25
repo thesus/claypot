@@ -24,15 +24,15 @@
         :class="{'form-error': !!errors.description.length}"
       />
     </header>
-    <!--
     <FormFieldValidationError :errors="errors.description" />
+
     <div class="images">
       <ImageUpload
         v-model="recipe.images"
-        :initial="null"
+        :initial="imagesInitial"
       />
     </div>
-    -->
+
     <div class="ingredients">
       <RecipeEditIngredientTable
         v-for="(ingredientBatch,i) in recipe.ingredients"
@@ -197,12 +197,7 @@ import ImageUpload from '@/components/recipe-edit/ImageUpload'
 import Modal from '@/components/utils/Modal'
 
 import Draft from '@/components/recipe-edit/Draft'
-import { createDefaultRecipe } from '@/components/recipe-edit/utils'
-const amount_types = {
-  none: 1,
-  numeric: 2,
-  approx: 3,
-}
+import { createDefaultRecipe, createEmptyIngredientGroup, createEmptyInstruction } from '@/components/recipe-edit/utils'
 
 export default {
   name: 'RecipeEditForm',
@@ -210,7 +205,7 @@ export default {
     DurationInput,
     FormFieldValidationError,
     RecipeEditIngredientTable,
-    // ImageUpload,
+    ImageUpload,
     Modal,
     Draft
   },
@@ -225,7 +220,11 @@ export default {
       deleteModal: false,
       saving: false,
 
+      // Gets populated if id changes or immediately
       recipe: null,
+
+      // Initial state of images, @see this.loadRecipe
+      imagesInitial: [],
 
       errors: {
         title: [],
@@ -274,7 +273,7 @@ export default {
       }
     },
     isExistingRecipe () {
-      return !!this.recipe.id
+      return !!this.id
     },
     canDeleteRecipe () {
       return this.isExistingRecipe && this.recipe.deletable
@@ -289,7 +288,7 @@ export default {
         if (this.id != null) {
           this.loadRecipe()
         } else {
-          this.$set(this, recipe, createDefaultRecipe())
+          this.$set(this, 'recipe', createDefaultRecipe())
         }
       },
       immediate: true
@@ -444,8 +443,14 @@ export default {
         const response = await api(endpoints.fetch_recipe(this.id))
 
         if (response.ok) {
-          // TODO: fix image handling
-          this.$set(this, 'recipe', await response.json())
+          const recipe = await response.json()
+
+          // inital images consists of url for the thumbnails
+          // on save recipe.images is an array of ids of the images
+          this.imagesInitial = recipe.images
+          delete recipe.images
+
+          this.$set(this, 'recipe', recipe)
         } else {
 
         }
