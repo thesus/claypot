@@ -41,11 +41,6 @@ class Unit(models.Model):
         unique_together = ("name",)
 
 
-class RecipeManager(models.Manager):
-    def get_by_natural_key(self, slug):
-        return self.get(slug=slug)
-
-
 RECIPE_RELATION_TYPE_ADDITION = 1
 RECIPE_RELATION_TYPE_REPLACEMENT = 2
 RECIPE_RELATION_TYPES = (
@@ -63,6 +58,11 @@ class RecipeRelation(models.Model):
         verbose_name = gettext_lazy("Recipe relation")
         verbose_name_plural = gettext_lazy("Recipe relations")
         unique_together = (("recipe1", "recipe2", "type"),)
+
+
+class RecipeManager(models.Manager):
+    def get_by_natural_key(self, slug):
+        return self.get(slug=slug)
 
 
 class Recipe(models.Model):
@@ -144,14 +144,14 @@ AMOUNT_TYPES = (
 )
 
 
-class RecipeIngredientManager(models.Manager):
-    def get_by_natural_key(self, recipe, order):
-        recipe = Recipe.objects.get_by_natural_key(*recipe)
-        return self.get(recipe=recipe, order=order)
+class RecipeIngredient(models.Model):
+    """Stores an ingredient belonging to a group."""
 
+    group = models.ForeignKey(
+        "RecipeIngredientGroup", on_delete=models.CASCADE, related_name="ingredients"
+    )
 
-class AbstractIngredient(models.Model):
-    objects = RecipeIngredientManager()
+    order = models.IntegerField()
 
     ingredient = models.ForeignKey(
         "Ingredient",
@@ -166,7 +166,9 @@ class AbstractIngredient(models.Model):
         # specific ingredient
         verbose_name=gettext_lazy("Additional notes about ingredient"),
     )
+
     optional = models.BooleanField(verbose_name=gettext_lazy("Optional"), default=False)
+
     amount_type = models.IntegerField(
         choices=AMOUNT_TYPES,
         # Translators: Name of internal field, e. g. "numeric amount",
@@ -174,9 +176,11 @@ class AbstractIngredient(models.Model):
         verbose_name=gettext_lazy("Amount type"),
         default=AMOUNT_TYPE_NUMERIC,
     )
+
     amount_numeric = models.FloatField(
         verbose_name=gettext_lazy("Amount, numeric"), null=True, blank=True
     )
+
     amount_approx = models.CharField(
         max_length=250,
         # Translators: Description of amount like "pint" or "some"
@@ -184,6 +188,7 @@ class AbstractIngredient(models.Model):
         null=True,
         blank=True,
     )
+
     unit = models.ForeignKey(
         "Unit",
         on_delete=models.PROTECT,
@@ -195,28 +200,16 @@ class AbstractIngredient(models.Model):
     )
 
     def natural_key(self):
-        return (self.recipe.natural_key(), self.order)
+        return (self.group.natural_key(), self.order)
 
     def __str__(self):
         # Translators: Recipe ingredient display name
-        return gettext("{0.recipe}'s {0.ingredient}").format(self)
-
-    class Meta:
-        abstract = True
-        verbose_name = gettext_lazy("Recipe ingredient")
-        verbose_name_plural = gettext_lazy("Recipe ingredients")
-
-
-class RecipeIngredient(AbstractIngredient):
-    recipe = models.ForeignKey(
-        "Recipe", on_delete=models.CASCADE, related_name="ingredients"
-    )
-    order = models.IntegerField()
+        return gettext("{0.group.recipe}'s {0.ingredient}").format(self)
 
     class Meta:
         verbose_name = gettext_lazy("Recipe ingredient")
         verbose_name_plural = gettext_lazy("Recipe ingredients")
-        unique_together = ("recipe", "order")
+        unique_together = [["group", "order"], ["group", "ingredient"]]
 
 
 class RecipeIngredientGroupManager(models.Manager):
@@ -232,7 +225,7 @@ class RecipeIngredientGroup(models.Model):
         "Recipe", on_delete=models.CASCADE, related_name="ingredient_groups"
     )
     order = models.IntegerField()
-    title = models.CharField(max_length=1000)
+    title = models.CharField(max_length=1000, blank=True)
 
     def natural_key(self):
         return (self.recipe.natural_key(), self.order)
@@ -240,30 +233,7 @@ class RecipeIngredientGroup(models.Model):
     class Meta:
         verbose_name = gettext_lazy("Recipe ingredient group")
         verbose_name_plural = gettext_lazy("Recipe ingredient groups")
-        unique_together = ("recipe", "order")
-
-
-class RecipeIngredientGroupIngredientManager(models.Manager):
-    def get_by_natural_key(self, group, order):
-        group = RecipeIngredientGroup.objects.get_by_natural_key(*group)
-        return self.get(group=group, order=order)
-
-
-class RecipeIngredientGroupIngredient(AbstractIngredient):
-    objects = RecipeIngredientGroupIngredientManager()
-
-    group = models.ForeignKey(
-        "RecipeIngredientGroup", on_delete=models.CASCADE, related_name="ingredients"
-    )
-    order = models.IntegerField()
-
-    def natural_key(self):
-        return (self.group.natural_key(), self.order)
-
-    class Meta:
-        verbose_name = gettext_lazy("Recipe ingredient group ingredient")
-        verbose_name_plural = gettext_lazy("Recipe ingredient group ingredients")
-        unique_together = ("group", "order")
+        unique_together = [["recipe", "order",], ["recipe", "title"]]
 
 
 class IngredientManager(models.Manager):
