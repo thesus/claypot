@@ -236,10 +236,19 @@ class RecipeIngredientGroup(models.Model):
         unique_together = [["recipe", "order",], ["recipe", "title"]]
 
 
+class IngredientSynonym(models.Model):
+    name = models.CharField(max_length=200, verbose_name=gettext_lazy("Name"))
+    ingredient = models.ForeignKey(
+        "Ingredient", on_delete=models.CASCADE, related_name="synonyms"
+    )
+
+    class Meta:
+        unique_together = ("name",)
+
+
 class IngredientManager(models.Manager):
     def get_by_natural_key(self, name):
         return self.get(name=name)
-
 
 class Ingredient(models.Model):
     objects = IngredientManager()
@@ -254,21 +263,23 @@ class Ingredient(models.Model):
         # Translators: Ingredient display name
         return gettext("{0.name}").format(self)
 
+    def get_by_name(name):
+        """Checks Ingredients and it's synonyms."""
+        try:
+            return Ingredient.objects.get(name=name)
+        except Ingredient.DoesNotExist:
+            return IngredientSynonym.object.get(name=name).ingredient
+
+    def get_or_create_name(name):
+        try:
+            return Ingredient.get_by_name(name)
+        except IngredientSynonym.DoesNotExist:
+            return Ingredient.objects.create(name=name)
+
     class Meta:
         verbose_name = gettext_lazy("Ingredient")
         verbose_name_plural = gettext_lazy("Ingredients")
         unique_together = ("name",)
-
-
-class IngredientSynonym(models.Model):
-    name = models.CharField(max_length=200, verbose_name=gettext_lazy("Name"))
-    ingredient = models.ForeignKey(
-        Ingredient, on_delete=models.CASCADE, related_name="synonyms"
-    )
-
-    class Meta:
-        unique_together = ("name",)
-
 
 class IngredientTagManager(models.Manager):
     def get_by_natural_key(self, tag):

@@ -15,7 +15,6 @@ from claypot.images.serializers import ImageRetrieveSerializer
 from claypot.models import (
     AMOUNT_TYPES,
     RECIPE_RELATION_TYPE_REPLACEMENT,
-    AbstractIngredient,
     Ingredient,
     IngredientSynonym,
     IngredientTag,
@@ -23,7 +22,6 @@ from claypot.models import (
     RecipeDraft,
     RecipeIngredient,
     RecipeIngredientGroup,
-    RecipeIngredientGroupIngredient,
     RecipeInstruction,
     RecipeRelation,
     Unit,
@@ -115,7 +113,7 @@ class RecipeIngredientSerializer(serializers.Serializer):
 
 
 class RecipeIngredientListSerializer(serializers.Serializer):
-    is_group = serializers.BooleanField()
+    order = serializers.IntegerField()
     title = serializers.CharField(allow_blank=True)
     ingredients = RecipeIngredientSerializer(many=True)
 
@@ -177,20 +175,7 @@ class RecipeSerializer(serializers.Serializer):
         data = super().to_representation(recipe)
         ingredients = []
 
-        if recipe.ingredients.exists():
-            ingredients.append(
-                RecipeIngredientListSerializer(
-                    {
-                        "is_group": False,
-                        "title": "",
-                        "ingredients": recipe.ingredients.order_by("order")
-                        .prefetch_related("ingredient", "unit")
-                        .all(),
-                    }
-                ).data
-            )
-
-        for group in recipe.ingredient_groups.all():
+        for group in recipe.ingredient_groups.order_by("order").all():
             group_ingredients = (
                 group.ingredients.prefetch_related("ingredient")
                 .prefetch_related("unit")
@@ -201,7 +186,7 @@ class RecipeSerializer(serializers.Serializer):
             ingredients.append(
                 RecipeIngredientListSerializer(
                     {
-                        "is_group": True,
+                        "order": group.order,
                         "title": group.title,
                         "ingredients": group_ingredients,
                     }
@@ -217,8 +202,10 @@ class RecipeSerializer(serializers.Serializer):
         sub_serializer = RecipeIngredientListSerializer(
             data=data["ingredients"], many=True
         )
+
         if not sub_serializer.is_valid():
             raise serializers.ValidationError({"ingredients": sub_serializer.errors})
+
         value["ingredients"] = sub_serializer.validated_data
         return value
 
@@ -288,72 +275,39 @@ class RecipeSerializer(serializers.Serializer):
             obj.text = ri["text"]
             obj.save()
 
-        # save ingredients
-        order = 1
-        existing = {}
-        for i in instance.ingredients.all():
-            existing[i.order,] = i
-        for grp in instance.ingredient_groups.all():
-            existing[grp.order,] = grp
-            for i in grp.ingredients.all():
-                existing[grp.order, i.order] = i
-        for grp in validated_data["ingredients"]:
-            relevant_order = order
-            if grp["is_group"] is True:
-                pk = {"recipe": instance, "order": order}
-                values = {"title": grp["title"]}
-                complete_ref = (order,)
-                if complete_ref in existing:
-                    existing_obj = existing[complete_ref]
-                    del existing[complete_ref]
-                    if not isinstance(existing_obj, RecipeIngredientGroup):
-                        existing_obj.delete()
-                        rig = RecipeIngredientGroup.objects.create(**pk, **values)
-                    else:
-                        RecipeIngredientGroup.objects.filter(pk=existing_obj.pk).update(
-                            **values
-                        )
-                    rig = RecipeIngredientGroup.objects.get(**pk)
-                else:
-                    rig = RecipeIngredientGroup.objects.create(**pk, **values)
-                relevant_order = 1
-                ref = (order,)
-                order += 1
-                cls = RecipeIngredientGroupIngredient
-                parent_ref = {"group": rig}
-            else:
-                ref = ()
-                order += len(grp["ingredients"])
-                cls = RecipeIngredient
-                parent_ref = {"recipe": instance}
-            for ingredient in grp["ingredients"]:
-                pk = {"order": relevant_order}
-                pk.update(parent_ref)
-                values = {
-                    "ingredient": ingredient["ingredient"],
-                    "ingredient_extra": ingredient["ingredient_extra"],
-                    "optional": ingredient["optional"],
-                    "amount_type": ingredient["amount_type"],
-                    "amount_numeric": ingredient["amount_numeric"],
-                    "amount_approx": ingredient["amount_approx"],
-                    "unit": ingredient["unit"],
-                }
-                # import pdb
-                # pdb.set_trace()
-                complete_ref = ref + (relevant_order,)
-                if complete_ref in existing:
-                    existing_obj = existing[complete_ref]
-                    del existing[complete_ref]
-                    if not isinstance(existing_obj, cls):
-                        existing_obj.delete()
-                        cls.objects.create(**pk, **values)
-                    else:
-                        cls.objects.filter(pk=existing_obj.pk).update(**values)
-                else:
-                    cls.objects.create(**pk, **values)
-                relevant_order += 1
-        for i in existing.values():
-            i.delete()
+        # Save new ingredients
+        orders = set([ingredient["order"] for ingredient in validated_data["ingredients"]]) - set([0])
+
+        # order=0 denotes a new ingredient group
+        # delete groups that don't exist in the request
+        instance.ingredient_groups.exclude(order__in=orders).delete()
+
+        # update existing groups
+        existing = instance.ingredient_groups.all().order_by("order")
+        existing_data = [ingredient for ingredient in validated_data["ingredients"] if ingredient["order"] != 0]
+        # Ordering should be the same
+        for index, group in enumerate(existing):
+            # Create a new ingredient or update the existing one
+            for ingredient_data in existing_data[index]['ingredients']:
+                group.ingredients.update_or_create(
+                    defaults=ingredient_data,
+                    ingredient=ingredient_data.pop('ingredient'),
+                )
+
+        # Create new groups
+        max_order = existing.last().order
+        new_data = [ingredient for ingredient in validated_data["ingredients"] if ingredient["order"] == 0]
+        for group_data in new_data:
+            max_order += 1
+            group = RecipeIngredientGroup.objects.create(
+                order=max_order, recipe=instance, title=group_data["title"]
+            )
+
+            # Create all new ingredients
+            RecipeIngredient.objects.bulk_create(
+                RecipeIngredient(group=group, order=index + 1, **ingredient)
+                for (index, ingredient) in enumerate(group_data["ingredients"])
+            )
 
         return instance
 

@@ -9,7 +9,9 @@ def forwards(apps, schema_editor):
         return
     Recipe = apps.get_model("claypot", "Recipe")
     RecipeIngredient = apps.get_model("claypot", "RecipeIngredient")
-    RecipeIngredientGroupIngredient = apps.get_model("claypot", "RecipeIngredientGroupIngredient")
+    RecipeIngredientGroupIngredient = apps.get_model(
+        "claypot", "RecipeIngredientGroupIngredient"
+    )
     RecipeIngredientGroup = apps.get_model("claypot", "RecipeIngredientGroup")
 
     for recipe in Recipe.objects.all():
@@ -30,10 +32,11 @@ def forwards(apps, schema_editor):
                     amount_numeric=ingredient.amount_numeric,
                     amount_approx=ingredient.amount_approx,
                     unit=ingredient.unit,
-                    optional=ingredient.optional
+                    optional=ingredient.optional,
                 )
                 for ingredient in recipe.ingredients.all()
             )
+
 
 def backwards(apps, schema_editor):
     pass

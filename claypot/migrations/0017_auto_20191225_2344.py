@@ -6,12 +6,11 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('claypot', '0016_auto_20191225_2343'),
+        ("claypot", "0016_auto_20191225_2343"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='RecipeIngredientGroupIngredient',
-            new_name='RecipeIngredient',
+            old_name="RecipeIngredientGroupIngredient", new_name="RecipeIngredient",
         ),
     ]

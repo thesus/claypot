@@ -6,15 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('claypot', '0015_auto_20191225_2241'),
+        ("claypot", "0015_auto_20191225_2241"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='recipeingredientgroupingredient',
-            options={'verbose_name': 'Recipe ingredient', 'verbose_name_plural': 'Recipe ingredients'},
+            name="recipeingredientgroupingredient",
+            options={
+                "verbose_name": "Recipe ingredient",
+                "verbose_name_plural": "Recipe ingredients",
+            },
         ),
-        migrations.DeleteModel(
-            name='RecipeIngredient',
-        ),
+        migrations.DeleteModel(name="RecipeIngredient",),
     ]
