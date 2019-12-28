@@ -256,7 +256,6 @@ class RecipeSerializer(serializers.Serializer):
 
         # save images
         existing = set(instance.images.values_list("id", flat=True))
-
         new = set(i.pk for i in validated_data["images"])
         remove = existing - new
 
@@ -276,7 +275,9 @@ class RecipeSerializer(serializers.Serializer):
             obj.save()
 
         # Save new ingredients
-        orders = set([ingredient["order"] for ingredient in validated_data["ingredients"]]) - set([0])
+        orders = set(
+            [ingredient["order"] for ingredient in validated_data["ingredients"]]
+        ) - set([0])
 
         # order=0 denotes a new ingredient group
         # delete groups that don't exist in the request
@@ -284,19 +285,34 @@ class RecipeSerializer(serializers.Serializer):
 
         # update existing groups
         existing = instance.ingredient_groups.all().order_by("order")
-        existing_data = [ingredient for ingredient in validated_data["ingredients"] if ingredient["order"] != 0]
+
+        existing_data = [
+            ingredient
+            for ingredient in validated_data["ingredients"]
+            if ingredient["order"] != 0
+        ]
         # Ordering should be the same
         for index, group in enumerate(existing):
             # Create a new ingredient or update the existing one
-            for ingredient_data in existing_data[index]['ingredients']:
+            # This can be done safely since we only allow each ingredient once per group
+            order = 1
+            for ingredient_data in existing_data[index]["ingredients"]:
+                ingredient_data["order"] = order
+                order += 1
                 group.ingredients.update_or_create(
+                    ingredient=ingredient_data.pop("ingredient"),
                     defaults=ingredient_data,
-                    ingredient=ingredient_data.pop('ingredient'),
                 )
 
         # Create new groups
+        # Use orders higher than the existing ones
         max_order = existing.last().order
-        new_data = [ingredient for ingredient in validated_data["ingredients"] if ingredient["order"] == 0]
+        # A group is new if it's order is 0
+        new_data = [
+            ingredient
+            for ingredient in validated_data["ingredients"]
+            if ingredient["order"] == 0
+        ]
         for group_data in new_data:
             max_order += 1
             group = RecipeIngredientGroup.objects.create(

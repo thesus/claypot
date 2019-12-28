@@ -18,20 +18,20 @@ function createEmptyIngredient () {
   }
 }
 
+function createEmptyIngredientGroup () {
+  return {order: 0, title: '', ingredients: [createEmptyIngredient()]}
+}
+
 function createDefaultRecipe () {
   return {
     id: null,
-    ingredients: [{is_group: false, title: '', ingredients: [createEmptyIngredient()]}],
+    ingredients: [createEmptyIngredientGroup()],
     instructions: [createEmptyInstruction()],
     images: [],
     estimated_work_duration: null,
     estimated_waiting_duration: null,
     description: ''
   }
-}
-
-function createEmptyIngredientGroup () {
-  return {is_group: true, title: '', ingredients: [createEmptyIngredient()]}
 }
 
 export {

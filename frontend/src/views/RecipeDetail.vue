@@ -91,8 +91,8 @@
       <RecipeIngredientTable
         v-for="(i, c) in allIngredients"
         :key="c + 1"
-        :ingredients="i.is_group ? i.ingredients : i.ingredients"
-        :caption="i.is_group ? i.title : ''"
+        :ingredients="i.ingredients"
+        :caption="allIngredients.length > 1 ? i.title : ''"
         :scaling="scaling"
       />
 

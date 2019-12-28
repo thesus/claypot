@@ -1,10 +1,8 @@
 <template>
   <div
-    :class="{group: group.is_group}"
-    class="table"
+    class="table group"
   >
     <input
-      v-if="group.is_group"
       v-model="group.title"
       placeholder="Ingredient group title"
       class="title"
@@ -131,8 +129,10 @@ export default {
   },
   watch: {
     isEmpty () {
-      // The group can't exist if there are no ingredients, therefore it's sufficient to wait for a change.
-      this.$emit('remove')
+      // The group can't exist if there are no ingredients
+      if (this.isEmpty) {
+        this.$emit('remove')
+      }
     }
   },
   methods: {
