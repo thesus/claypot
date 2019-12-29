@@ -13,10 +13,18 @@ from claypot.models import Recipe, RECIPE_RELATION_TYPE_ADDITION
 
 
 @pytest.mark.django_db
-def test_tagging(recipe_factory, recipe_ingredient_factory, ingredient_tag_factory):
+def test_tagging(
+    recipe_factory,
+    recipe_ingredient_group_factory,
+    recipe_ingredient_factory,
+    ingredient_tag_factory,
+):
     recipe = recipe_factory()
     assert recipe.tags() == set()
-    recipe_ingredient = recipe_ingredient_factory(recipe=recipe)
+
+    group = recipe_ingredient_group_factory(recipe=recipe)
+    recipe_ingredient = recipe_ingredient_factory(group=group)
+
     tag1 = ingredient_tag_factory()
     recipe_ingredient.ingredient.tags.add(tag1)
     assert recipe.tags() == set((tag1,))
@@ -60,12 +68,11 @@ def test_post_new_recipe(
     recipe,
     recipe_ingredient_factory,
     recipe_ingredient_group_factory,
-    recipe_ingredient_group_ingredient_factory,
     user,
 ):
-    recipe_ingredient_factory(recipe=recipe, order=1)
     group = recipe_ingredient_group_factory(recipe=recipe, order=2)
-    recipe_ingredient_group_ingredient_factory(group=group, order=1)
+    recipe_ingredient = recipe_ingredient_factory(group=group, order=1)
+
     api_client.force_login(user)
     url = reverse("api:recipe-detail", kwargs={"pk": recipe.pk})
     src = serializers.RecipeSerializer(instance=recipe).data
@@ -73,15 +80,15 @@ def test_post_new_recipe(
         "title": src["title"],
         "description": src["description"],
         "instructions": src["instructions"],
-        "ingredients": [i for i in src["ingredients"] if i["is_group"] is not True],
+        "ingredients": src["ingredients"],
         "images": [],
         "estimated_work_duration": None,
         "estimated_waiting_duration": None,
     }
     response = api_client.put(url, data, format="json")
     assert response.status_code == status.HTTP_200_OK
-    assert [i for i in response.data["ingredients"] if i["is_group"] is True] == []
-    assert len([i for i in response.data["ingredients"] if i["is_group"] is False]) > 0
+    assert len(response.data.get("ingredients")) == 1
+    assert response.data.get("ingredients")[0]["id"] is not None
 
 
 @pytest.mark.django_db
@@ -89,16 +96,14 @@ def test_fork_recipe(
     api_client,
     recipe_factory,
     recipe_ingredient_factory,
-    recipe_ingredient_group_ingredient_factory,
     recipe_ingredient_group_factory,
     user,
 ):
 
     orig = recipe_factory()
-    recipe_ingredient_factory(recipe=orig)
 
     group = recipe_ingredient_group_factory(recipe=orig, order=2)
-    recipe_ingredient_group_ingredient_factory(group=group, order=1)
+    recipe_ingredient_factory(group=group, order=1)
 
     api_client.force_login(user)
 
@@ -110,12 +115,9 @@ def test_fork_recipe(
     fork = Recipe.objects.get(pk=response.data)
 
     assert orig.pk == fork.parent_recipe.pk
-    assert orig.instructions.count() == fork.instructions.count()
-    # Check sporadically if the groups are correctly copied.
-    orig_ingredient = orig.ingredient_groups.first().ingredients.first()
-    fork_ingredient = fork.ingredient_groups.first().ingredients.first()
-    assert orig_ingredient.ingredient == fork_ingredient.ingredient
-    assert orig_ingredient.amount_type == fork_ingredient.amount_type
+
+    assert fork.ingredients.count() == 1
+    assert fork.ingredients.first().ingredients.count() == 1
 
 
 @pytest.mark.django_db

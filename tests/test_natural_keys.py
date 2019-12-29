@@ -3,17 +3,12 @@ import pytest
 
 @pytest.fixture
 def factories(
-    ingredient_factory,
-    unit_factory,
-    recipe_factory,
-    recipe_ingredient_factory,
-    ingredient_tag_factory,
+    ingredient_factory, unit_factory, recipe_factory, ingredient_tag_factory,
 ):
     return [
         ingredient_factory,
         unit_factory,
         recipe_factory,
-        recipe_ingredient_factory,
         ingredient_tag_factory,
     ]
 

@@ -112,10 +112,10 @@ class Recipe(models.Model):
         super().save(*args, **kwargs)
 
     def tags(self):
-        return reduce(
-            operator.or_,
-            (set(ri.ingredient.tags.all()) for ri in self.ingredients.all()),
-            set(),
+        return set(
+            IngredientTag.objects.filter(
+                ingredients__instances__group__recipe=self
+            ).distinct()
         )
 
     def is_starred_by(self, user):
@@ -157,7 +157,7 @@ class RecipeIngredient(models.Model):
         "Ingredient",
         verbose_name=gettext_lazy("Ingredient"),
         on_delete=models.PROTECT,
-        related_name="+",
+        related_name="instances",
     )
 
     ingredient_extra = models.TextField(
@@ -209,7 +209,7 @@ class RecipeIngredient(models.Model):
     class Meta:
         verbose_name = gettext_lazy("Recipe ingredient")
         verbose_name_plural = gettext_lazy("Recipe ingredients")
-        unique_together = (("group", "order"), )
+        unique_together = (("group", "order"),)
 
 
 class RecipeIngredientGroupManager(models.Manager):
@@ -250,6 +250,7 @@ class IngredientManager(models.Manager):
     def get_by_natural_key(self, name):
         return self.get(name=name)
 
+
 class Ingredient(models.Model):
     objects = IngredientManager()
 
@@ -267,6 +268,7 @@ class Ingredient(models.Model):
         verbose_name = gettext_lazy("Ingredient")
         verbose_name_plural = gettext_lazy("Ingredients")
         unique_together = ("name",)
+
 
 class IngredientTagManager(models.Manager):
     def get_by_natural_key(self, tag):

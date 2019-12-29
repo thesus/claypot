@@ -91,13 +91,8 @@ class RecipeFilter(django_filters.FilterSet):
                     StringAgg("instructions__text", delimiter=" "), weight="C"
                 )
                 + SearchVector(
-                    StringAgg("ingredients__ingredient__name", delimiter=" "),
-                    weight="B",
-                )
-                + SearchVector(
                     StringAgg(
-                        "ingredient_groups__ingredients__ingredient__name",
-                        delimiter=" ",
+                        "ingredients__ingredients__ingredient__name", delimiter=" ",
                     ),
                     weight="B",
                 )

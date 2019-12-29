@@ -116,15 +116,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         instance = get_object_or_404(Recipe, pk=pk)
         instance.parent_recipe = Recipe.objects.get(pk=pk)
-        instance.slug = None
 
         # Get all foreign key relationships
-        recipe_ingredients = instance.ingredients.all()
-        ingredient_groups = instance.ingredient_groups.all()
+        # this has to be done here since they don't exist after saving the instance
         instructions = instance.instructions.all()
         images = instance.images.all()
+        groups = instance.ingredients.all()
 
         instance.pk = None
+        instance.slug = None
         instance.author = request.user
         instance.save()
 
@@ -132,7 +132,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         # therefore they are simply copied to the fork.
         instance.images.set(images)
 
-        for group in ingredient_groups:
+        for group in groups:
             ingredients = group.ingredients.all()
             group.pk = None
             group.recipe = instance
@@ -142,7 +142,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 ingredient.group = group
                 ingredient.save()
 
-        copy_foreign_key_relation(instance, recipe_ingredients)
         copy_foreign_key_relation(instance, instructions)
 
         return Response(instance.pk)
