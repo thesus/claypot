@@ -88,7 +88,7 @@ class UnitField(serializers.RelatedField):
         try:
             return Unit.objects.get(code=data)
         except Unit.DoesNotExist:
-            raise serializers.ValidationError("Unknown unit")
+            raise serializers.ValidationError(_("Unknown unit"))
 
 
 class UsernameField(serializers.RelatedField):
@@ -106,20 +106,34 @@ class RecipeInstructionSerializer(serializers.ModelSerializer):
         fields = ["order", "text"]
 
 
-class RecipeIngredientSerializer(serializers.Serializer):
+class RecipeIngredientSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
     ingredient = IngredientField()
-    ingredient_extra = serializers.CharField(allow_blank=True)
-    optional = serializers.BooleanField()
-    amount_type = serializers.ChoiceField(choices=AMOUNT_TYPES)
-    amount_numeric = serializers.FloatField(allow_null=True)
-    amount_approx = serializers.CharField(allow_null=True, allow_blank=True)
     unit = UnitField()
 
+    class Meta:
+        model = RecipeIngredient
+        list_serializer_class = OrderedListSerializer
+        fields = [
+            "id",
+            "ingredient",
+            "ingredient_extra",
+            "optional",
+            "amount_type",
+            "amount_numeric",
+            "amount_approx",
+            "unit",
+        ]
 
-class RecipeIngredientListSerializer(serializers.Serializer):
-    order = serializers.IntegerField()
-    title = serializers.CharField(allow_blank=True)
+
+class RecipeIngredientGroupSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
     ingredients = RecipeIngredientSerializer(many=True)
+
+    class Meta:
+        model = RecipeIngredientGroup
+        list_serializer_class = OrderedListSerializer
+        fields = ["id", "ingredients", "title"]
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
@@ -138,82 +152,16 @@ class RecipeListSerializer(serializers.ModelSerializer):
         return None
 
 
-class RecipeSerializer(serializers.Serializer):
-    id = serializers.ModelField(
-        model_field=Recipe._meta.get_field("id"), read_only=True
-    )
-    title = serializers.ModelField(model_field=Recipe._meta.get_field("title"))
-    slug = serializers.ModelField(
-        model_field=Recipe._meta.get_field("slug"), read_only=True
-    )
-    author_id = serializers.ModelField(
-        model_field=Recipe._meta.get_field("author_id"), read_only=True
-    )
-    published_on = serializers.ModelField(
-        model_field=Recipe._meta.get_field("published_on"), read_only=True
-    )
-    author = UsernameField(required=False)
-    parent_recipe = serializers.ModelField(
-        model_field=Recipe._meta.get_field("parent_recipe"), read_only=True
-    )
-    estimated_work_duration = serializers.ModelField(
-        model_field=Recipe._meta.get_field("estimated_work_duration"), allow_null=True
-    )
-    estimated_waiting_duration = serializers.ModelField(
-        model_field=Recipe._meta.get_field("estimated_waiting_duration"),
-        allow_null=True,
-    )
-    description = serializers.ModelField(
-        model_field=Recipe._meta.get_field("description")
-    )
-
-    images = serializers.PrimaryKeyRelatedField(queryset=Image.objects.all(), many=True)
-
+class RecipeSerializer(serializers.ModelSerializer):
+    ingredients = RecipeIngredientGroupSerializer(many=True)
     instructions = RecipeInstructionSerializer(many=True)
+
     is_starred = serializers.SerializerMethodField()
-    draft_id = serializers.SerializerMethodField()
+    draft = serializers.SerializerMethodField()
     stars = serializers.SerializerMethodField()
     deletable = serializers.SerializerMethodField()
 
-    def to_representation(self, recipe):
-        data = super().to_representation(recipe)
-        ingredients = []
-
-        for group in recipe.ingredient_groups.order_by("order").all():
-            group_ingredients = (
-                group.ingredients.prefetch_related("ingredient")
-                .prefetch_related("unit")
-                .order_by("order")
-                .all()
-            )
-
-            ingredients.append(
-                RecipeIngredientListSerializer(
-                    {
-                        "order": group.order,
-                        "title": group.title,
-                        "ingredients": group_ingredients,
-                    }
-                ).data
-            )
-
-        data["ingredients"] = ingredients
-
-        return data
-
-    def to_internal_value(self, data):
-        value = super().to_internal_value(data)
-        sub_serializer = RecipeIngredientListSerializer(
-            data=data["ingredients"], many=True
-        )
-
-        if not sub_serializer.is_valid():
-            raise serializers.ValidationError({"ingredients": sub_serializer.errors})
-
-        value["ingredients"] = sub_serializer.validated_data
-        return value
-
-    def get_draft_id(self, obj):
+    def get_draft(self, obj):
         if "request" in self.context and self.context["request"].user.is_authenticated:
             try:
                 return obj.drafts.get(author=self.context["request"].user).pk
@@ -250,116 +198,96 @@ class RecipeSerializer(serializers.Serializer):
 
     @method_decorator(transaction.atomic)
     def update(self, instance, validated_data):
-        instance.title = validated_data["title"]
-        instance.estimated_work_duration = validated_data["estimated_work_duration"]
-        instance.estimated_waiting_duration = validated_data[
-            "estimated_waiting_duration"
-        ]
-        instance.description = validated_data["description"]
-        instance.save()
-
         # save images
-        existing = set(instance.images.values_list("id", flat=True))
-        new = set(i.pk for i in validated_data["images"])
-        remove = existing - new
+        if "images" in validated_data:
+            existing = set(instance.images.values_list("id", flat=True))
+            new = set(i.pk for i in validated_data.pop("images"))
+            remove = existing - new
 
-        instance.images.remove(*remove)
-        instance.images.set(new)
+            instance.images.remove(*remove)
+            instance.images.set(new)
 
         # save instructions
-        existing = set(ri.order for ri in instance.instructions.all())
-        new = set(ri["order"] for ri in validated_data["instructions"])
-        remove = existing - new
-        instance.instructions.filter(order__in=remove).delete()
-        for ri in validated_data["instructions"]:
-            obj = instance.instructions.filter(order=ri["order"]).first()
-            if obj is None:
-                obj = RecipeInstruction(recipe=instance, order=ri["order"])
-            obj.text = ri["text"]
-            obj.save()
+        if "instructions" in validated_data:
+            instruction_data = validated_data.pop("instructions")
+            existing = set(ri.order for ri in instance.instructions.all())
+            new = set(ri["order"] for ri in instruction_data)
+
+            remove = existing - new
+            instance.instructions.filter(order__in=remove).delete()
+
+            for ri in instruction_data:
+                obj = instance.instructions.filter(order=ri["order"]).first()
+                if obj is None:
+                    obj = RecipeInstruction(recipe=instance, order=ri["order"])
+                obj.text = ri["text"]
+                obj.save()
 
         # Save new ingredients
-        orders = set(
-            [ingredient["order"] for ingredient in validated_data["ingredients"]]
-        ) - set([0])
+        if "ingredients" in validated_data:
+            ingredient_group_data = validated_data.pop("ingredients")
 
-        # order=0 denotes a new ingredient group
-        # delete groups that don't exist in the request
-        instance.ingredient_groups.exclude(order__in=orders).delete()
-
-        # update existing groups
-        existing = instance.ingredient_groups.all().order_by("order")
-
-        existing_data = [
-            ingredient
-            for ingredient in validated_data["ingredients"]
-            if ingredient["order"] != 0
-        ]
-        # Ordering should be the same
-        for index, group in enumerate(existing):
-            # Create a new ingredient or update the existing one
-            # This can be done safely since we only allow each ingredient once per group
-            order = 1
-            for ingredient_data in existing_data[index]["ingredients"]:
-                ingredient_data["order"] = order
-                order += 1
-                group.ingredients.update_or_create(
-                    ingredient=ingredient_data.pop("ingredient"),
-                    defaults=ingredient_data,
-                )
-
-        # Create new groups
-        # Use orders higher than the existing ones
-        max_order = existing.last().order
-        # A group is new if it's order is 0
-        new_data = [
-            ingredient
-            for ingredient in validated_data["ingredients"]
-            if ingredient["order"] == 0
-        ]
-        for group_data in new_data:
-            max_order += 1
-            group = RecipeIngredientGroup.objects.create(
-                order=max_order, recipe=instance, title=group_data["title"]
+            existing = set(instance.ingredients.values_list("id", flat=True))
+            current = set(
+                ingredient["id"]
+                for ingredient in ingredient_group_data
+                if "id" in ingredient
             )
+            instance.ingredients.filter(pk__in=existing - current).delete()
 
-            # Create all new ingredients
-            RecipeIngredient.objects.bulk_create(
-                RecipeIngredient(group=group, order=index + 1, **ingredient)
-                for (index, ingredient) in enumerate(group_data["ingredients"])
-            )
+            for group_order, group_data in enumerate(ingredient_group_data):
+                ingredients_data = group_data.pop("ingredients")
 
-        return instance
+                if not "id" in group_data:
+                    group = RecipeIngredientGroup.objects.create(
+                        order=group_order, recipe=instance, **group_data
+                    )
+                    RecipeIngredient.objects.bulk_create(
+                        RecipeIngredient(
+                            group=group, order=ingredient_order, **ingredient_data
+                        )
+                        for (ingredient_order, ingredient_data) in enumerate(
+                            ingredients_data
+                        )
+                    )
+                else:
+                    group = instance.ingredients.get(pk=group_data.pop('id'))
+                    group.title = group_data.pop('title')
+                    group.save()
+
+                    order = 0
+                    for ingredient_data in ingredients_data:
+                        ingredient_data["order"] = order
+                        order += 1
+                        group.ingredients.update_or_create(
+                            pk=ingredient_data.pop("id", None),
+                            defaults=ingredient_data,
+                        )
+
+        return super().update(instance, validated_data)
 
     class Meta:
         model = Recipe
         fields = [
             "id",
             "title",
-            "slug",
             "instructions",
             "ingredients",
-            "ingredient_groups",
             "images",
             "author",
-            "author_id",
             "published_on",
+            "draft",
+            "deletable",
             "is_starred",
             "stars",
             "estimated_work_duration",
             "estimated_waiting_duration",
             "description",
         ]
+
         read_only_fields = [
-            "id",
-            "slug",
             "author",
-            "author_id",
             "published_on",
-            "starred_by",
-            "is_starred",
-            "stars",
-            "draft",
         ]
 
 

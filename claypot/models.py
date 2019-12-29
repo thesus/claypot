@@ -233,7 +233,7 @@ class RecipeIngredientGroup(models.Model):
     class Meta:
         verbose_name = gettext_lazy("Recipe ingredient group")
         verbose_name_plural = gettext_lazy("Recipe ingredient groups")
-        unique_together = [["recipe", "order",], ["recipe", "title"]]
+        unique_together = (("recipe", "order"),)
 
 
 class IngredientSynonym(models.Model):

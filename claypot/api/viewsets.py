@@ -49,19 +49,6 @@ class IngredientViewSet(viewsets.ModelViewSet):
         methods=["post"],
         permission_classes=(permissions.IsAuthenticated,),
     )
-    def create_many(self, request):
-        serializer = IngredientSerializer(data=request.data, many=True)
-        if serializer.is_valid():
-            instances = serializer.save()
-            return Response(IngredientSerializer(instances, many=True).data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(
-        detail=False,
-        methods=["post"],
-        permission_classes=(permissions.IsAuthenticated,),
-    )
     def check_new(self, request):
         serializer = ManyIngredientSerializer(data=request.data)
         if serializer.is_valid():
