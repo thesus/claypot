@@ -19,7 +19,7 @@ function createEmptyIngredient () {
 }
 
 function createEmptyIngredientGroup () {
-  return {order: 0, title: '', ingredients: [createEmptyIngredient()]}
+  return {title: '', ingredients: [createEmptyIngredient()]}
 }
 
 function createDefaultRecipe () {

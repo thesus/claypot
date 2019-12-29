@@ -133,30 +133,6 @@
         </button>
       </div>
 
-      <Modal
-        v-if="newIngredientsDecision"
-        @close="newIngredientsDecision(false)"
-      >
-        <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
-        <ul>
-          <li
-            v-for="(ingredient, i) in newIngredients"
-            :key="i"
-          >
-            <div>{{ ingredient }}</div>
-            <FormFieldValidationError
-              :errors="(((newIngredientsError || [])[i] || {}).text) || []"
-            />
-          </li>
-        </ul>
-        <button
-          class="btn right"
-          @click="newIngredientsDecision(true)"
-        >
-          {{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}
-        </button>
-      </Modal>
-
       <div v-if="errors.client_side">
         {{ errors.client_side }}
       </div>
@@ -164,6 +140,30 @@
         {{ errors.detail }}
       </div>
     </fieldset>
+
+    <Modal
+      v-if="newIngredientsDecision"
+      @close="newIngredientsDecision(false)"
+    >
+      <p>{{ $tc('recipes.confirm_new_ingredients.message', newIngredientsCount, {count: newIngredientsCount}) }}</p>
+      <ul>
+        <li
+          v-for="(ingredient, i) in newIngredients"
+          :key="i"
+        >
+          <div>{{ ingredient }}</div>
+          <FormFieldValidationError
+            :errors="(((newIngredientsError || [])[i] || {}).text) || []"
+          />
+        </li>
+      </ul>
+      <button
+        class="btn right"
+        @click="newIngredientsDecision(true)"
+      >
+        {{ $tc('recipes.confirm_new_ingredients.accept', newIngredientsCount, {count: newIngredientsCount}) }}
+      </button>
+    </Modal>
 
     <footer>
       <p v-if="recipe.id">
@@ -322,23 +322,9 @@ export default {
                   // this will give the user a choice to cancel or continue the process. Executed with a call to newIngredientsDecision(true) or newIngredientsDecision(false)
                   this.newIngredientsDecision = resolve
                 })
-                if (userDecision) {
-                  const newIngredientData = newIngredients.map(i => {
-                    return {
-                      name: i,
-                    }
-                  })
-                  this.newIngredientsError.splice(0)
-                  const r2 = await api(endpoints.create_many_ingredients(), newIngredientData)
-                  if (r2.ok) {
-                  } else {
-                    this.newIngredientsError.push(...(await r2.json()))
-                    return
-                  }
-                } else {
+                if (!userDecision) {
                   this.newIngredients.length = 0
                   this.newIngredientsCount = 0
-
                   return
                 }
               } finally {
@@ -348,6 +334,8 @@ export default {
           } else {
             // TODO: Proper error propagation
             const errors = await r.json()
+
+            console.log(errors)
             const errorsByIngredient = {}
             this.ingredientList.forEach((k, i) => {
               errorsByIngredient[k] = errors.ingredients[String(i)]

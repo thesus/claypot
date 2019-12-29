@@ -52,6 +52,7 @@ class IngredientField(serializers.RelatedField):
     def to_representation(self, value):
         return value and value.name
 
+    @method_decorator(transaction.atomic)
     def to_internal_value(self, data):
         try:
             return Ingredient.objects.get(name=data)
@@ -59,7 +60,10 @@ class IngredientField(serializers.RelatedField):
             try:
                 return IngredientSynonym.objects.get(name=data).ingredient
             except IngredientSynonym.DoesNotExist:
-                raise serializers.ValidationError("Unknown ingredient")
+                if not data:
+                    serializers.ValidationError(_("Ingredient must not be empty."))
+                else:
+                    return Ingredient.objects.create(name=data)
 
 
 class UnitSerializer(serializers.ModelSerializer):

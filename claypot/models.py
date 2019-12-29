@@ -209,7 +209,7 @@ class RecipeIngredient(models.Model):
     class Meta:
         verbose_name = gettext_lazy("Recipe ingredient")
         verbose_name_plural = gettext_lazy("Recipe ingredients")
-        unique_together = [["group", "ingredient"], ["group", "order"]]
+        unique_together = (("group", "order"), )
 
 
 class RecipeIngredientGroupManager(models.Manager):
@@ -222,7 +222,7 @@ class RecipeIngredientGroup(models.Model):
     objects = RecipeIngredientGroupManager()
 
     recipe = models.ForeignKey(
-        "Recipe", on_delete=models.CASCADE, related_name="ingredient_groups"
+        "Recipe", on_delete=models.CASCADE, related_name="ingredients"
     )
     order = models.IntegerField()
     title = models.CharField(max_length=1000, blank=True)
