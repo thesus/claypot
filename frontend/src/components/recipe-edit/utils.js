@@ -34,11 +34,26 @@ function createDefaultRecipe () {
   }
 }
 
+function createDefaultRecipeError () {
+  return {
+    title: [],
+    description: [],
+    estimated_work_duration: [],
+    estimated_waiting_duration: [],
+    ingredients: [],
+    ingredient_groups: [],
+    instructions: [],
+    client_side: '',
+    detail: '',
+  }
+}
+
 export {
   createEmptyIngredientGroup,
   createEmptyIngredient,
   createEmptyInstruction,
   createDefaultRecipe,
+  createDefaultRecipeError,
 
   AMOUNT_TYPE_NUMERIC,
   AMOUNT_TYPE_APPROX,

@@ -33,18 +33,15 @@ class OrderedListSerializer(serializers.ListSerializer):
         data = data.order_by("order")
         return super().to_representation(data)
 
-
-class ManyIngredientSerializer(serializers.Serializer):
-    ingredients = serializers.ListField(
-        child=serializers.CharField(), min_length=0, max_length=100
-    )
-
-
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = ["id", "name"]
 
+class ManyIngredientSerializer(serializers.Serializer):
+    ingredients = serializers.ListField(
+        child=serializers.CharField(min_length=0, max_length=100)
+    )
 
 class IngredientField(serializers.RelatedField):
     queryset = Ingredient.objects.all()
@@ -61,7 +58,7 @@ class IngredientField(serializers.RelatedField):
                 return IngredientSynonym.objects.get(name=data).ingredient
             except IngredientSynonym.DoesNotExist:
                 if not data:
-                    serializers.ValidationError(_("Ingredient must not be empty."))
+                    serializers.ValidationError(_("This field may not be null."))
                 else:
                     return Ingredient.objects.create(name=data)
 
@@ -155,6 +152,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     ingredients = RecipeIngredientGroupSerializer(many=True)
     instructions = RecipeInstructionSerializer(many=True)
+    images = serializers.PrimaryKeyRelatedField(queryset=Image.objects.all(), many=True, allow_null=True)
 
     is_starred = serializers.SerializerMethodField()
     draft = serializers.SerializerMethodField()

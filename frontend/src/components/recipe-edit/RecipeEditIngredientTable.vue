@@ -3,6 +3,7 @@
     class="table group"
   >
     <input
+      v-if="!single"
       v-model="group.title"
       placeholder="Ingredient group title"
       class="title"
@@ -102,6 +103,10 @@ export default {
     group: {
       type: Object,
       required: true
+    },
+    single: {
+      type: Boolean,
+      default: false
     },
     recipeIngredientError: {
       type: Function,

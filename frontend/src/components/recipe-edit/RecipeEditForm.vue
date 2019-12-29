@@ -33,6 +33,7 @@
         <RecipeEditIngredientTable
           v-for="(group, i) in recipe.ingredients"
           :key="i"
+          :single="recipe.ingredients.length == 1"
           :group.sync="recipe.ingredients[i]"
           :recipe-ingredient-error="recipeIngredientError(i)"
           @remove="recipe.ingredients.splice(i, 1)"
@@ -151,10 +152,7 @@
           v-for="(ingredient, i) in newIngredients"
           :key="i"
         >
-          <div>{{ ingredient }}</div>
-          <FormFieldValidationError
-            :errors="(((newIngredientsError || [])[i] || {}).text) || []"
-          />
+          {{ ingredient }}
         </li>
       </ul>
       <button
@@ -185,7 +183,7 @@ import ImageUpload from '@/components/recipe-edit/ImageUpload'
 import Modal from '@/components/utils/Modal'
 
 import Draft from '@/components/recipe-edit/Draft'
-import { createDefaultRecipe, createEmptyIngredientGroup, createEmptyInstruction } from '@/components/recipe-edit/utils'
+import { createDefaultRecipe, createEmptyIngredientGroup, createEmptyInstruction, createDefaultRecipeError } from '@/components/recipe-edit/utils'
 
 export default {
   name: 'RecipeEditForm',
@@ -208,29 +206,15 @@ export default {
       deleteModal: false,
       saving: false,
 
+      errors: createDefaultRecipeError(),
       // Gets populated if id changes or immediately
       recipe: null,
 
       // Initial state of images, @see this.loadRecipe
       imagesInitial: [],
-
-      errors: {
-        title: [],
-        description: [],
-        estimated_work_duration: [],
-        estimated_waiting_duration: [],
-        ingredients: [],
-        ingredient_groups: [],
-        instructions: [],
-
-        client_side: '',
-        detail: '',
-      },
-
       newIngredientsDecision: null,
       newIngredients: [],
       newIngredientsCount: 0,
-      newIngredientsError: [],
     }
   },
   computed: {
@@ -268,7 +252,7 @@ export default {
       return this.isExistingRecipe && this.recipe.deletable
     },
     ingredientList () {
-      return [].concat(...this.recipe.ingredients.map(group => group.ingredients.map(i => i.ingredient)))
+      return [].concat(...this.recipe.ingredients.map(group => group.ingredients.filter(i => i.ingredient != "").map(i => i.ingredient)))
     }
   },
   watch: {
@@ -312,6 +296,7 @@ export default {
           const r = await api(endpoints.check_new_ingredients(), {
             ingredients: this.ingredientList,
           })
+
           if (r.ok) {
             const newIngredients = (await r.json()).ingredients
             if (newIngredients.length > 0) {
@@ -319,7 +304,8 @@ export default {
               this.newIngredientsCount = newIngredients.length
               try {
                 const userDecision = await new Promise((resolve) => {
-                  // this will give the user a choice to cancel or continue the process. Executed with a call to newIngredientsDecision(true) or newIngredientsDecision(false)
+                  // this will give the user a choice to cancel or continue the process.
+                  // Executed with a call to newIngredientsDecision(true) or newIngredientsDecision(false)
                   this.newIngredientsDecision = resolve
                 })
                 if (!userDecision) {
@@ -335,32 +321,34 @@ export default {
             // TODO: Proper error propagation
             const errors = await r.json()
 
-            console.log(errors)
             const errorsByIngredient = {}
             this.ingredientList.forEach((k, i) => {
               errorsByIngredient[k] = errors.ingredients[String(i)]
             })
 
-            this.recipe.ingredients.forEach((group, groupI) => {
-              group.ingredients.forEach((ingredient, ingredientI) => {
-                if (typeof errorsByIngredient[ingredient.ingredient] !== 'undefined') {
-                  const thisError = errorsByIngredient[ingredient.ingredient]
-                  if (typeof this.errors.ingredients[groupI] === 'undefined') {
-                    Vue.set(this.errors.ingredients, groupI, {})
-                  }
-                  if (typeof this.errors.ingredients[groupI].ingredients === 'undefined') {
-                    Vue.set(this.errors.ingredients[groupI], 'ingredients', [])
-                  }
-                  if (typeof this.errors.ingredients[groupI].ingredients[ingredientI] === 'undefined') {
-                    Vue.set(this.errors.ingredients[groupI].ingredients, ingredientI, [])
-                  }
-                  if (typeof this.errors.ingredients[groupI].ingredients[ingredientI].ingredient === 'undefined') {
-                    Vue.set(this.errors.ingredients[groupI].ingredients[ingredientI], 'ingredient', [])
-                  }
-                  this.errors.ingredients[groupI].ingredients[ingredientI].ingredient = thisError
+            this.recipe.ingredients.forEach((group, groupIndex) => {
+              group.ingredients.forEach((ingredient, ingredientIndex) => {
+                // create group
+                if (!this.errors.ingredients[groupIndex]) {
+                  this.$set(this.errors.ingredients, groupIndex, {ingredients: []})
+                }
+                // create ingredient in group
+                if (!this.errors.ingredients[groupIndex].ingredients[ingredientIndex]) {
+                  this.$set(this.errors.ingredients[groupIndex].ingredients, ingredientIndex, {})
+                }
+
+                // Append error
+                const error = errorsByIngredient[ingredient.ingredient]
+                if (error) {
+                    this.$set(
+                    this.errors.ingredients[groupIndex].ingredients[ingredientIndex],
+                    'ingredient',
+                    error
+                  )
                 }
               })
             })
+
             return
           }
         }
@@ -380,7 +368,7 @@ export default {
           this.errors.client_side = ''
           this.recipe = await r.json()
 
-          // If a draft is created or loaded earlier, delete it after succesfull saving
+        // If a draft is created or loaded earlier, delete it after succesfull saving
         // Draft must be saved before it can be removed
         await draftSavePromise
         this.$refs.drafts.deleteDraft()
@@ -389,15 +377,8 @@ export default {
         this.$emit('update', this.recipe.id)
         } else {
           // TODO: Notify user about broken fields?
-          const errors = await r.json()
-          this.errors.title = errors.title || []
-          this.errors.description = errors.description || []
-          this.errors.estimated_work_duration = errors.estimated_work_duration || []
-          this.errors.estimated_waiting_duration = errors.estimated_waiting_duration || []
-          this.errors.ingredients = errors.ingredients || []
-          this.errors.ingredient_groups = errors.ingredient_groups || []
-          this.errors.instructions = errors.instructions || []
-          this.errors.detail = errors.detail || ''
+
+          this.$set(this, 'errors', {...createDefaultRecipeError(), ...(await r.json())})
         }
       } catch (err) {
         this.errors.client_side = err.message

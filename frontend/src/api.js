@@ -33,7 +33,7 @@ const endpoints = {
     }
   },
   fetch_user (id) {
-    return `/api/accounts/users/${id}/`
+    return `/api/accounts/${id}/`
   },
   login () {
     return '/api/accounts/login/'
