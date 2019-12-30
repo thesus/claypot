@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="drafts.length || recipe.draft_id"
+    v-if="drafts.length || recipe.draft"
     class="drafts"
   >
     <select
@@ -25,10 +25,10 @@
     </select>
 
     <button
-      v-else-if="recipe.draft_id"
+      v-else-if="recipe.draft"
       class="btn right"
-      :disabled="!(recipe.draft_id && !draft)"
-      @click="getDraft(recipe.draft_id)"
+      :disabled="!(recipe.draft && !draft)"
+      @click="getDraft(recipe.draft)"
     >
       {{ $t('recipes.draft.single') }}
     </button>
@@ -79,7 +79,7 @@ export default {
           }, 10000)
         }
       },
-      deep: true
+      deep: true,
     }
   },
   mounted () {

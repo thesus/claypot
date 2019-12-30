@@ -254,7 +254,16 @@ class RecipeSerializer(serializers.ModelSerializer):
                         )
                     )
                 else:
-                    group = instance.ingredients.get(pk=group_data.pop("id"))
+                    group, _ = instance.ingredients.get_or_create(
+                        pk=group_data.pop("id"),
+                        defaults={
+                            "order": lambda: instance.ingredients.order_by(
+                                "order"
+                            ).last.order
+                            + 1
+                        },
+                    )
+
                     group.title = group_data.pop("title")
                     group.save()
 
