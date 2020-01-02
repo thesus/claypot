@@ -61,7 +61,7 @@ class IngredientField(serializers.RelatedField):
                 return IngredientSynonym.objects.get(name=data).ingredient
             except IngredientSynonym.DoesNotExist:
                 if not data:
-                    serializers.ValidationError(_("This field may not be null."))
+                    raise serializers.ValidationError(_("This field may not be null."))
                 else:
                     return Ingredient.objects.create(name=data)
 
@@ -420,10 +420,10 @@ class RecipeRelationCreateSerializer(serializers.ModelSerializer):
         recipe2 = self.validated_data["recipe2"]
 
         if recipe1 == recipe2:
-            return serializers.ValidationError(
+            raise serializers.ValidationError(
                 {
                     "recipe1": {
-                        i: [
+                        0: [
                             _(
                                 "You may only define relations between different recipes."
                             )

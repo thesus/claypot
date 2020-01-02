@@ -9,7 +9,7 @@ from rest_framework.renderers import JSONRenderer
 
 from claypot.api import serializers
 
-from claypot.models import Recipe, RECIPE_RELATION_TYPE_ADDITION
+from claypot.models import Recipe, Ingredient, RECIPE_RELATION_TYPE_ADDITION
 
 
 @pytest.mark.django_db
@@ -28,6 +28,85 @@ def test_tagging(
     tag1 = ingredient_tag_factory()
     recipe_ingredient.ingredient.tags.add(tag1)
     assert recipe.tags() == set((tag1,))
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "status,logged_in,starred,expected",
+    [
+        ("true", False, False, 0),
+        ("false", False, False, 1),
+        ("true", True, False, 0),
+        ("false", True, False, 1),
+        ("true", True, True, 1),
+        ("false", True, True, 0),
+    ],
+)
+def test_recipe_filter_starred(
+    api_client, recipe_factory, user, status, logged_in, starred, expected
+):
+    recipe = recipe_factory(author=user)
+
+    url = reverse("api:recipe-list") + f"?is_starred={status}"
+
+    if logged_in:
+        api_client.force_login(user)
+        if starred:
+            recipe.starred_by.add(user)
+
+    response = api_client.get(url)
+    assert response.data["count"] == expected
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "status,logged_in,expected",
+    [("false", False, 1), ("true", False, 0), ("false", True, 0), ("true", True, 1)],
+)
+def test_recipe_filter_author(
+    api_client, recipe_factory, user, status, logged_in, expected
+):
+    recipe = recipe_factory(author=user)
+    if logged_in:
+        api_client.force_login(user)
+    response = api_client.get(reverse("api:recipe-list") + f"?is_my_recipe={status}")
+    assert response.data["count"] == expected
+
+
+@pytest.mark.django_db
+def test_recipe_filter_exclude(api_client, recipe_factory, user):
+    recipe = recipe_factory(author=user)
+    response = api_client.get(reverse("api:recipe-list") + f"?exclude={recipe.pk}")
+    assert response.data["count"] == 0
+
+
+@pytest.mark.django_db
+def test_create_new_ingredient(
+    api_client,
+    recipe_factory,
+    recipe_ingredient_group_factory,
+    recipe_ingredient_factory,
+    user,
+):
+    recipe = recipe_factory(author=user)
+    group = recipe_ingredient_group_factory(recipe=recipe, order=2)
+    recipe_ingredient = recipe_ingredient_factory(group=group, order=1)
+
+    api_client.force_login(user)
+    url = reverse("api:recipe-detail", kwargs={"pk": recipe.pk})
+
+    src = serializers.RecipeSerializer(instance=recipe).data
+    data = {"ingredients": src["ingredients"]}
+
+    data["ingredients"][0]["ingredients"][0]["ingredient"] = "ingredient with new name"
+    response = api_client.patch(url, data, format="json")
+
+    assert Ingredient.objects.count() == 2
+
+    data["ingredients"][0]["ingredients"][0]["ingredient"] = ""
+    response = api_client.patch(url, data, format="json")
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 @pytest.mark.django_db
@@ -63,6 +142,35 @@ def test_search_recipe_list(api_client, recipe_factory, user):
 
 
 @pytest.mark.django_db
+def test_create_new_ingredient_group(
+    api_client,
+    recipe_factory,
+    recipe_ingredient_factory,
+    recipe_ingredient_group_factory,
+    user,
+):
+    api_client.force_login(user)
+    recipe = recipe_factory(author=user)
+    source = recipe_factory(author=user)
+
+    group = recipe_ingredient_group_factory(recipe=source, order=2)
+    recipe_ingredient = recipe_ingredient_factory(group=group, order=1)
+
+    data = serializers.RecipeIngredientGroupSerializer(instance=group).data
+
+    # Remove information about id's
+    data.pop("id")
+    data["ingredients"][0].pop("id")
+
+    data = {"ingredients": [data,]}
+    url = reverse("api:recipe-detail", kwargs={"pk": recipe.pk})
+    response = api_client.patch(url, data, format="json")
+
+    assert len(response.data.get("ingredients")) == 1
+    assert len(response.data["ingredients"][0]["ingredients"]) == 1
+
+
+@pytest.mark.django_db
 def test_post_new_recipe(
     api_client,
     recipe,
@@ -79,7 +187,7 @@ def test_post_new_recipe(
     data = {
         "title": src["title"],
         "description": src["description"],
-        "instructions": src["instructions"],
+        "instructions": [{"order": 1, "text": "a"}, {"order": 2, "text": "b"}],
         "ingredients": src["ingredients"],
         "images": [],
         "estimated_work_duration": None,
@@ -88,6 +196,7 @@ def test_post_new_recipe(
     response = api_client.put(url, data, format="json")
     assert response.status_code == status.HTTP_200_OK
     assert len(response.data.get("ingredients")) == 1
+    assert len(response.data.get("instructions")) == 2
     assert response.data.get("ingredients")[0]["id"] is not None
 
 
@@ -274,6 +383,15 @@ def test_recipe_relations(api_client, recipe_factory, user):
         "previous": None,
         "results": [],
     }
+
+    url = reverse("api:reciperelation-list")
+    data = {
+        "recipe1": recipe1.pk,
+        "recipe2": recipe1.pk,
+        "type": RECIPE_RELATION_TYPE_ADDITION,
+    }
+    response = api_client.post(url, data)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 @pytest.mark.django_db

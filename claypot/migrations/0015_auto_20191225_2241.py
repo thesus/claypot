@@ -48,4 +48,4 @@ class Migration(migrations.Migration):
         ("claypot", "0014_auto_20191225_2240"),
     ]
 
-    operations = [migrations.RunPython(forwards), migrations.RunPython(backwards)]
+    operations = [migrations.RunPython(forwards, backwards)]
