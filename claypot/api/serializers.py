@@ -197,6 +197,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         instance = Recipe(author=self.context["request"].user)
+        instance.save()
         return self.update(instance, validated_data)
 
     @method_decorator(transaction.atomic)
