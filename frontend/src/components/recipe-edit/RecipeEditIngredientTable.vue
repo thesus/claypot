@@ -120,6 +120,10 @@ export default {
       return ingredient => {
         switch (ingredient.amount_type) {
           case AMOUNT_TYPE_NUMERIC:
+            // If there is a literal representation, use that instead of the "pure" number. Also see 'updateAmount'.
+            if (ingredient.amount_literal) {
+              return ingredient.amount_literal
+            }
             return ingredient.amount_numeric
           case AMOUNT_TYPE_APPROX:
             return ingredient.amount_approx
@@ -173,6 +177,9 @@ export default {
       const isApprox = Number.isNaN(number)
 
       ingredient.amount_type = isApprox ? AMOUNT_TYPE_APPROX : AMOUNT_TYPE_NUMERIC
+      // The literal string is always stored.
+      // To handle cases like when the user entered "0.", we prefer displaying the number INCLUDING the dot. "amount_numeric" is "0"
+      this.$set(ingredient, 'amount_literal', possibleNumber)
       ingredient.amount_approx = isApprox ? value : null
       ingredient.amount_numeric = isApprox ? null : number
     }
