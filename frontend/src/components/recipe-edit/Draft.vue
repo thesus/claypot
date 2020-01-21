@@ -68,14 +68,19 @@ export default {
          If a change happens after this first 15 seconds, the recipe will be saved as a draft, but at most once every 10 seconds.
          Also note: If changes happen in the first 15 seconds, but no changes happen after that, no draft will be saved; this is intentional as well.
        */
-
     recipe: {
       handler() {
+        // If this is a new recipe load the draft list
+        if (!this.recipe.id) {
+          this.getDraftList()
+        }
+
         if (this.autoSaveEnabled && !this.saveScheduled) {
           this.saveScheduled = true
 
           this.timer.autoSaveLoop = setTimeout(() => {
             this.saveDraft()
+            this.saveScheduled = false
           }, 10000)
         }
       },
@@ -83,10 +88,6 @@ export default {
     }
   },
   mounted () {
-    if (!this.recipe.id) {
-      this.getDraftList()
-    }
-
     this.timer.autoSaveDelay = setTimeout(() => {
       this.autoSaveEnabled = true
     }, 15000)
@@ -113,8 +114,8 @@ export default {
     */
     async saveDraft () {
       // This disables the 'load draft' button.
-      if (!this.draft && this.recipe.draft_id) {
-        this.draft = this.recipe.draft_id
+      if (!this.draft && this.recipe.draft) {
+        this.draft = this.recipe.draft
       }
 
       try {
@@ -143,9 +144,10 @@ export default {
         )
         if (r.ok) {
           // Replace current version with the draft. Merged with the default, in case the saved draft is incomplete.
+
           this.$emit(
             'draftLoad',
-            { ...createDefaultRecipe, ...(await r.json()).data }
+            { ...createDefaultRecipe(), ...(await r.json()).data }
           )
         }
       } catch (e) {
