@@ -29,6 +29,7 @@
           <input
             :value="displayAmount(ingredient)"
             :class="{'form-error': !!recipeIngredientError(i).amount_numeric.length || !!recipeIngredientError(i).amount_numeric.length}"
+            :placeholder="$t('recipe_edit.amount')"
             @input="updateAmount(ingredient, $event.target.value)"
           >
           <FormFieldValidationError :errors="recipeIngredientError(i).amount_numeric" />
@@ -121,7 +122,7 @@ export default {
         switch (ingredient.amount_type) {
           case AMOUNT_TYPE_NUMERIC:
             // If there is a literal representation, use that instead of the "pure" number. Also see 'updateAmount'.
-            if (ingredient.amount_literal) {
+            if (ingredient.amount_literal != undefined) {
               return ingredient.amount_literal
             }
             return ingredient.amount_numeric
@@ -180,6 +181,7 @@ export default {
       // The literal string is always stored.
       // To handle cases like when the user entered "0.", we prefer displaying the number INCLUDING the dot. "amount_numeric" is "0"
       this.$set(ingredient, 'amount_literal', possibleNumber)
+
       ingredient.amount_approx = isApprox ? value : null
       ingredient.amount_numeric = isApprox ? null : number
     }

@@ -11,7 +11,7 @@ function createEmptyIngredient () {
     ingredient: '',
     ingredient_extra: '',
     optional: false,
-    amount_type: AMOUNT_TYPE_NUMERIC,
+    amount_type: AMOUNT_TYPE_APPROX,
     amount_approx: '',
     amount_numeric: 0,
     unit: '',
