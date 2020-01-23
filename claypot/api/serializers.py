@@ -163,6 +163,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     draft = serializers.SerializerMethodField()
     stars = serializers.SerializerMethodField()
     deletable = serializers.SerializerMethodField()
+    author = serializers.SlugRelatedField(slug_field='username', read_only=True)
 
     def get_draft(self, obj):
         if "request" in self.context and self.context["request"].user.is_authenticated:
@@ -288,6 +289,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             "ingredients",
             "images",
             "author",
+            "author_id",
             "published_on",
             "draft",
             "deletable",
@@ -300,6 +302,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         read_only_fields = [
             "author",
+            "author_id",
             "published_on",
         ]
 
