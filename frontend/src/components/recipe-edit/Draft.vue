@@ -70,11 +70,6 @@ export default {
        */
     recipe: {
       handler() {
-        // If this is a new recipe load the draft list
-        if (!this.recipe.id) {
-          this.getDraftList()
-        }
-
         if (this.autoSaveEnabled && !this.saveScheduled) {
           this.saveScheduled = true
 
@@ -91,6 +86,11 @@ export default {
     this.timer.autoSaveDelay = setTimeout(() => {
       this.autoSaveEnabled = true
     }, 15000)
+
+    // If this is a new recipe load the draft list
+    if (!this.recipe.id) {
+      this.getDraftList()
+    }
   },
   beforeDestroy () {
     clearTimeout(this.timer.autoSaveDelay)
