@@ -175,7 +175,7 @@ export default {
       }
 
       const number = Number(possibleNumber)
-      const isApprox = Number.isNaN(number)
+      const isApprox = Number.isNaN(number) || possibleNumber == ""
 
       ingredient.amount_type = isApprox ? AMOUNT_TYPE_APPROX : AMOUNT_TYPE_NUMERIC
       // The literal string is always stored.
