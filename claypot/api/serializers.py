@@ -256,6 +256,9 @@ class RecipeSerializer(serializers.ModelSerializer):
                         )
                     )
                 else:
+                    # Even if the group has an id, its not guaranteed that the group exists
+                    # E.g. The group existed in a draft (with an id) but got deleted,
+                    # therefore we create a new group if it doesn't exist.
                     group, _ = instance.ingredients.get_or_create(
                         pk=group_data.pop("id"),
                         defaults={
@@ -269,10 +272,8 @@ class RecipeSerializer(serializers.ModelSerializer):
                     group.title = group_data.pop("title")
                     group.save()
 
-                    order = 0
-                    for ingredient_data in ingredients_data:
+                    for order, ingredient_data in enumerate(ingredients_data):
                         ingredient_data["order"] = order
-                        order += 1
                         group.ingredients.update_or_create(
                             pk=ingredient_data.pop("id", None),
                             defaults=ingredient_data,

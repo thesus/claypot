@@ -142,6 +142,13 @@
       </div>
     </fieldset>
 
+    <Alert
+      v-if="errorAlert"
+      @close="errorAlert = false"
+    >
+      There are errors in your form!
+    </Alert>
+
     <Modal
       v-if="newIngredientsDecision"
       @close="newIngredientsDecision(false)"
@@ -176,6 +183,8 @@ import Vue from 'vue'
 
 import {api, endpoints} from '@/api'
 import {clone} from '@/utils'
+
+import Alert from '@/components/utils/Alert'
 import DurationInput from '@/components/recipe-edit/DurationInput'
 import FormFieldValidationError from '@/components/utils/FormFieldValidationError'
 import RecipeEditIngredientTable from '@/components/recipe-edit/RecipeEditIngredientTable'
@@ -193,7 +202,8 @@ export default {
     RecipeEditIngredientTable,
     ImageUpload,
     Modal,
-    Draft
+    Draft,
+    Alert
   },
   props: {
     id: {
@@ -207,6 +217,8 @@ export default {
       saving: false,
 
       errors: createDefaultRecipeError(),
+      errorAlert: false,
+
       // Gets populated if id changes or immediately
       recipe: null,
 
@@ -318,7 +330,7 @@ export default {
               }
             }
           } else {
-            // TODO: Proper error propagation
+            this.errorAlert = true
             const errors = await r.json()
 
             const errorsByIngredient = {}
@@ -376,8 +388,7 @@ export default {
         // Close page on success
         this.$emit('update', this.recipe.id)
         } else {
-          // TODO: Notify user about broken fields?
-
+          this.errorAlert = true
           this.$set(this, 'errors', {...createDefaultRecipeError(), ...(await r.json())})
         }
       } catch (err) {
