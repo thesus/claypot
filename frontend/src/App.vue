@@ -52,4 +52,34 @@ a {
 ol {
   padding: 0;
 }
+
+
+@media print {
+  body, div {
+    background-color: transparent !important;
+  }
+
+  #app {
+    margin-top: 0;
+  }
+
+  .nav, div.functions, div.relations, .btn {
+    display: none !important;
+  }
+
+  div.information {
+    border: none !important;
+  }
+
+  h1 {
+    text-align: left;
+    margin: 5px 0 0 0 !important;
+  }
+
+  .ingredients-group {
+    width: 180px !important;
+  }
+}
+
+
 </style>

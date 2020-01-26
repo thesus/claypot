@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="relations">
     <!-- Add recipe relation -->
     <Modal
       v-if="showAddRecipeRelationDialog"

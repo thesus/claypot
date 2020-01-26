@@ -65,6 +65,8 @@ export default {
 
 <style lang="scss" scoped>
 .amount {
+  /* Align amount with the first line of the ingredient name. */
+  vertical-align: top;
   text-align: right;
   width: 70px;
 }
