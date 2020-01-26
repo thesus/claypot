@@ -48,4 +48,8 @@ h3, h4, h5, h6 {
 a {
   display: inline-block;
 }
+
+ol {
+  padding: 0;
+}
 </style>

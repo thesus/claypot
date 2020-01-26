@@ -60,7 +60,10 @@ export default {
 }
 
 .container {
-  min-width: 200px;
+  min-width: 220px;
+  max-width: 600px;
+
+  width: 66vw;
   margin: 0px auto;
   padding: 12px;
 
@@ -96,5 +99,9 @@ export default {
 .modal-leave-active .modal-container {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
+}
+
+.btn {
+  min-width: unset;
 }
 </style>

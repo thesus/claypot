@@ -264,16 +264,21 @@ export default {
 <style lang="scss" scoped>
 @import '@/modules/variables.scss';
 
+
 .functions {
-  line-height: 24px;
+  display: flex;
+  justify-content: space-between;
 
   @media screen and (max-width: 500px) {
-    line-height: 40px;
     flex-direction: column;
   }
 
-  display: flex;
-  justify-content: space-between;
+  .fork, .stars {
+    line-height: 24px;
+    @media screen and (max-width: 500px) {
+      line-height: 40px;
+    }
+  }
 
   .stars {
     border: solid 1px #ccc;

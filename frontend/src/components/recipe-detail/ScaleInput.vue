@@ -27,7 +27,7 @@
       </template>
       <template v-else>
         <span>
-          {{ scaleToAmount }}
+          {{ scaleToAmount }}&nbsp;{{ scaleToIngredient.unit }} {{ scaleToIngredient.ingredient }}
           <!-- show ingredient unit and name - unfortunately lost right now -->
         </span>
       </template>
@@ -44,6 +44,7 @@
       v-if="showModal"
       @close="showModal = false"
     >
+      <!-- MODE_SCALE_TO -->
       <form
         v-if="mode == MODE_SCALE_TO"
         class="scaleTo"
@@ -61,13 +62,13 @@
             <option
               v-for="item in group.items"
               :key="item.key"
-              :value="item.value"
+              :value="item"
             >
               {{ item.text }}
             </option>
           </optgroup>
         </select>
-        <div>{{ $t("recipe_detail.scale_to.middle_text") }}</div>
+        <span>{{ $t("recipe_detail.scale_to.middle_text") }}</span>
         <input v-model="scaleToAmount">
         <button
           class="btn"
@@ -76,7 +77,7 @@
           {{ $t('recipe_detail.scale_to.submit') }}
         </button>
       </form>
-
+      <!-- MODE_ADVANCED -->
       <div
         v-if="mode == MODE_ADVANCED"
         class="box"
@@ -158,18 +159,6 @@
         <span class="result">{{ resultStr }}</span>
       </div>
 
-      <!-- toggle between MODE_SCALE_TO and MODE_ADVANCED -->
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            :checked="mode === MODE_ADVANCED"
-            @change="toggleMode"
-          >
-          <span>{{ $t("recipe_detail.scale_to.advanced_mode") }}</span>
-        </label>
-      </div>
-
       <!-- list a quick summary of all ingredients, scaled by the current multiplier -->
       <ol class="ingredientList">
         <li
@@ -179,6 +168,18 @@
           {{ item.amount }}{{ item.unit }}&nbsp;{{ item.ingredient }}<template v-if="i < scaledIngredients.length - 1">,</template>
         </li>
       </ol>
+
+      <!-- toggle between MODE_SCALE_TO and MODE_ADVANCED -->
+      <div class="modeswitch">
+        <label>
+          <input
+            type="checkbox"
+            :checked="mode === MODE_ADVANCED"
+            @change="toggleMode"
+          >
+          {{ $t("recipe_detail.scale_to.advanced_mode") }}
+        </label>
+      </div>
     </Modal>
   </div>
 </template>
@@ -212,8 +213,8 @@ export default {
       showModal: false,
       mode: MODE_CLOSED,
       scaleToAmount: null,
-      scaleToIngredient: null,
-      formatter: new Intl.NumberFormat(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2}),
+      scaleToIngredient: { value: null } ,
+      formatter: new Intl.NumberFormat(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2, useGrouping: false}),
     }
   },
   computed: {
@@ -247,7 +248,7 @@ export default {
     scaleToOptions () {
       return this.recipe.ingredients
         .map((group, c1) => ({
-          text: group.is_group ? group.title : this.$t('recipe_detail.scale_to.ingredient_group'),
+          text: group.title != "" ? group.title : this.$t('recipe_detail.scale_to.ingredient_group'),
           key: String(c1),
           items: group.ingredients
             .filter(i => (i.amount_type == this.AMOUNT_TYPE_NUMERIC && i.unit !== ''))
@@ -262,7 +263,7 @@ export default {
         .filter(group => group.items.length > 0)
     },
     scaledIngredients () {
-      return Array.concat(
+      return [].concat(
         ...this.scaleToOptions
         .map(group => group.items.map(i => ({
           ingredient: i.ingredient,
@@ -282,7 +283,7 @@ export default {
       // Show actual modal dialog
       this.showModal = true
 
-      // Iff the modal has never been loaded, we will switch to MODE_SCALE_TO
+      // If the modal has never been loaded, we will switch to MODE_SCALE_TO
       if (this.mode === MODE_CLOSED) {
         this.mode = MODE_SCALE_TO
       }
@@ -293,16 +294,16 @@ export default {
        to want most of the time.
       */
       {
-        let max = null
+        let maxIngredient = { value: null }
         this.scaleToOptions.forEach(i => {
           i.items.forEach(j => {
-            if (max === null || j.value > max) {
-              max = j.value
+            if (maxIngredient.value === null || j.value > maxIngredient.value) {
+              maxIngredient = j
             }
           })
         })
-        if (max !== null) {
-          this.scaleToIngredient = max
+        if (maxIngredient !== null) {
+          this.scaleToIngredient = maxIngredient
           this.reverseScaleTo()
         }
       }
@@ -372,10 +373,10 @@ export default {
       // TODO: reduce fraction
       this.multiplier = 1
       this.numerator = Number(this.scaleToAmount)
-      this.denominator = Number(this.scaleToIngredient)
+      this.denominator = Number(this.scaleToIngredient.value)
     },
     reverseScaleTo () {
-      this.scaleToAmount = this.multiplier * this.numerator / this.denominator * this.scaleToIngredient
+      this.scaleToAmount = this.multiplier * this.numerator / this.denominator * this.scaleToIngredient.value
     },
     toggleMode () {
       this.mode = this.mode === MODE_SCALE_TO ? MODE_ADVANCED : MODE_SCALE_TO
@@ -417,10 +418,6 @@ export default {
   background-color: transparent;
   margin: 0;
 
-  @media screen and (max-width: 500px) {
-    min-width: 35px;
-  }
-
   &:hover {
     background-color: $font_color;
     color: white;
@@ -428,6 +425,7 @@ export default {
   }
 
 	&.number {
+    line-height: 24px;
 		height: 100%;
 		cursor: pointer;
 		padding-left: 8px;
@@ -442,11 +440,19 @@ export default {
 			margin-right: 2px;
 		}
 	}
+
+  @media screen and (max-width: 500px) {
+    min-width: 35px;
+
+    &.number {
+      line-height: 40px;
+    }
+  }
 }
 
 .box {
   display: grid;
-  grid-template-columns: 30px 80px 30px 60px 150px 80px 100px;
+  grid-template-columns: 6% 15% 6% 12% 30% 15% 16%;
   grid-template-rows: 30% 30% 30% 10%;
   grid-template-areas:
     ". . . . fraction . ."
@@ -455,6 +461,7 @@ export default {
     ". meals . . size . .";
   place-items: center;
   font-size: 300%;
+  width: 100%;
 
   .input {
     border: 0px;
@@ -528,6 +535,7 @@ export default {
   @media screen and (max-width: 630px) {
     /* Smaller layout on mobile devices */
     grid-template-columns: 35px 30px 35px 20px 100px 20px 20px;
+    grid-template-columns: 13% 11% 13% 7% 42% 7% 7%;
     font-size: 100%;
 
     .btn {
@@ -541,7 +549,7 @@ export default {
 
     .fraction {
       .block {
-        grid-template-columns: 35% 30% 35%;
+        grid-template-columns: 33% 33% 33%;
 
         &.nominator {
           border-width: 1px;
@@ -559,16 +567,41 @@ input::-webkit-inner-spin-button {
 }
 
 input[type=number] {
-  -moz-appearance:textfield;
+  -moz-appearance: textfield;
+  text-indent: 0px;
 }
 
 .scaleTo {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
+
+  .btn {
+    min-width: unset;
+    /* same height as inputs */
+    height: 30px;
+  }
+
+  input, select, span {
+    margin: 2px;
+  }
+
+  input, select {
+    min-width: 20%;
+    width: 100%;
+  }
+
+  span {
+    min-width: 60px;
+    line-height: 30px;
+  }
+
+  @media screen and (max-width: 500px) {
+    flex-direction: column;
+  }
 }
 
 ol.ingredientList {
-  max-width: 66vw;
   & li {
     display: inline;
   }
