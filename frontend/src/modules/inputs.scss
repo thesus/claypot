@@ -13,8 +13,7 @@ input, textarea {
     width: 100%;
 }
 
-/* Resize inputs on mobile devices */
-input {
+input, select {
     height: 30px;
 }
 
@@ -24,8 +23,9 @@ input[type=checkbox] {
   height: 14px;
 }
 
+/* Resize inputs on mobile devices */
 @media screen and (max-width: 500px) {
-    input {
+    input, select {
         height: 40px;
     }
 }

@@ -27,7 +27,7 @@
       </template>
       <template v-else>
         <span>
-          {{ scaleToAmount }}&nbsp;{{ scaleToIngredient.unit }} {{ scaleToIngredient.ingredient }}
+          {{ round(scaleToAmount) }}&nbsp;{{ scaleToIngredient.unit }} {{ scaleToIngredient.ingredient }}
           <!-- show ingredient unit and name - unfortunately lost right now -->
         </span>
       </template>
@@ -69,7 +69,11 @@
           </optgroup>
         </select>
         <span>{{ $t("recipe_detail.scale_to.middle_text") }}</span>
-        <input v-model="scaleToAmount">
+        <input
+          v-model="dirtyAmount"
+          type="number"
+          step="any"
+        >
         <button
           class="btn"
           role="submit"
@@ -213,6 +217,7 @@ export default {
       showModal: false,
       mode: MODE_CLOSED,
       scaleToAmount: null,
+      dirtyAmount: "0",
       scaleToIngredient: { value: null } ,
       formatter: new Intl.NumberFormat(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2, useGrouping: false}),
     }
@@ -274,11 +279,20 @@ export default {
     },
   },
   watch: {
+    scaleToAmount () {
+      // Set the dirty amount to current scaled mode. We can do that, since changing
+      // `this.dirtyAmount` does not trigger any action by itself
+      this.dirtyAmount = String(this.round(this.scaleToAmount))
+    },
     result () {
       this.$emit('input', this.result)
     },
   },
   methods: {
+    round(value) {
+      // Number.EPSILON is because floating point division in javascript
+      return Math.round((Number.EPSILON + value) * 100) / 100
+    },
     doShowModal () {
       // Show actual modal dialog
       this.showModal = true
@@ -370,10 +384,12 @@ export default {
       this.reverseScaleTo()
     },
     scaleTo () {
-      // TODO: reduce fraction
       this.multiplier = 1
-      this.numerator = Number(this.scaleToAmount)
+      this.numerator = Number(this.dirtyAmount)
       this.denominator = Number(this.scaleToIngredient.value)
+
+      // For displaying purposes
+      this.reverseScaleTo()
     },
     reverseScaleTo () {
       this.scaleToAmount = this.multiplier * this.numerator / this.denominator * this.scaleToIngredient.value
@@ -471,6 +487,21 @@ export default {
     font-size: 100%;
   }
 
+  /* Remove step buttons on inputs */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+   -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Don't indent numbers in 'hidden' inputs */
+  input[type=number] {
+    -moz-appearance: textfield;
+    text-indent: 0px;
+  }
+
+
+
   /* Informational text in modal */
   .helptext {
     font-size: 50%;
@@ -559,18 +590,6 @@ export default {
   }
 }
 
-/* Remove step buttons on inputs */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
- -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type=number] {
-  -moz-appearance: textfield;
-  text-indent: 0px;
-}
-
 .scaleTo {
   display: flex;
   flex-direction: row;
@@ -588,11 +607,11 @@ input[type=number] {
 
   input, select {
     min-width: 20%;
-    width: 100%;
+    width: auto;
   }
 
   span {
-    min-width: 60px;
+    min-width: 70px;
     line-height: 30px;
   }
 
