@@ -1,18 +1,18 @@
 services:
-  - postgres:latest
+  - postgres:12
 
 variables:
   POSTGRES_DB: claypot
   POSTGRES_USER: ci
-  POSTGRES_PASSWORD: ""
+  POSTGRES_PASSWORD: "ci"
 
 test:backend:
-  image: python:latest
+  image: python:3.8
   stage: test
   tags:
     - docker
   variables:
-    DATABASE_URL: "postgresql://ci@postgres/claypot"
+    DATABASE_URL: "postgresql://ci:ci@postgres/claypot"
     DJANGO_SECRET_KEY: running-tests
     DJANGO_DEBUG: "true"
   coverage: "/\\d+\\%\\s*$/"
