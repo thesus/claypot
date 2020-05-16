@@ -2,15 +2,19 @@
     "generic": {
         "loading": "Lädt...",
         "loading_error": "Fehler beim Laden der Daten.",
-        "no_data": "Kein Ergebnis"
+        "no_data": "Kein Ergebnis",
+        "save": "Speichern",
+        "remove": "Löschen"
     },
     "navbar": {
+        "button": "Menü",
         "home": "Startseite",
         "my_favorites": "Gemerkte Rezepte",
         "my_recipes": "Meine Rezepte",
         "logout": "Abmelden",
         "login": "Anmelden",
-        "signup": "Registrierung"
+        "signup": "Registrierung",
+        "admin": "Admin"
     },
     "login": {
         "username": "Benutzername",
@@ -76,7 +80,13 @@
         "star": "Merken",
         "unstar": "Nicht mehr merken",
         "stars": "Kein Mal gemerkt | Ein Mal gemerkt | {count} Mal gemerkt",
-        "parent": "Original"
+        "fork": "Kopieren",
+        "parent": "Original",
+        "draft": {
+            "multiple": "Wähle einen Entwurf",
+            "single": "Entwurf laden",
+            "no_title": "Kein Titel"
+        }
     },
     "recipe_detail": {
         "loading": "@:generic.loading",
@@ -91,6 +101,8 @@
         "edit": "Bearbeiten",
         "estimated_work_duration": "Geschätzte Arbeitszeit",
         "estimated_waiting_duration": "Geschätzte Koch-/Backzeit",
+        "fork_title": "Kopie anlegen",
+        "fork_confirm": "Es wird eine Kopie des Rezepts erstellt. Wirklich fortfahren?",
         "add_recipe_relation": "Rezept verknüpfen",
         "no_linked_recipes": "Noch keine verknüpften Rezepte.",
         "portion_count": "Portionen",
@@ -136,5 +148,16 @@
     },
     "thumbnail": {
         "empty": "Kein Vorschaubild vorhanden"
+    },
+    "synonym": {
+        "add": "Hinzufügen",
+        "no_synonym": "Noch kein Synonym vorhanden.",
+        "synonym": "Synonym"
+    },
+    "ingredient": {
+        "name": "Name"
+    },
+    "scaling": {
+        "title": "Skalieren"
     }
 }

@@ -31,6 +31,7 @@
         "heading": "Reset your password",
         "email": "E-Mail Address",
         "reset": "Request reset e-mail",
+        "error": "Link is invalid.",
         "confirm": "We send an email to the given address."
     },
     "reset_password_confirm": {
@@ -79,7 +80,7 @@
         "star": "Star",
         "unstar": "Unstar",
         "stars": "Not starred | Starred once | Starred {count} times",
-        "fork": "Fork",
+        "fork": "Copy",
         "parent": "Original",
         "draft": {
             "multiple": "Select a draft",

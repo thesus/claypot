@@ -40,6 +40,7 @@ test:frontend:
     - cd frontend
     - yarn install
   script:
+    - yarn test:unit
     - node_modules/eslint/bin/eslint.js --ext .js,.vue src
   cache:
     key: frontend
