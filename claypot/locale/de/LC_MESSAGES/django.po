@@ -79,7 +79,7 @@ msgstr ""
 
 #: claypot/api/permissions.py:14
 msgid "You must be superuser to edit."
-msgstr "Du must Administrator sein um Bearbeiten zu können."
+msgstr "Du musst Administrator sein um Bearbeiten zu können."
 
 #: claypot/api/permissions.py:30
 msgid "You may only read an edit your own data."
