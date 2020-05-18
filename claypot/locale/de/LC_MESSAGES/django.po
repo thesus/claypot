@@ -1,0 +1,313 @@
+# Claypot translations.
+# Copyright (C) 2020 The Claypot team
+# This file is distributed under the same license as the Claypot package.
+# David Sieger <david@conceal.at>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Claypot translations 1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-18 17:52+0000\n"
+"PO-Revision-Date: 2020-05-18 19:51+0200\n"
+"Last-Translator: David Sieger <david@conceal.at>\n"
+"Language-Team: German <none>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"X-Generator: Gtranslator 3.30.1\n"
+
+#: claypot/accounts/permissions.py:9
+msgid "You may only view your own profile."
+msgstr "Du kannst nur dein eigenes Profil ansehen."
+
+#: claypot/accounts/serializers.py:31
+msgid "Unable to login with provided credentials."
+msgstr "Die angegebenen Zugangsdaten sind falsch."
+
+#: claypot/accounts/serializers.py:116
+msgid "The username is already taken."
+msgstr "Dieser Benutzername ist bereits vergeben."
+
+#: claypot/accounts/serializers.py:123
+msgid "The email address is already used."
+msgstr "Diese E-Mail-Adresse ist bereits in Benutzung."
+
+#: claypot/accounts/serializers.py:128
+msgid "Passwords didn't match!"
+msgstr "Die angegeben Kennwörter stimmen nicht überein."
+
+#: claypot/accounts/utils.py:33
+msgid "E-Mail verification for {}"
+msgstr "E-Mail-Adressprüfung für {}"
+
+#: claypot/accounts/viewsets.py:65
+msgid "Logged out successfully."
+msgstr "Erfolgreich abgemeldet."
+
+#: claypot/accounts/viewsets.py:80
+msgid "Reset email has been sent."
+msgstr "Eine E-Mail zum Zurücksetzen des Kennworts wurde dir zugesendet."
+
+#: claypot/accounts/viewsets.py:93
+msgid "Password resetted successfully."
+msgstr "Das Kennwort wurde erfolgreich zurückgesetzt."
+
+#: claypot/accounts/viewsets.py:104
+msgid "Signup email has been sent."
+msgstr ""
+"Eine E-Mail zur Bestätigung deiner Registrierung wurde an dich versendet."
+
+#: claypot/accounts/viewsets.py:114
+msgid "Signup link is missing get parameters!"
+msgstr "Der Anmelde-Link ist kaputt; es fehlen GET-Parameter."
+
+#: claypot/accounts/viewsets.py:122
+msgid "Signup link is invalid. Did you copy the URL correctly?"
+msgstr "Der Anmelde-Link ist ungültig. Hast du die Adresse richtig kopiert?"
+
+#: claypot/accounts/viewsets.py:129
+msgid "Signup link is invalid!"
+msgstr "Der Anmelde-Link ist ungültig."
+
+#: claypot/accounts/viewsets.py:133
+msgid "Signup link no longer valid. New email has been sent."
+msgstr ""
+"Der Anmelde-Link ist abgelaufen. Ein neuer Anmelde-Link ist dir per E-Mail "
+"zugesendet worden."
+
+#: claypot/api/permissions.py:14
+msgid "You must be superuser to edit."
+msgstr "Du must Administrator sein um Bearbeiten zu können."
+
+#: claypot/api/permissions.py:30
+msgid "You may only read an edit your own data."
+msgstr "Du kannst nur deine eigenen Daten lesen."
+
+#: claypot/api/permissions.py:51
+msgid "You may only edit your own recipes."
+msgstr "Du kannst nur deine eigenen Rezepte bearbeiten."
+
+#: claypot/api/serializers.py:64
+msgid "This field may not be null."
+msgstr "Dieses Feld darf nicht leer sein."
+
+#: claypot/api/serializers.py:91
+msgid "Unknown unit"
+msgstr "Unbekannte Einheit"
+
+#: claypot/api/serializers.py:356
+msgid "Already used on another ingredient."
+msgstr "Bereits an einer anderen Zutat verwendet."
+
+#: claypot/api/serializers.py:433
+msgid "You may only define relations between different recipes."
+msgstr "Du darfst ein Rezept nicht mit sich selbst verknüpfen."
+
+#: claypot/models.py:20 claypot/models.py:240 claypot/models.py:257
+msgid "Name"
+msgstr "Name"
+
+#: claypot/models.py:22
+msgid "Name, plural"
+msgstr "Name, Plural"
+
+#. Translators: Abbreviation for a unit
+#: claypot/models.py:27
+msgid "Code"
+msgstr "Code"
+
+#. Translators: Unit display name
+#. Translators: Ingredient display name
+#: claypot/models.py:36 claypot/models.py:265
+#, python-brace-format
+msgid "{0.name}"
+msgstr "{0.name}"
+
+#. Translators: Unit for a numeric amount
+#: claypot/models.py:39 claypot/models.py:196
+msgid "Unit"
+msgstr "Einheit"
+
+#: claypot/models.py:40
+msgid "Units"
+msgstr "Einheiten"
+
+#: claypot/models.py:47
+msgid "Addition"
+msgstr "Ergänzung"
+
+#: claypot/models.py:48
+msgid "Replacement"
+msgstr "Ersatz"
+
+#: claypot/models.py:58
+msgid "Recipe relation"
+msgstr "Rezeptverknüpfung"
+
+#: claypot/models.py:59
+msgid "Recipe relations"
+msgstr "Verknüpfte Rezepte"
+
+#: claypot/models.py:71
+msgid "Title"
+msgstr "Titel"
+
+#. Translators: author of recipe
+#: claypot/models.py:82
+msgid "Author"
+msgstr "Autor"
+
+#: claypot/models.py:95
+msgid "Estimated time spent working"
+msgstr "Geschätze Arbeitszeit"
+
+#: claypot/models.py:99
+msgid "Estimated waiting time"
+msgstr "Geschätzte Wartezeit"
+
+#: claypot/models.py:100
+msgid "Cooking and baking"
+msgstr "Kochen und Backen"
+
+#: claypot/models.py:106
+msgid "Additional information"
+msgstr "Zusätzliche Informationen"
+
+#. Translators: Recipe display name
+#: claypot/models.py:129
+#, python-brace-format
+msgid "{0.title}"
+msgstr "{0.title}"
+
+#: claypot/models.py:132
+msgid "Recipe"
+msgstr "Rezept"
+
+#: claypot/models.py:133
+msgid "Recipes"
+msgstr "Rezepte"
+
+#: claypot/models.py:141
+msgid "Unspecified amount"
+msgstr "Keine Menge angegeben"
+
+#: claypot/models.py:142
+msgid "Numeric amount"
+msgstr "Numerische Mengenangabe"
+
+#: claypot/models.py:143
+msgid "Approximated amount"
+msgstr "Ungefähre Mengenangabe"
+
+#: claypot/models.py:158 claypot/models.py:268
+msgid "Ingredient"
+msgstr "Zutat"
+
+#. Translators: Optional field to note additional things about one
+#. specific ingredient
+#: claypot/models.py:167
+msgid "Additional notes about ingredient"
+msgstr "Zusätzliche Notizen zur Zutat"
+
+#: claypot/models.py:170
+msgid "Optional"
+msgstr "Optional"
+
+#. Translators: Name of internal field, e. g. "numeric amount",
+#. "approximate amount"
+#: claypot/models.py:176
+msgid "Amount type"
+msgstr "Art der Mengenangabe"
+
+#: claypot/models.py:181
+msgid "Amount, numeric"
+msgstr "Menge, numerisch"
+
+#. Translators: Description of amount like "pint" or "some"
+#: claypot/models.py:187
+msgid "Amount, approximated"
+msgstr "Menge, ungefähr"
+
+#. Translators: Recipe ingredient display name
+#: claypot/models.py:207
+#, python-brace-format
+msgid "{0.group.recipe}'s {0.ingredient}"
+msgstr "{0.ingredient} von {0.group.recipe}"
+
+#: claypot/models.py:210
+msgid "Recipe ingredient"
+msgstr "Rezeptzutat"
+
+#: claypot/models.py:211
+msgid "Recipe ingredients"
+msgstr "Rezeptzutaten"
+
+#: claypot/models.py:234
+msgid "Recipe ingredient group"
+msgstr "Rezeptzutatengruppe"
+
+#: claypot/models.py:235
+msgid "Recipe ingredient groups"
+msgstr "Rezeptzutatengruppen"
+
+#: claypot/models.py:269
+msgid "Ingredients"
+msgstr "Zutaten"
+
+#: claypot/models.py:290
+msgid "Tag"
+msgstr "Schlagwort"
+
+#: claypot/models.py:291
+msgid "Tags"
+msgstr "Schlagworte"
+
+#: claypot/models.py:314
+msgid "Recipe instruction"
+msgstr "Rezeptanweisung"
+
+#: claypot/models.py:315
+msgid "Recipe instructions"
+msgstr "Rezeptanweisungen"
+
+#: claypot/models.py:333
+msgid "Recipe draft"
+msgstr "Rezeptentwurf"
+
+#: claypot/models.py:334
+msgid "Recipe drafts"
+msgstr "Rezeptentwürfe"
+
+#: claypot/templates/accounts/password_reset_email.html:3
+#, python-format
+msgid ""
+"\n"
+"You requested a password reset for your account at %(site_name)s."
+msgstr ""
+"\n"
+"Du hast angefordert, dass das Kennwort für dein Benutzerkonto zu "
+"%(site_name)s zurückgesetzt wird."
+
+#: claypot/templates/accounts/password_reset_email.html:6
+msgid "Please go to the following page and choose a new password: "
+msgstr "Bitte gehe auf diese Webseite und wähle ein neues Kennwort: "
+
+#: claypot/templates/accounts/password_reset_email.html:10
+#: claypot/templates/accounts/signup_email.html:10
+msgid "Your username is: "
+msgstr "Dein Benutzername ist: "
+
+#: claypot/templates/accounts/signup_email.html:3
+#, python-format
+msgid ""
+"\n"
+"You registered an account at %(site_name)s."
+msgstr ""
+"\n"
+"Du hast ein Benutzerkonto für %(site_name)s erstellt."
+
+#: claypot/templates/accounts/signup_email.html:6
+msgid "Click the following link to verify your email address: "
+msgstr "Klicke den folgenden Link um deine E-Mail-Adresse zu bestätigen: "
