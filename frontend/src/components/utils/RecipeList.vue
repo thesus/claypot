@@ -17,6 +17,7 @@
       :reload-trigger="reloadTrigger"
       :filters="filters"
       :has-url-pages="hasUrlPages"
+      @page="window.scrollTo(0, 0)"
     >
       <template v-slot:default="props">
         <slot

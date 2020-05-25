@@ -173,6 +173,7 @@ export default {
     },
     setPage (value) {
       this.page = value
+      emit("page", value)
     }
   }
 }
