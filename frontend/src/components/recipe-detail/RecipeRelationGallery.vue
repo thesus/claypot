@@ -14,7 +14,7 @@
       <RecipeList
         v-if="recipeRelationSearch.length"
         :filters="{search: recipeRelationSearch, exclude: recipeId}"
-        :has-url-pages="false"
+        :is-embedded="true"
       >
         <template v-slot:options>
           <div />

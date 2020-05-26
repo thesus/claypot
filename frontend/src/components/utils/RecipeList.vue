@@ -16,8 +16,8 @@
       :transform="receiverTransform"
       :reload-trigger="reloadTrigger"
       :filters="filters"
-      :has-url-pages="hasUrlPages"
-      @page="window.scrollTo(0, 0)"
+      :has-url-pages="!isEmbedded"
+      @page="scrollTop"
     >
       <template v-slot:default="props">
         <slot
@@ -77,9 +77,10 @@ export default {
       type: Number,
       default: 0,
     },
-    hasUrlPages: {
+    // If this is false we show the page in the url and scroll to the top after changing the page
+    isEmbedded: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   data () {
@@ -94,11 +95,6 @@ export default {
     updateMode() {
       this.$store.commit('updateProfile', { homeView: !this.getHomeView})
     },
-    addRecipe () {
-      this.$router.push({
-        'name': 'recipe-add'
-      })
-    },
     showAllRecipes () {
       this.$set(this, 'filters', {})
     },
@@ -107,6 +103,11 @@ export default {
     },
     showMyRecipes () {
       this.$set(this, 'filters', {is_my_recipe: 2})
+    },
+    scrollTop() {
+      if (!this.isEmbedded) {
+        window.scrollTo(0, 0)
+      }
     }
   },
 }

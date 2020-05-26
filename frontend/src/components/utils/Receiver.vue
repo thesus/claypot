@@ -84,11 +84,15 @@ export default {
       set (value) {
         /* Store page in url otherwise in 'simplePage' data */
         if (this.hasUrlPages) {
-          this.$router.push({
+          const resolved = this.$router.resolve({
             name: this.$route.name,
             params: this.$route.params,
             query: { ...this.$route.query, page: value }
           })
+
+          if (resolved.route.fullPath != this.$route.fullPath) {
+            this.$router.push(resolved.location)
+          }
         } else {
           this.simplePage = value
         }
@@ -173,7 +177,8 @@ export default {
     },
     setPage (value) {
       this.page = value
-      emit("page", value)
+
+      this.$emit('page', value)
     }
   }
 }

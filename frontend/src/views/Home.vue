@@ -16,7 +16,7 @@
     </div>
     <RecipeList
       :filters="allFilters"
-      :simple="false"
+      :is-embedded="false"
     />
   </article>
 </template>
@@ -44,7 +44,8 @@ export default {
   },
   data () {
     return {
-      search: ''
+      // Use searchtext from history
+      search: this.$route.query.search || ''
     }
   },
   computed: {
@@ -55,13 +56,27 @@ export default {
       'isLoggedIn',
     ]),
   },
+  watch: {
+    search () {
+      // Add the search text to the url if not empty, otherwise delete the parameter
+      if (this.search) {
+        this.$router.push({ query: {search: this.search} })
+      } else {
+        let query = this.$route.query
+        if (query.search) {
+          delete query.search
+          this.$router.push(query)
+        }
+      }
+    }
+  },
   methods: {
     addRecipe () {
       this.$router.push({
         'name': 'recipe-add'
       })
     },
-  },
+  }
 }
 </script>
 
