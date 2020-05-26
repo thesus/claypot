@@ -56,7 +56,6 @@
         "retry": "Wiederholen",
         "no_recipes": "Keine Rezepte gefunden.",
         "error": "@:generic.loading_error",
-        "search": "Suchen",
         "next": "Nächste Seite",
         "previous": "Vorherige Seite",
         "mode": "Ansicht"
