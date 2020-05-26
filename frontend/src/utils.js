@@ -51,8 +51,24 @@ class Timer {
   }
 }
 
+/*
+ * Removes all properties that are undefined, null or an empty string
+ * Returns a (shallow) copy.
+*/
+function cleanObject(object) {
+    const result = {}
+    for (const property in object) {
+      const value = object[property]
+      if (value != undefined && value != null && value != '') {
+        result[property] = value
+      }
+    }
+  return result
+}
+
 export {
   getCookie,
   clone,
+  cleanObject,
   Timer
 }

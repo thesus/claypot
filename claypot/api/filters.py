@@ -36,6 +36,7 @@ class RecipeFilter(django_filters.FilterSet):
     exclude = django_filters.AllValuesMultipleFilter(
         field_name="pk", label="Exclude by id", method="filter_exclude_by_pk"
     )
+    ordering = django_filters.OrderingFilter(fields=(("published_on", "time"),))
 
     def filter_exclude_by_pk(self, queryset, name, value):
         if value:

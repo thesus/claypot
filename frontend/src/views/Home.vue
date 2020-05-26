@@ -1,11 +1,8 @@
 <template>
   <article>
     <div class="header">
-      <DebounceInput
-        v-model="search"
-        :placeholder="$t('home.search')"
-        class="search"
-      />
+      <SearchForm @input="updateFilters" />
+
       <router-link
         v-if="isLoggedIn"
         :to="{name: 'recipe-add'}"
@@ -26,7 +23,7 @@ import Vue from 'vue'
 import { mapGetters } from 'vuex'
 
 import RecipeList from '@/components/utils/RecipeList'
-import DebounceInput from '@/components/utils/DebounceInput'
+import SearchForm from '@/components/utils/SearchForm'
 
 import { api, endpoints } from '@/api'
 
@@ -34,7 +31,7 @@ export default {
   name: 'Home',
   components: {
     RecipeList,
-    DebounceInput
+    SearchForm
   },
   props: {
     filters: {
@@ -45,30 +42,16 @@ export default {
   data () {
     return {
       // Use searchtext from history
-      search: this.$route.query.search || ''
+      filterOptions:this.$route.query
     }
   },
   computed: {
     allFilters () {
-      return this.search === '' ? this.filters : {'search': this.search, ...this.filters}
+      return {...this.filters, ...this.filterOptions}
     },
     ...mapGetters([
       'isLoggedIn',
     ]),
-  },
-  watch: {
-    search () {
-      // Add the search text to the url if not empty, otherwise delete the parameter
-      if (this.search) {
-        this.$router.push({ query: {search: this.search} })
-      } else {
-        let query = this.$route.query
-        if (query.search) {
-          delete query.search
-          this.$router.push(query)
-        }
-      }
-    }
   },
   methods: {
     addRecipe () {
@@ -76,6 +59,9 @@ export default {
         'name': 'recipe-add'
       })
     },
+    updateFilters(value) {
+      this.$set(this, 'filterOptions', value)
+    }
   }
 }
 </script>

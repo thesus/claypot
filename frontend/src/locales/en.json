@@ -56,10 +56,17 @@
         "retry": "Try again",
         "no_recipes": "No recipes found.",
         "error": "@:generic.error",
-        "search": "Search",
         "next": "Next",
         "previous": "Previous",
         "mode": "Toggle view mode"
+    },
+    "search": {
+        "textsearch": "Search",
+        "ordering": {
+            "label": "Ordering",
+            "time": "Date published",
+            "relevance": "Relevance"
+        }
     },
     "recipes": {
         "title": "Title",

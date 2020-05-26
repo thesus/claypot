@@ -61,6 +61,14 @@
         "previous": "Vorherige Seite",
         "mode": "Ansicht"
     },
+    "search": {
+        "textsearch": "Suche",
+        "ordering": {
+            "label": "Sortierung",
+            "time": "Veröffentlichungsdatum",
+            "relevance": "Relevanz"
+        }
+    },
     "recipes": {
         "title": "Titel",
         "description": "Beschreibung",

@@ -23,7 +23,7 @@
 <script>
 import { api } from '@/api'
 
-import { Timer } from '@/utils'
+import { Timer, cleanObject } from '@/utils'
 
 import Pagination from '@/components/utils/Pagination'
 
@@ -102,10 +102,10 @@ export default {
       /* Merge page in filters if list mode is enabled */
       const d = this.isList ? { page: this.page } : { }
 
-      return {
+      return cleanObject({
         ...this.filters,
         ...d
-      }
+      })
     }
   },
   watch: {
