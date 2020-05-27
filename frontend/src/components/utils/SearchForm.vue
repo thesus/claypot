@@ -27,11 +27,14 @@
           id="ordering"
           v-model="filters.ordering"
         >
+          <option value="">
+            {{ $t('search.ordering.relevance') }}
+          </option>
           <option value="time">
             {{ $t('search.ordering.time') }}
           </option>
-          <option value="">
-            {{ $t('search.ordering.relevance') }}
+          <option value="popularity">
+            {{ $t('search.ordering.popularity') }}
           </option>
         </select>
       </div>

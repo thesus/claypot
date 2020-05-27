@@ -7,7 +7,7 @@ from django.contrib.postgres.search import (
     SearchVector,
     TrigramSimilarity,
 )
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.utils.translation import get_language, get_language_info
 
 from claypot.models import Ingredient, Recipe
@@ -19,6 +19,20 @@ class IngredientFilter(django_filters.FilterSet):
     class Meta:
         model = Ingredient
         fields = ["name"]
+
+
+class RecipeOrderingFilter(django_filters.OrderingFilter):
+    def __init__(self, *args, **kwargs):
+        super(RecipeOrderingFilter, self).__init__(*args, **kwargs)
+        self.extra["choices"] += [
+            ("popularity", "Popularity"),
+        ]
+
+    def filter(self, qs, value):
+        if value and any(v in ["popularity",] for v in value):
+            return qs.annotate(popularity=Count("starred_by")).order_by("-popularity")
+
+        return super(RecipeOrderingFilter, self).filter(qs, value)
 
 
 class RecipeFilter(django_filters.FilterSet):
@@ -36,7 +50,7 @@ class RecipeFilter(django_filters.FilterSet):
     exclude = django_filters.AllValuesMultipleFilter(
         field_name="pk", label="Exclude by id", method="filter_exclude_by_pk"
     )
-    ordering = django_filters.OrderingFilter(fields=(("published_on", "time"),))
+    ordering = RecipeOrderingFilter(fields=(("published_on", "time"), "author"))
 
     def filter_exclude_by_pk(self, queryset, name, value):
         if value:

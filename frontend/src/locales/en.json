@@ -65,7 +65,8 @@
         "ordering": {
             "label": "Ordering",
             "time": "Date published",
-            "relevance": "Relevance"
+            "relevance": "Relevance",
+            "popularity": "Popularity"
         },
         "open": "Open extended search",
         "close": "Close extended search"
