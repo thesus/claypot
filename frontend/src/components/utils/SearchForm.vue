@@ -108,9 +108,7 @@ export default {
       this.$store.commit('updateProfile', { extendedSearch: !this.extendedSearchOpen })
 
       // clear the extended options on closing them so nobody can get confused by hidden search options
-      if (this.extendedSearchOpen) {
-        this.$set(this.filters, 'ordering', '')
-      }
+      this.$set(this.filters, 'ordering', '')
     }
   }
 }
