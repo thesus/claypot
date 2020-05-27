@@ -1,22 +1,22 @@
 <template>
   <div class="search">
-    <div class="option">
+    <div class="main">
       <input
         v-model="filters.search"
         :placeholder="$t('search.textsearch')"
       >
+      <button
+        class="btn"
+        @click="toggleExtendedSearch"
+      >
+        <template v-if="extendedSearchOpen">
+          {{ $t('search.close') }}
+        </template>
+        <template v-else>
+          {{ $t('search.open') }}
+        </template>
+      </button>
     </div>
-    <button
-      class="btn"
-      @click="toggleExtendedSearch"
-    >
-      <template v-if="extendedSearchOpen">
-        {{ $t('search.close') }}
-      </template>
-      <template v-else>
-        {{ $t('search.open') }}
-      </template>
-    </button>
     <div
       v-show="extendedSearchOpen"
       class="extended"
@@ -117,15 +117,35 @@ export default {
 .search {
   width: 100%;
   display: flex;
-  flex-flow: row;
+  flex-flow: column;
 
-  @media screen and (max-width: 780px) {
+  .main {
+    width: 100%;
+    display: flex;
     flex-flow: column;
+
+    .btn {
+      /* Please keep going. This is due to funky firefox behavior */
+      min-width: unset !important;
+      white-space: nowrap;
+    }
+
+    @media screen and (min-width: 500px) {
+      flex-flow: row;
+    }
   }
 
-  .option {
-    width: 100%;
-    margin: 5px;
+  .extended {
+    display: flex;
+    flex-flow: row;
+    padding: 5px;
+    margin-top: 5px;
+    background-color: rgba(184, 203, 214, 0.4);
+
+    .option {
+      width: 100%;
+      margin: 5px;
+    }
   }
 }
 
