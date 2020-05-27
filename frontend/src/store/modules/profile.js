@@ -1,11 +1,13 @@
 import Vue from 'vue'
 
 const state = {
-  homeView: true
+  homeView: true,
+  extendedSearch: false,
 }
 
 const getters = {
-  getHomeView: state => !!state.homeView
+  getHomeView: state => !!state.homeView,
+  getExtendedSearch: state => !!state.extendedSearch
 }
 
 const actions = {}
