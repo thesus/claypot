@@ -48,7 +48,7 @@
       <form
         v-if="mode == MODE_SCALE_TO"
         class="scaleTo"
-        @submit="scaleTo"
+        @submit.prevent="scaleTo"
       >
         <select
           v-model="scaleToIngredient"
