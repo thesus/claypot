@@ -23,7 +23,7 @@ class IngredientFilter(django_filters.FilterSet):
 
 class RecipeOrderingFilter(django_filters.OrderingFilter):
     def __init__(self, *args, **kwargs):
-        super(RecipeOrderingFilter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.extra["choices"] += [
             ("popularity", "Popularity"),
         ]
@@ -32,7 +32,7 @@ class RecipeOrderingFilter(django_filters.OrderingFilter):
         if value and any(v in ["popularity",] for v in value):
             return qs.annotate(popularity=Count("starred_by")).order_by("-popularity")
 
-        return super(RecipeOrderingFilter, self).filter(qs, value)
+        return super().filter(qs, value)
 
 
 class RecipeFilter(django_filters.FilterSet):
