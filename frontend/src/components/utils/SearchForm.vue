@@ -1,5 +1,8 @@
 <template>
-  <div class="search">
+  <form
+    class="search"
+    @submit.prevent
+  >
     <div class="main">
       <input
         v-model="filters.search"
@@ -39,7 +42,7 @@
         </select>
       </div>
     </div>
-  </div>
+  </form>
 </template>
 
 <script>

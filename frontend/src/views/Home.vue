@@ -42,7 +42,7 @@ export default {
   data () {
     return {
       // Use searchtext from history
-      filterOptions:this.$route.query
+      filterOptions: this.$route.query
     }
   },
   computed: {
