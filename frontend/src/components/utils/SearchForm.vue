@@ -33,7 +33,7 @@
           <option value="">
             {{ $t('search.ordering.relevance') }}
           </option>
-          <option value="time">
+          <option value="-time">
             {{ $t('search.ordering.time') }}
           </option>
           <option value="popularity">
