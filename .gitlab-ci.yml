@@ -9,6 +9,15 @@ variables:
 test:backend:
   image: python:3.8
   stage: test
+  rules:
+    - changes: &changes-in-backend
+        - config/**
+        - claypot/**
+        - tox.ini
+        - manage.py
+        - tests/**
+        - .gitlab-ci.yml
+      when: always
   tags:
     - docker
   variables:
@@ -34,6 +43,11 @@ test:backend:
 test:frontend:
   image: node:10-alpine
   stage: test
+  rules:
+    - changes:
+        - frontend/**
+        - .gitlab-ci.yml
+      when: always
   tags:
     - docker
   before_script:
@@ -51,8 +65,8 @@ pages:
   stage: deploy
   tags:
     - docker
-  only:
-    - master
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
   needs:
     - test:backend
   dependencies:
@@ -65,14 +79,15 @@ pages:
   artifacts:
     paths:
       - public
-  when: always
 
 build:claypot:
   stage: build
   tags:
     - docker-cli
-  only:
-    - master
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
+      changes: *changes-in-backend
+      when: always
   before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
@@ -85,8 +100,8 @@ build:nginx:
   stage: build
   tags:
     - docker-cli
-  only:
-    - master
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
   before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
@@ -100,8 +115,8 @@ deploy:cooking.cryptec.at:
   environment:
     name: production/cooking.cryptec.at
     url: https://cooking.cryptec.at
-  only:
-    - master
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "master"'
   tags:
     - docker
   image: ubuntu
