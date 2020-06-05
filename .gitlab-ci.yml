@@ -17,7 +17,7 @@ test:backend:
         - manage.py
         - tests/**
         - .gitlab-ci.yml
-      when: always
+      when: on_success
   tags:
     - docker
   variables:
