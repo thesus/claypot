@@ -11,11 +11,11 @@ test:backend:
   stage: test
   rules:
     - changes: &changes-in-backend
-        - config/**
-        - claypot/**
+        - config/**/*
+        - claypot/**/*
         - tox.ini
         - manage.py
-        - tests/**
+        - tests/**/*
         - .gitlab-ci.yml
       when: on_success
   tags:
@@ -45,7 +45,7 @@ test:frontend:
   stage: test
   rules:
     - changes:
-        - frontend/**
+        - frontend/**/*
         - .gitlab-ci.yml
       when: on_success
   tags:
