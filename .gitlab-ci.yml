@@ -87,7 +87,7 @@ build:claypot:
   rules:
     - if: '$CI_COMMIT_REF_NAME == "master"'
       changes: *changes-in-backend
-      when: always
+      when: on_success
   before_script:
     - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY
   script:
