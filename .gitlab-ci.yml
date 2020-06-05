@@ -47,7 +47,7 @@ test:frontend:
     - changes:
         - frontend/**
         - .gitlab-ci.yml
-      when: always
+      when: on_success
   tags:
     - docker
   before_script:
