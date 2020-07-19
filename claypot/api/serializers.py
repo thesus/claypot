@@ -272,6 +272,14 @@ class RecipeSerializer(serializers.ModelSerializer):
                     group.title = group_data.pop("title")
                     group.save()
 
+                    # Delete old ingredients
+                    existing = set(group.ingredients.values_list("id", flat=True))
+                    current = set(
+                            ingredient["id"]
+                            for ingredient in ingredients_data
+                            if "id" in ingredient
+                    )
+                    group.ingredients.filter(pk__in=existing - current).delete()
                     for order, ingredient_data in enumerate(ingredients_data):
                         ingredient_data["order"] = order
                         group.ingredients.update_or_create(
