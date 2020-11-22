@@ -1,7 +1,15 @@
+FROM node:10-alpine as js
+COPY frontend/ /code/
+
+RUN cd /code \
+    && yarn install \
+    && yarn build --mode production
+
 FROM python:3.8 as base
 COPY requirements/ /tmp/requirements
 RUN pip install -r /tmp/requirements/production.txt \
     && rm -rf /tmp/requirements
+COPY --from=js /code/claypot/templates/claypot /code/claypot/templates/claypot
 COPY manage.py /code/manage.py
 COPY config/ /code/config
 COPY claypot/ /code/claypot
