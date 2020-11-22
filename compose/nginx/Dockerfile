@@ -1,6 +1,6 @@
 # Build JavaScript code
 FROM node:10-alpine as js
-COPY frontend/ /code/frontend
+COPY frontend/ /code/frontend/
 
 RUN cd /code/frontend \
     && yarn install \
@@ -9,4 +9,4 @@ RUN cd /code/frontend \
 # Build nginx container
 FROM nginx:alpine
 COPY compose/nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=js /code/claypot/templates/claypot/ /var/www/html
+COPY --from=js /code/claypot/templates/claypot/js/ /var/www/html/js/
