@@ -1,4 +1,31 @@
 {
+    "titles": {
+        "home": "claypot",
+        "recipe-favorites": "Gemerkte Rezepte - claypot",
+        "recipe-my-recipes": "Eigene Rezepte - claypot",
+        "recipeDetail": {
+            "ok": "{title} - Rezept - claypot",
+            "error": "Rezept - claypot"
+        },
+        "recipeEdit": {
+            "ok": "{title} - Rezept bearbeiten - claypot",
+            "error": "Rezept bearbeiten - claypot"
+        },
+        "admin": {
+            "admin": "Admin - claypot",
+            "ingredient-list": "Zutatenliste - Admin - claypot",
+            "ingredient-edit": {
+                "ok": "{name} - Zutat bearbeiten - Admin - claypot",
+                "error": "Zutat bearbeiten - Admin - claypot"
+            }
+        },
+        "accounts": {
+            "login": "Anmeldung - claypot",
+            "logout": "Abgemeldet - claypot",
+            "reset-confirm-password": "Kennwort zurücksetzen - claypot",
+            "reset-password": "Kennwort vergessen - claypot"
+        }
+    },
     "generic": {
         "loading": "Lädt...",
         "loading_error": "Fehler beim Laden der Daten.",
