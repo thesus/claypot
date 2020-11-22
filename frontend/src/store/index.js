@@ -4,6 +4,7 @@ import createPersistedState from 'vuex-persistedstate'
 
 import accounts from './modules/accounts'
 import profile from './modules/profile'
+import sentry from './modules/sentry'
 
 
 import { api, endpoints } from '@/api'
@@ -51,17 +52,11 @@ const store = new Vuex.Store({
   ],
   modules: {
     accounts,
-    profile
+    profile,
+    sentry,
   },
-  state: {
-
-  },
-  mutations: {
-
-  },
-  actions: {
-
-  }
 })
+
+store.dispatch("assertSentryDsn")
 
 export default store

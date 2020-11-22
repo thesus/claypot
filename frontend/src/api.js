@@ -1,3 +1,4 @@
+import injectedConfig from '@/injectedConfig'
 import { getCookie } from '@/utils'
 
 const endpoints = {
@@ -113,6 +114,16 @@ function _needsCsrfToken(method) {
   }
 }
 
+// mockup to fool the rest of the project to digest our content as HTTP response
+function fakeResponse(content) {
+  this.content = content
+  // async to comply to FetchResponse (or whatever that object is called)
+  this.json = async function () {
+    return JSON.parse(this.content)
+  }
+  this.ok = true
+}
+
 async function api(endpoint, data, options) {
   if (!endpoint.earmarked) {
     throw new UnknownEndpointError()
@@ -146,6 +157,18 @@ async function api(endpoint, data, options) {
   if (fetchOptions.needsCsrfToken && csrf) {
     fetchOptions.headers['X-CSRFToken'] = csrf
   }
+
+  // some responses might be included in the initial response body
+  if (fetchOptions.method === "GET") {
+    const query_results = injectedConfig().query_results
+    if (typeof query_results === "object") {
+      const content = query_results[url]
+      if (typeof content !== "undefined") {
+        return new fakeResponse(content)
+      }
+    }
+  }
+
   return fetch(url, fetchOptions)
 }
 

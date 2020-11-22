@@ -4,6 +4,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.contrib import admin
 
+from claypot.views import IndexView, RecipeDetailView
 from claypot.api.viewsets import (
     IngredientViewSet,
     RecipeViewSet,
@@ -34,6 +35,8 @@ for view in views:
     router.register(*view)
 
 urlpatterns = [
+    path("", IndexView.as_view()),
+    path("recipes/<int:pk>", RecipeDetailView.as_view()),
     path("api/", include((router.urls, "api"))),
     path("api/sentry", SentryConfigView.as_view(), name="sentry-config"),
     path("api/csrf", csrf_token_view),
@@ -46,19 +49,8 @@ if settings.DEBUG:
     from django.views.generic.base import TemplateView
     from django.conf.urls.static import static
 
-    urlpatterns += [
-        path("", TemplateView.as_view(template_name="index.html")),
-        path(
-            "js/app.js",
-            TemplateView.as_view(
-                template_name="app.js", content_type="text/javascript"
-            ),
-        ),
-        path(
-            "js/chunk-vendors.js",
-            TemplateView.as_view(
-                template_name="chunk-vendors.js", content_type="text/javascript"
-            ),
-        ),
-        path("__debug__/", include(debug_toolbar.urls)),
-    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns.append(path("__debug__/", include(debug_toolbar.urls)))
+    urlpatterns += static(
+        "js/", document_root=settings.APPS_DIR.path("templates", "claypot", "js")
+    )
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

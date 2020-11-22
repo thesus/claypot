@@ -11,7 +11,7 @@ import accounts from './accounts'
 import admin from './admin'
 
 export default new Router({
-  mode: process.env.ROUTER_MODE || 'hash',
+  mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {

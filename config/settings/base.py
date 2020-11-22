@@ -7,6 +7,8 @@ from datetime import timedelta
 
 import environ
 
+from claypot.utils import get_html_lang_attribute
+
 
 ROOT_DIR = environ.Path(__file__) - 3
 APPS_DIR = ROOT_DIR.path("claypot")
@@ -95,6 +97,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 
 LANGUAGE_CODE = env("LANGUAGE_CODE", default="en-us")
+HTML_LANGUAGE_CODE = env(
+    "HTML_LANGUAGE_CODE", default=get_html_lang_attribute(LANGUAGE_CODE)
+)
 
 TIME_ZONE = env("TIME_ZONE", default="UTC")
 
