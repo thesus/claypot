@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 import { api, endpoints } from '@/api'
 import FormFieldValidationError from '@/components/utils/FormFieldValidationError'
 
@@ -41,6 +43,9 @@ export default {
       email: null,
       errors: [],
     }
+  },
+  mounted () {
+    this.updateTitle({name: "titles.accounts.reset-password"})
   },
   methods: {
     async submit () {
@@ -63,6 +68,7 @@ export default {
         this.finished = true
       }
     },
+    ...mapActions(["updateTitle"]),
   },
 }
 </script>

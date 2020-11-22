@@ -44,6 +44,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 import { InvalidRequestError } from '@/api'
 import FormFieldValidationError from '@/components/utils/FormFieldValidationError'
 
@@ -66,6 +68,7 @@ export default {
   },
   mounted () {
     this.$refs.username_input.focus()
+    this.updateTitle({name: "titles.accounts.login"})
   },
   methods: {
     async submit () {
@@ -80,7 +83,8 @@ export default {
           this.errors.other = [err.message]
         }
       }
-    }
+    },
+    ...mapActions(["updateTitle"]),
   },
 }
 </script>

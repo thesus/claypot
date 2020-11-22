@@ -25,6 +25,7 @@ export default new Router({
       component: Home,
       props: {
         filters: {is_starred: 2},
+        titleName: "titles.recipe-favorites",
       },
     },
     {
@@ -33,6 +34,7 @@ export default new Router({
       component: Home,
       props: {
         filters: {is_my_recipe: 2},
+        titleName: "titles.recipe-my-recipes",
       },
     },
     {

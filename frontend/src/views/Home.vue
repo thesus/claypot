@@ -20,7 +20,7 @@
 
 <script>
 import Vue from 'vue'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 import RecipeList from '@/components/utils/RecipeList'
 import SearchForm from '@/components/utils/SearchForm'
@@ -37,7 +37,11 @@ export default {
     filters: {
       type: Object,
       default: () => ({})
-    }
+    },
+    titleName: {
+      type: String,
+      default: "titles.home",
+    },
   },
   data () {
     return {
@@ -53,6 +57,16 @@ export default {
       'isLoggedIn',
     ]),
   },
+  watch: {
+    titleName: {
+      handler () {
+        this.updateTitle({name: this.titleName})
+      },
+    },
+  },
+  mounted () {
+    this.updateTitle({name: this.titleName})
+  },
   methods: {
     addRecipe () {
       this.$router.push({
@@ -61,7 +75,8 @@ export default {
     },
     updateFilters(value) {
       this.$set(this, 'filterOptions', value)
-    }
+    },
+    ...mapActions(["updateTitle"])
   }
 }
 </script>

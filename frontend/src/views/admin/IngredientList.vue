@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import { api, endpoints } from '@/api'
 
 import Receiver from '@/components/utils/Receiver'
@@ -58,7 +59,13 @@ export default {
     filters () {
       return this.search != '' ? { name: this.search } : {}
     }
-  }
+  },
+  mounted () {
+    this.updateTitle({name: "titles.admin.ingredient-list"})
+  },
+  methods: {
+    ...mapActions(["updateTitle"]),
+  },
 }
 </script>
 

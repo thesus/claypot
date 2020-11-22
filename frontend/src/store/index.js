@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import createPersistedState from 'vuex-persistedstate'
 
 import accounts from './modules/accounts'
+import htmlTitle from './modules/html-title'
 import profile from './modules/profile'
 import sentry from './modules/sentry'
 
@@ -52,6 +53,7 @@ const store = new Vuex.Store({
   ],
   modules: {
     accounts,
+    htmlTitle,
     profile,
     sentry,
   },

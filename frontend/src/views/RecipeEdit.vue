@@ -20,6 +20,8 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex'
+
 import RecipeEditForm from '@/components/recipe-edit/RecipeEditForm'
 
 export default {
@@ -60,13 +62,19 @@ export default {
     onLoadingStart () {
       this.timer = setTimeout(() => { this.loading = true }, 200)
     },
-    onLoadingEnd () {
+    onLoadingEnd ({recipe}) {
+      if (recipe !== null) {
+        this.updateTitle({name: "titles.recipeEdit.ok", args: {title: recipe.title}})
+      } else {
+        this.updateTitle({name: "titles.recipeEdit.error"})
+      }
       clearTimeout(this.timer)
       this.loading = false
       if (!this.error) {
         this.success = true
       }
-    }
-  }
+    },
+    ...mapActions(["updateTitle"]),
+  },
 }
 </script>

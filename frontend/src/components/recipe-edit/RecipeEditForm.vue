@@ -411,13 +411,14 @@ export default {
       }
     },
     async loadRecipe () {
+      let recipe = null
       try {
         this.$emit('loadingStart')
 
         const response = await api(endpoints.fetch_recipe(this.id))
 
         if (response.ok) {
-          const recipe = await response.json()
+          recipe = await response.json()
 
           // inital images consists of url for the thumbnails
           // on save recipe.images is an array of ids of the images
@@ -431,7 +432,7 @@ export default {
       } catch (error) {
         this.$emit('error', error)
       } finally {
-        this.$emit("loadingEnd")
+        this.$emit("loadingEnd", {recipe: recipe})
       }
     }
   }

@@ -1,4 +1,31 @@
 {
+    "titles": {
+        "home": "claypot",
+        "recipe-favorites": "Starred recipes - claypot",
+        "recipe-my-recipes": "My recipes - claypot",
+        "recipeDetail": {
+            "ok": "{title} - Recipe - claypot",
+            "error": "Recipe - claypot"
+        },
+        "recipeEdit": {
+            "ok": "{title} - Edit recipe - claypot",
+            "error": "Edit recipe - claypot"
+        },
+        "admin": {
+            "admin": "Admin - claypot",
+            "ingredient-list": "Ingredient list - Admin - claypot",
+            "ingredient-edit": {
+                "ok": "{name} - Edit ingredient - Admin - claypot",
+                "error": "Edit ingredient - Admin - claypot"
+            }
+        },
+        "accounts": {
+            "login": "Login - claypot",
+            "logout": "Logout - claypot",
+            "reset-confirm-password": "Reset password - claypot",
+            "reset-password": "Forgot password - claypot"
+        }
+    },
     "generic": {
         "loading": "Loading...",
         "loading_error": "Error loading data.",

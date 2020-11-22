@@ -141,7 +141,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { api, endpoints } from '@/api'
 
 import DurationSpan from '@/components/recipe-detail/DurationSpan'
@@ -249,14 +249,17 @@ export default {
         this.loading = false
         if (r.ok) {
           this.recipe = await r.json()
+          this.updateTitle({name: "titles.recipeDetail.ok", args: {title: this.recipe.title}})
         } else {
+          this.updateTitle({name: "titles.recipeDetail.error"})
           throw new Error("Display some kind of error")
         }
       } catch (err) {
         // TODO: Display some kind of error
         this.error = true
       }
-    }
+    },
+    ...mapActions(["updateTitle"]),
   },
 }
 </script>

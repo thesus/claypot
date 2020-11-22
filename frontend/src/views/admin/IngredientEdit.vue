@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import { api, endpoints } from '@/api'
 
 import IngredientSynonymInput from '@/components/ingredient-edit/IngredientSynonymInput'
@@ -73,7 +74,9 @@ export default {
 
         if (r.ok) {
           this.ingredient = await r.json()
+          this.updateTitle({name: "titles.admin.ingredient-edit.ok", args: {name: this.ingredient.name}})
         } else {
+          this.updateTitle({name: "titles.admin.ingredient-edit.error"})
           throw new Error("")
         }
       } catch (err) {
@@ -109,7 +112,8 @@ export default {
       } finally {
         this.locked = false
       }
-    }
+    },
+    ...mapActions(["updateTitle"]),
   }
 }
 </script>
