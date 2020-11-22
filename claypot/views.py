@@ -68,7 +68,7 @@ def cache_query(
     if hasattr(response, "render"):
         response = response.render()
     if not (200 <= response.status_code < 300):
-        breakpoint()
+        # only cache successful requests
         return {}
     full_url = url
     if len(path_args) > 0:
