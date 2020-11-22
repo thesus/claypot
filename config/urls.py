@@ -1,10 +1,10 @@
 from rest_framework.routers import DefaultRouter
 
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.contrib import admin
 
-from claypot.views import IndexView, RecipeDetailView
+from claypot.views import IndexView, RecipeDetailView, SinglePageAppView
 from claypot.api.viewsets import (
     IngredientViewSet,
     RecipeViewSet,
@@ -54,3 +54,9 @@ if settings.DEBUG:
         "js/", document_root=settings.APPS_DIR.path("templates", "claypot", "js")
     )
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Everything else might be a frontend route with no special handling.
+# Static files in production are filtered out by the reverse proxy configuration.
+urlpatterns += [
+    re_path(r"", SinglePageAppView.as_view()),
+]
