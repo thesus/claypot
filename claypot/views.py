@@ -90,9 +90,7 @@ class SinglePageAppView(TemplateView):
         return result
 
     def get_injected_data(self) -> dict:
-        return {
-            "query_results": self.get_query_results(),
-        }
+        return {"query_results": self.get_query_results()}
 
     def get_og_tags(self) -> Dict[str, str]:
         return {
@@ -120,9 +118,7 @@ class SinglePageAppView(TemplateView):
 
     def get_query_results(self) -> Dict[str, str]:
         result = {}
-        result.update(
-            cache_query(self.request, "sentry-config")
-        )
+        result.update(cache_query(self.request, "sentry-config"))
         # if self.request.user.is_authenticated:
         #     result.update(
         #         cache_query(
