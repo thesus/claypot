@@ -5,6 +5,8 @@ import Home from '../views/Home.vue'
 import RecipeDetail from '../views/RecipeDetail.vue'
 import RecipeEdit from '../views/RecipeEdit.vue'
 
+import PageNotFound from '../views/PageNotFound.vue'
+
 Vue.use(Router)
 
 import accounts from './accounts'
@@ -53,11 +55,10 @@ export default new Router({
       component: RecipeEdit
     },
     ...accounts,
-    ...admin
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   component: () => import('../views/About.vue')
-    // }i
+    ...admin,
+    {
+      path: '*',
+      component: PageNotFound
+    }
   ]
 })
