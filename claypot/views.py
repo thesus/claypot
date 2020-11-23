@@ -44,7 +44,7 @@ def cache_query(
     req.COOKIES = {}
     req.COOKIES.update(request.COOKIES)
     req.META = {}
-    for k in (
+    forwarded_meta = [
         "SERVER_NAME",
         "SERVER_PORT",
         "REMOTE_HOST",
@@ -53,7 +53,13 @@ def cache_query(
         "HTTP_ACCEPT_LANGUAGE",
         "HTTP_COOKIE",
         "HTTP_UPGRADE_INSECURE_REQUESTS",
-    ):
+    ]
+
+    # Otherwise the subrequests will act as if the traffic is unsecure.
+    if settings.SECURE_PROXY_SSL_HEADER is not None:
+        forwarded_meta.append(settings.SECURE_PROXY_SSL_HEADER[0])
+
+    for k in forwarded_meta:
         if k in request.META:
             req.META[k] = request.META[k]
     req.FILES = MultiValueDict()
