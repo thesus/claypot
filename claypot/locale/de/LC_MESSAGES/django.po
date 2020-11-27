@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Claypot translations 1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-18 17:52+0000\n"
+"POT-Creation-Date: 2020-11-27 19:26+0000\n"
 "PO-Revision-Date: 2020-05-18 19:51+0200\n"
 "Last-Translator: David Sieger <david@conceal.at>\n"
 "Language-Team: German <none>\n"
@@ -97,11 +97,11 @@ msgstr "Dieses Feld darf nicht leer sein."
 msgid "Unknown unit"
 msgstr "Unbekannte Einheit"
 
-#: claypot/api/serializers.py:356
+#: claypot/api/serializers.py:364
 msgid "Already used on another ingredient."
 msgstr "Bereits an einer anderen Zutat verwendet."
 
-#: claypot/api/serializers.py:433
+#: claypot/api/serializers.py:441
 msgid "You may only define relations between different recipes."
 msgstr "Du darfst ein Rezept nicht mit sich selbst verknüpfen."
 
@@ -311,3 +311,12 @@ msgstr ""
 #: claypot/templates/accounts/signup_email.html:6
 msgid "Click the following link to verify your email address: "
 msgstr "Klicke den folgenden Link um deine E-Mail-Adresse zu bestätigen: "
+
+#: claypot/views.py:123 claypot/views.py:141
+msgid "claypot"
+msgstr "claypot"
+
+#: claypot/views.py:203
+#, python-brace-format
+msgid "{recipe_title} - Recipe - claypot"
+msgstr "{recipe_title} - Rezept - claypot"

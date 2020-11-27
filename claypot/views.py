@@ -120,7 +120,7 @@ class SinglePageAppView(TemplateView):
         return ""
 
     def get_page_title(self) -> str:
-        return "claypot"
+        return _("claypot")
 
     def get_query_results(self) -> Dict[str, str]:
         result = {}
@@ -138,7 +138,7 @@ class SinglePageAppView(TemplateView):
 
 class IndexView(SinglePageAppView):
     def get_page_title(self) -> str:
-        return "claypot"
+        return _("claypot")
 
     def get_og_type(self) -> str:
         return "website"
